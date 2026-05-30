@@ -7,7 +7,7 @@ use PDOException;
 class Config {
     public static function conexion() {
         $host = "localhost";
-        $db = "medicina";
+        $db = "servicio_medico";
         $user = "root";
         $password = "";
 

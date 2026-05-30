@@ -15,6 +15,7 @@
                         <button class="login-card__submit" type="submit">Registro</button>
                     </form>
                 <?= isset($_SESSION["registro_notif"]) ? $_SESSION["registro_notif"] : "" ?>
+                <?php unset($_SESSION["registro_notif"])?>
     
                 </div>
                 <div class="login-card">
@@ -34,7 +35,7 @@
                     </form>
                     <p class="login-card__disclaimer">@ 2026 PNF Informatica - Universidad Politecnica Territorial de Lara Andres Eloy Blanco</p>
                     <?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : "" ?>
-
+                    <?php unset($_SESSION["login_notif"]) ?>
                 </div>
             </div>
         </section>

@@ -29,7 +29,7 @@ class Controller {
         }
 
         else {
-            $_SESSION["registro_notif"] = "Registro no exitoso";
+            $_SESSION["registro_notif"] = "Registro no exitoso. No pasaste las validaciones";
         }
     }
 
@@ -40,7 +40,7 @@ class Controller {
         if (!empty($cedula) && !empty($password) && strlen($cedula) >= 7 && strlen($cedula) <= 8) {
             $model = new Usuario($this->pdo);
             $usuarioEncontrado = $model->loginUsuario($cedula);
-            if ($usuarioEncontrado && password_verify($password, $usuarioEncontrado["password"])) {
+            if ($usuarioEncontrado && password_verify($password, $usuarioEncontrado["contrasena"])) {
                 $_SESSION["login_notif"] = "Logueado";
                 $_SESSION["cedula"] = $usuarioEncontrado["cedula"];
                 header("Location: perfil");
