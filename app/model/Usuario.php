@@ -15,7 +15,7 @@ class Usuario {
     public function registrarUsuario($cedula, $password) {
         
         try {
-            $sql = "INSERT INTO usuarios (password, cedula) VALUES (:password, :cedula)";
+            $sql = "INSERT INTO usuarios (cedula, contrasena) VALUES (:cedula, :password)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
             "password" => $password,
