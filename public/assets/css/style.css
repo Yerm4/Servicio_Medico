@@ -93,9 +93,6 @@ main {
     margin-top: 75px;
 }
 
-.section-1 {
-}
-
 .section-1__box {
     display: flex;
     justify-content: center;
@@ -120,7 +117,7 @@ main {
 }
 
 .action-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .action-card__logo {
@@ -229,7 +226,7 @@ main {
 
 .action-card__form--grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 10px;
     width: 100%;
 }
