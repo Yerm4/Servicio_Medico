@@ -166,6 +166,13 @@ main {
     outline: none;
 }
 
+.action-card__select {
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #eee;
+    border: 1px solid #999;
+}
+
 .action-card__button-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -193,10 +200,26 @@ main {
 
 .modal-usuario {
     border: none;
+    padding: 50px;
     border-radius: 20px;
-    width: 70vw;
-    height: 70vw;
-    margin: auto
+    min-width: 60vw;
+    height: 60vw;
+    margin: auto;
+}
+
+.modal-usuario .action-card {
+    max-width: initial;
+}
+
+.action-card__form--registrar-usuarios {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.modal-usuario label {
+    width: 50%
 }
 
 /* MEDIA QUERY */

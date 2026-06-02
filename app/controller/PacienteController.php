@@ -31,8 +31,9 @@ class PacienteController {
 
             if ($resultado === true) {
                 unset($_SESSION['inputs']);
-                $mensajeExito = "¡Paciente registrado de manera exitosa!";
-                header("Location: index.php?ruta=registrar&status=success&msg=" . urlencode($mensajeExito));
+                $_SESSION["registro_status"] = "success";
+                $_SESSION["registro_msg"] = "¡Paciente registrado de manera exitosa!";
+                header("Location: perfil");
                 exit();
             } else {
                 throw new Exception($resultado);
@@ -40,7 +41,8 @@ class PacienteController {
 
         } catch (Exception $e) {
             $_SESSION['inputs'] = $_POST;
-            header("Location: index.php?ruta=registrar&status=error&msg=" . urlencode($e->getMessage()));
+            $_SESSION["registro_status"] = "error";
+            $_SESSION["registro_msg"] = "¡Paciente registrado de manera exitosa!";
             exit();
         }
     }

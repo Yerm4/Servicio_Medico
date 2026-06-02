@@ -22,14 +22,14 @@ if ($appEnv === 'local') {
     error_reporting(0);
 }
 
-session_set_cookie_params([
+/*session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
     'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
     'httponly' => true,
     'samesite' => 'Lax'
-]);
+]);*/
 session_start();
 
 if (isset($_SESSION['cedula'])) {
