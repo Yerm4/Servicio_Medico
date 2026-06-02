@@ -8,7 +8,7 @@ unset($_SESSION['inputs']);
 
 <main class="formModelo">
     <section class="section-1">
-    <div class="action-card action-card__pruebagit">
+    <div class="action-card action-card__prueba">
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                 <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
                 <div>
@@ -25,7 +25,7 @@ unset($_SESSION['inputs']);
                     <input type="hidden" name="form" value="registro_paciente">
                     
                         <label for="cedula" class="action-card__label">Cédula de Identidad
-                            <input type="tel" inputmode="numeric" pattern="[0, 9]*" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
+                            <input type="tel" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
                         </label>
 
                         <label for="tipo" class="action-card__label">Tipo de Usuario

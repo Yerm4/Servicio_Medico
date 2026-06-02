@@ -142,7 +142,7 @@ unset($_SESSION['inputs']);
 
                     <div class="action-card__form--grid">    
                         <label for="cedula" class="action-card__label">Cédula de Identidad
-                            <input type="tel" inputmode="numeric" pattern="[0, 9]*" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
+                            <input type="tel" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
                         </label>
 
                         <label for="tipo" class="action-card__label">Tipo de Usuario
