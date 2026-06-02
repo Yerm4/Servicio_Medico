@@ -89,6 +89,10 @@ switch($paginaActual) {
         include __DIR__."/../app/views/perfil.php";
         break;
 
+    case "form";
+        include __DIR__."/../app/views/formModelo.php";
+        break;
+
     case "logout":
         session_unset();
         session_destroy();

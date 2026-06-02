@@ -107,7 +107,7 @@ main {
     background-color: #fff;
     border-radius: 10px;
     padding: 30px;
-    box-shadow: 5px 10px 20px 0 #5af;
+    box-shadow: 5px 5px 20px 0 #000;
     transition: transform .5s ease;
     display: flex;
     justify-content: center;
@@ -229,6 +229,12 @@ main {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 10px;
     width: 100%;
+}
+
+.action-card__prueba {
+    max-width: 90vw;
+    margin: auto;
+
 }
 
 /* MEDIA QUERY */
