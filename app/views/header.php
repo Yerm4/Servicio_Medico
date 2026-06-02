@@ -19,8 +19,8 @@
                 <p class="top-menu__perfil-name">Hola!</p>
             </div>
             <div class="top-menu__links">
-                <a href="inicio" class="top-menu__link">Inicio</a>
-                <a href="registrar" class="top-menu__link">Info</a>
+                <a href="inicio" class="top-menu__link">Login</a>
+                <a href="perfil" class="top-menu__link">Perfil</a>
                 <a href="#" class="top-menu__link">Más</a>
             </div>
             <div class="top-menu__login">

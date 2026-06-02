@@ -54,7 +54,7 @@ a {
 
 .top-menu a:hover {
     background-color: #cacaca;
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .top-menu__perfil {
@@ -110,7 +110,7 @@ main {
     background-color: #fff;
     border-radius: 10px;
     padding: 30px;
-    box-shadow: 10px 10px 20px 0px #5af;
+    box-shadow: 5px 10px 20px 0 #5af;
     transition: transform .5s ease;
     display: flex;
     justify-content: center;
@@ -190,6 +190,15 @@ main {
     font-weight: bolder;
 }
 
+.action-card__button:focus {
+    outline: none
+}
+
+.action-card__button:focus-visible {
+    outline: 3px red solid
+}
+
+
 .action-card__button--grid-principal {
     grid-column: span 2;
 }
@@ -200,10 +209,9 @@ main {
 
 .modal-usuario {
     border: none;
-    padding: 50px;
+    padding: 30px;
     border-radius: 20px;
-    min-width: 60vw;
-    height: 60vw;
+    min-width: 90vw;
     margin: auto;
 }
 
@@ -216,17 +224,20 @@ main {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
-.modal-usuario label {
-    width: 50%
+.action-card__form--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    width: 100%;
 }
 
 /* MEDIA QUERY */
 
-@media screen and (max-width: 800px) {
-
+@media screen and (max-width: 400px) {
     .action-card {
-        padding: 20px 50px
+    max-width: 330px; 
     }
 }

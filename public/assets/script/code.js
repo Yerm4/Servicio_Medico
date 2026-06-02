@@ -23,7 +23,7 @@ const modalBuscarUsuario = document.getElementById("modalBuscarUsuario")
 abrirModalBoton.forEach(boton => {
     boton.addEventListener("click", (event) => {
         event.preventDefault()
-        let botonValue = boton.getAttribute("value")
+        let botonValue = boton.dataset.modal
         console.log(botonValue)
         let modalAbrir = document.getElementById(botonValue)
         modalAbrir.showModal()

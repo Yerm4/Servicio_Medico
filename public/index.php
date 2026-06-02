@@ -70,9 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$msg = isset($_GET['msg']) ? htmlspecialchars($_GET['msg']) : '';
-
 $ruta = isset($_GET["ruta"]) ? trim($_GET["ruta"], "/") : "login";
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];

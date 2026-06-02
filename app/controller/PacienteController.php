@@ -42,7 +42,8 @@ class PacienteController {
         } catch (Exception $e) {
             $_SESSION['inputs'] = $_POST;
             $_SESSION["registro_status"] = "error";
-            $_SESSION["registro_msg"] = "¡Paciente registrado de manera exitosa!";
+            $_SESSION["registro_msg"] = $e->getMessage();
+            header("Location: perfil");
             exit();
         }
     }
