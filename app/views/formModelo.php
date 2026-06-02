@@ -77,7 +77,7 @@ unset($_SESSION['inputs']);
                         </label>
                     </label>
                     <div class="action-card__button-grid">
-                    <button type="reset" class="action-card__button">Limpiar Formulario</button>
+                    <button type="reset" class="action-card__button action-card__button--red">Limpiar Formulario</button>
                     <button type="submit" class="action-card__button">Guardar en Sistema</button>
                     </div>
                 </form>

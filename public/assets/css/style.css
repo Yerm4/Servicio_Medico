@@ -187,6 +187,10 @@ main {
     font-weight: bolder;
 }
 
+.action-card__button--red {
+    background-color: #b22;
+}
+
 .action-card__button:focus {
     outline: none
 }
@@ -204,18 +208,6 @@ main {
     padding: 10px;
 }
 
-.modal-usuario {
-    border: none;
-    padding: 30px;
-    border-radius: 20px;
-    min-width: 90vw;
-    margin: auto;
-}
-
-.modal-usuario .action-card {
-    max-width: initial;
-}
-
 .action-card__form--registrar-usuarios {
     display: flex;
     justify-content: space-between;
@@ -231,13 +223,67 @@ main {
     width: 100%;
 }
 
+.modal-crud {
+    border: none;
+    padding: 30px;
+    border-radius: 20px;
+    min-width: 90vw;
+    margin: auto;
+    position: relative;
+}
+
+.modal-crud .action-card {
+    max-width: initial;
+    margin: auto;
+}
+
+.modal-crud__boton-cerrar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 20px;
+    background-color: #fff;
+    transition: background-color .5s ease, transform .5s ease
+}
+
+.modal-crud__boton-cerrar:hover {
+    background-color: #ddd;
+    transform: scale(1.1) rotate(10deg);
+}
+
 .action-card__prueba {
     max-width: 90vw;
     margin: auto;
-
 }
 
 /* MEDIA QUERY */
+
+@media screen and (min-width: 1001px) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    }
+}
+
+@media screen and (min-width: 1700px) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    }
+}
+
+@media screen and (max-width: 1000x) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
 
 @media screen and (max-width: 400px) {
     .action-card {

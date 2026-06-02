@@ -15,17 +15,37 @@ if (loginCardCedula) {
     });    
 }
 
-const abrirModalBoton = document.getElementsByName("openModal")
-
-const modalRegistrarUsuario = document.getElementById("modalRegistrarUsuario")
-const modalBuscarUsuario = document.getElementById("modalBuscarUsuario")
-
+const abrirModalBoton = document.querySelectorAll('[name="openModal"')
 abrirModalBoton.forEach(boton => {
     boton.addEventListener("click", (event) => {
         event.preventDefault()
-        let botonValue = boton.dataset.modal
-        console.log(botonValue)
-        let modalAbrir = document.getElementById(botonValue)
+        let modal = boton.dataset.modal
+        let modalAbrir = document.getElementById(modal)
         modalAbrir.showModal()
+    })
+})
+
+const modales = document.querySelectorAll(".modal-crud")
+modales.forEach(modal => {
+    modal.addEventListener("click", (event) => {
+        const modalPosicion = modal.getBoundingClientRect()
+        const clickAfuera = (
+            event.clientX < modalPosicion.left ||
+            event.clientX > modalPosicion.right ||
+            event.clientY < modalPosicion.top ||
+            event.clientY > modalPosicion.bottom 
+        )
+        if (clickAfuera) {
+            modal.close()
+        }
+    })
+})
+
+const modalBotonCerrar = document.querySelectorAll('[name="modalBotonCerrar"]')
+modalBotonCerrar.forEach(cerrar => {
+    cerrar.addEventListener("click", (event) => {
+        const modal = cerrar.dataset.modal
+        let modalCerrar = document.getElementById(modal)
+        modalCerrar.close()
     })
 })
