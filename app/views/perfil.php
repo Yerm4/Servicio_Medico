@@ -208,7 +208,7 @@ unset($_SESSION['inputs']);
             <p>aaaaaaaaaaaaactualizar</p>
         </dialog>
         <dialog id="modalBuscarConsulta" class="modal-usuario">
-            <p>aaaaaaaaaaaaactualizar</p>
+            <p>aaaaaaaaaaaabuscar</p>
         </dialog>
         
     </main>
