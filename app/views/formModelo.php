@@ -8,7 +8,7 @@ unset($_SESSION['inputs']);
 
 <main class="formModelo">
     <section class="section-1">
-    <div class="action-card action-card__prueba">
+    <div class="action-card action-card__pruebagit">
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                 <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
                 <div>

@@ -1,0 +1,5 @@
+APP_ENV=local
+DB_HOST=localhost
+DB_NAME=servicio_medico
+DB_USER=root
+DB_PASS=
