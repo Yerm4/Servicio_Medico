@@ -22,14 +22,14 @@ if ($appEnv === 'local') {
     error_reporting(0);
 }
 
-session_set_cookie_params([
+/*session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
     'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
     'httponly' => true,
     'samesite' => 'Lax'
-]);
+]);*/
 session_start();
 
 if (isset($_SESSION['cedula'])) {
@@ -70,9 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$msg = isset($_GET['msg']) ? htmlspecialchars($_GET['msg']) : '';
-
 $ruta = isset($_GET["ruta"]) ? trim($_GET["ruta"], "/") : "login";
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
@@ -90,6 +87,10 @@ switch($paginaActual) {
 
     case "perfil": 
         include __DIR__."/../app/views/perfil.php";
+        break;
+
+    case "form";
+        include __DIR__."/../app/views/formModelo.php";
         break;
 
     case "logout":

@@ -54,7 +54,7 @@ a {
 
 .top-menu a:hover {
     background-color: #cacaca;
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .top-menu__perfil {
@@ -93,9 +93,6 @@ main {
     margin-top: 75px;
 }
 
-.section-1 {
-}
-
 .section-1__box {
     display: flex;
     justify-content: center;
@@ -110,7 +107,7 @@ main {
     background-color: #fff;
     border-radius: 10px;
     padding: 30px;
-    box-shadow: 10px 10px 20px 0px #5af;
+    box-shadow: 5px 5px 20px 0 #000;
     transition: transform .5s ease;
     display: flex;
     justify-content: center;
@@ -120,7 +117,7 @@ main {
 }
 
 .action-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .action-card__logo {
@@ -166,6 +163,13 @@ main {
     outline: none;
 }
 
+.action-card__select {
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #eee;
+    border: 1px solid #999;
+}
+
 .action-card__button-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -183,6 +187,19 @@ main {
     font-weight: bolder;
 }
 
+.action-card__button--red {
+    background-color: #b22;
+}
+
+.action-card__button:focus {
+    outline: none
+}
+
+.action-card__button:focus-visible {
+    outline: 3px red solid
+}
+
+
 .action-card__button--grid-principal {
     grid-column: span 2;
 }
@@ -191,19 +208,85 @@ main {
     padding: 10px;
 }
 
-.modal-usuario {
+.action-card__form--registrar-usuarios {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.action-card__form--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.modal-crud {
     border: none;
+    padding: 30px;
     border-radius: 20px;
-    width: 70vw;
-    height: 70vw;
-    margin: auto
+    min-width: 90vw;
+    margin: auto;
+    position: relative;
+}
+
+.modal-crud .action-card {
+    max-width: initial;
+    margin: auto;
+}
+
+.modal-crud__boton-cerrar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 20px;
+    background-color: #fff;
+    transition: background-color .5s ease, transform .5s ease
+}
+
+.modal-crud__boton-cerrar:hover {
+    background-color: #ddd;
+    transform: scale(1.1) rotate(10deg);
+}
+
+.action-card__prueba {
+    max-width: 90vw;
+    margin: auto;
 }
 
 /* MEDIA QUERY */
 
-@media screen and (max-width: 800px) {
+@media screen and (min-width: 1001px) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+}
 
+@media screen and (min-width: 1400px) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    }
+}
+
+@media screen and (min-width: 1700px) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    }
+}
+
+@media screen and (max-width: 1000x) {
+    .action-card__form--grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
+
+@media screen and (max-width: 400px) {
     .action-card {
-        padding: 20px 50px
+    max-width: 330px; 
     }
 }
