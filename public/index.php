@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $form = isset($_POST["form"]) ? $_POST["form"] : '';
     switch($form) {
-        case "registro_prueba":
+        case "registro":
             $controller->registrar();
             break;
 
