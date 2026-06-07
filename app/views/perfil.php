@@ -19,9 +19,10 @@ unset($_SESSION['inputs']);
                 <div class="action-card">
                     <h2 class="action-card__title">Gestión de usuarios</h2>
                     <div class="action-card__button-grid">    
-                        <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button action-card__button--grid-principal" href="">Registrar paciente</a>
+                        <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar paciente</a>
                         <a name="openModal" data-modal="modalActualizarUsuario" class="action-card__button" href="">Actualizar paciente</a>
                         <a name="openModal" data-modal="modalBuscarUsuario" class="action-card__button" href="">Buscar usuario</a>
+                        <a name="openModal" data-modal="modalEliminarUsuario" class="action-card__button" href="">ar usuario</a>
                     </div>
                 </div>
                 <div class="action-card">
@@ -124,6 +125,9 @@ unset($_SESSION['inputs']);
         <dialog id="modalActualizarUsuario" class="modal-crud">
             <p>aaaaaaaaaaaaactualizar</p>
         </dialog>
+        <dialog id="modalEliminarUsuario" class="modal-crud">
+            <p>eliminar</p>
+        </dialog>
         <dialog id="modalRegistrarConsulta" class="modal-crud">
             <div class="action-card">
 
@@ -142,7 +146,7 @@ unset($_SESSION['inputs']);
 
                     <div class="action-card__form--grid">    
                         <label for="cedula" class="action-card__label">Cédula de Identidad
-                            <input type="tel" inputmode="numeric" pattern="[0, 9]*" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
+                            <input type="tel" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
                         </label>
 
                         <label for="tipo" class="action-card__label">Tipo de Usuario

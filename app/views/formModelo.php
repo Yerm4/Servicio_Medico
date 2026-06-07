@@ -5,10 +5,9 @@ $inputs = isset($_SESSION['inputs']) ? $_SESSION['inputs'] : [];
 unset($_SESSION['inputs']);
 
 ?>
-
 <main class="formModelo">
     <section class="section-1">
-    <div class="action-card action-card__pruebagit">
+    <div class="action-card action-card__prueba">
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                 <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
                 <div>
@@ -25,7 +24,7 @@ unset($_SESSION['inputs']);
                     <input type="hidden" name="form" value="registro_paciente">
                     
                         <label for="cedula" class="action-card__label">Cédula de Identidad
-                            <input type="tel" inputmode="numeric" pattern="[0, 9]*" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
+                            <input type="tel" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
                         </label>
 
                         <label for="tipo" class="action-card__label">Tipo de Usuario
@@ -44,15 +43,7 @@ unset($_SESSION['inputs']);
                     <label for="apellido" class="action-card__label">Apellidos
                         <input type="text" class="action-card__input" id="apellido" name="apellido" value="<?php echo isset($inputs['apellido']) ? $inputs['apellido'] : ''; ?>" required>
                     </label>
-                    <label for="pnf" class="action-card__label">PNF (Área académica)
-                        <select class="action-card__select" id="pnf" name="pnf" required>
-                            <?php $p = isset($inputs['pnf']) ? $inputs['pnf'] : ''; ?>
-                            <option value="" <?php echo ($p === '') ? 'selected' : ''; ?> disabled>Seleccione PNF...</option>
-                            <option value="1" <?php echo ($p === '1') ? 'selected' : ''; ?>>Informática</option>
-                            <option value="2" <?php echo ($p === '2') ? 'selected' : ''; ?>>Administración</option>
-                            <option value="3" <?php echo ($p === '3') ? 'selected' : ''; ?>>Higiene y Seguridad</option>
-                        </select>
-                    </label>
+                   
                     <label for="fecha_nacimiento" class="action-card__label">Fecha de Nacimiento
                         <input type="date" class="action-card__input" id="fecha_nacimiento" name="fecha_nacimiento" value="<?php echo isset($inputs['fecha_nacimiento']) ? $inputs['fecha_nacimiento'] : ''; ?>" required>
                     </label>
@@ -61,6 +52,9 @@ unset($_SESSION['inputs']);
                     </label>
                     <label for="tlfemergencia" class="action-card__label">Contacto de Emergencia
                         <input type="text" class="action-card__input" id="tlfemergencia" name="tlfemergencia" value="<?php echo isset($inputs['tlfemergencia']) ? $inputs['tlfemergencia'] : ''; ?>" required>
+                    </label>
+                     <label for="nombre_contacto_emergencia" class="action-card__label">Nombre de Contacto de Emergencia
+                        <input type="text" class="action-card__input" id="nombre_contacto_emergencia" name="nombre_contacto_emergencia" value="<?php echo isset($inputs['nombre_contacto_de_emergencia']) ? $inputs['nombre_contacto_emergencia'] : ''; ?>" required>
                     </label>
 
                 </div>
