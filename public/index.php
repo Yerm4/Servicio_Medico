@@ -2,6 +2,8 @@
 require_once __DIR__."/../vendor/autoload.php";
 use app\controller\Controller;
 use app\controller\PacienteController;
+use app\controller\ConsultaController;
+use app\model\Consulta;
 use app\config\Config;
 
 if (file_exists(__DIR__ . '/.env')) {
@@ -48,6 +50,7 @@ if (empty($_SESSION['csrf_token'])) {
 $pdo = Config::conexion(); 
 $controller = new Controller($pdo);
 $controllerPaciente = new PacienteController($pdo);
+$controllerConsulta = new ConsultaController($pdo);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -64,6 +67,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case "registro_paciente":
             $controllerPaciente->Registrar();    
             break;
+        case "registro_consulta":
+            $controllerConsulta->registrar();
+            break;
+        case "actualizar_consulta":
+            $controllerConsulta->actualizar();
+            break;
         case "login":
             $controller->login();
             break;
@@ -73,6 +82,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $ruta = isset($_GET["ruta"]) ? trim($_GET["ruta"], "/") : "login";
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
+
+if ($paginaActual === "buscar_patologia") {
+    $controllerConsulta->buscarPatologiaAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_paciente") {
+    $controllerConsulta->buscarPacienteAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_consultas_paciente") {
+    $controllerConsulta->obtenerConsultasPacienteAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_condicion") {
+    $controllerConsulta->buscarCondicionAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_condiciones_paciente") {
+    $controllerConsulta->obtenerCondicionesPacienteAjax();
+    exit();
+}
+
+$todosLosUsuarios = [];
+if (isset($_SESSION['cedula'])) {
+    $modeloConsulta = new Consulta($pdo);
+    $todosLosUsuarios = $modeloConsulta->obtenerTodosLosUsuarios();
+}
 
 include __DIR__."/../app/views/header.php";
 
@@ -89,7 +129,7 @@ switch($paginaActual) {
         include __DIR__."/../app/views/perfil.php";
         break;
 
-    case "form";
+    case "form":
         include __DIR__."/../app/views/formModelo.php";
         break;
 

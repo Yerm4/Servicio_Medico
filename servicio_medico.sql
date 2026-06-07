@@ -25,7 +25,7 @@ CREATE TABLE `lista_patologias` (
 
 CREATE TABLE `lista_condiciones` (
   `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `condicion` text NOT NULL
+  `condicion` varchar(255) UNIQUE NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `lista_pnfs` (
@@ -125,7 +125,7 @@ ALTER TABLE `nucleo_pnf` ADD FOREIGN KEY (`id_pnf`) REFERENCES `lista_pnfs` (`id
 
 
 
-INSERTAR DATOS LUEGO DE CREAR TODO
+-- INSERTAR DATOS LUEGO DE CREAR TODO
 
 INSERT INTO `lista_nucleos` (`id_nucleo`, `nombre_nucleo`) VALUES
 (2, 'Núcleo Carora (Torres)'),
@@ -148,7 +148,7 @@ INSERT INTO `lista_pnfs` (`id_pnf`, `nombre_pnf`) VALUES
 (12, 'Turismo');
 
 
-RELACION ENTRE LOS NUCLEOS Y SUS PNFS
+-- RELACION ENTRE LOS NUCLEOS Y SUS PNFS
 
 INSERT INTO `nucleo_pnf` (`id_nucleo`, `id_pnf`) VALUES
 (1, 1),
@@ -174,6 +174,33 @@ INSERT INTO `nucleo_pnf` (`id_nucleo`, `id_pnf`) VALUES
 (4, 1),
 (4, 2),
 (4, 4);
+
+
+-- ========================================================
+-- 5. DATOS DE PATOLOGÍAS (CÓDIGOS ICD-10 COMUNES)
+-- ========================================================
+
+INSERT INTO `lista_patologias` (`codigo_icd`, `patologia`) VALUES
+('A09', 'Diarrea y gastroenteritis de presunto origen infeccioso'),
+('B35', 'Dermatofitosis (micosis)'),
+('E11', 'Diabetes mellitus no insulinodependiente'),
+('G44', 'Otros síndromes de cefalea (dolor de cabeza)'),
+('I10', 'Hipertensión esencial (primaria)'),
+('J00', 'Rinofaringitis aguda (resfriado común)'),
+('J02', 'Faringitis aguda'),
+('J03', 'Amigdalitis aguda'),
+('K21', 'Enfermedad por reflujo gastroesofágico'),
+('K29', 'Gastritis y duodenitis'),
+('L03', 'Celulitis (infección cutánea)'),
+('M54', 'Dorsalgia (dolor de espalda)'),
+('N39', 'Infección del tracto urinario, sitio no especificado'),
+('R50', 'Fiebre de origen desconocido');
+
+
+
+
+
+
 
 
 
