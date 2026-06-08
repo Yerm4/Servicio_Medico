@@ -16,6 +16,7 @@ class ConsultaController {
             $cedulaPaciente = isset($_POST['cedula_paciente']) ? trim($_POST['cedula_paciente']) : '';
             $motivo         = isset($_POST['motivo_de_visita']) ? trim($_POST['motivo_de_visita']) : '';
             $observaciones  = isset($_POST['observaciones']) ? trim($_POST['observaciones']) : '';
+            $medicamento    = isset($_POST['medicamento_suministrado']) ? trim($_POST['medicamento_suministrado']) : '';
             
             // Symptoms
             $sintomas       = isset($_POST['sintomas']) ? $_POST['sintomas'] : [];
@@ -47,7 +48,7 @@ class ConsultaController {
             }
 
             $modeloConsulta = new Consulta($this->db);
-            $resultado = $modeloConsulta->registrarConsulta($cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones);
+            $resultado = $modeloConsulta->registrarConsulta($cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento);
 
             if ($resultado === true) {
                 unset($_SESSION['inputs']);
@@ -98,6 +99,7 @@ class ConsultaController {
             $idConsulta    = isset($_POST['id_consulta']) ? (int)$_POST['id_consulta'] : 0;
             $motivo        = isset($_POST['motivo_de_visita']) ? trim($_POST['motivo_de_visita']) : '';
             $observaciones = isset($_POST['observaciones']) ? trim($_POST['observaciones']) : '';
+            $medicamento   = isset($_POST['medicamento_suministrado']) ? trim($_POST['medicamento_suministrado']) : '';
 
             $sintomas      = isset($_POST['sintomas']) ? $_POST['sintomas'] : [];
             if (!is_array($sintomas)) {
@@ -122,7 +124,7 @@ class ConsultaController {
             }
 
             $modeloConsulta = new Consulta($this->db);
-            $resultado = $modeloConsulta->actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones);
+            $resultado = $modeloConsulta->actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento);
 
             if ($resultado === true) {
                 unset($_SESSION['inputs']);

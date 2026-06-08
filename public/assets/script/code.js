@@ -366,11 +366,11 @@ function setupPatientAutocomplete(inputId, suggestionsId, hiddenId, onSelectCall
                             const div = document.createElement("div");
                             div.className = "sugerencia-item";
                             div.style.cursor = "pointer";
-                            div.textContent = `${item.cedula} - ${item.apellido}, ${item.nombre}`;
+                            div.textContent = `${item.cedula} - ${item.nombre} ${item.apellido}`;
                             div.addEventListener("mousedown", () => {
                                 justSelected = true;
                                 hiddenInput.value = item.cedula;
-                                searchInput.value = `${item.cedula} - ${item.apellido}, ${item.nombre}`;
+                                searchInput.value = `${item.cedula} - ${item.nombre} ${item.apellido}`;
                                 suggestionsBox.innerHTML = "";
                                 suggestionsBox.style.display = "none";
                                 if (onSelectCallback) onSelectCallback(item.cedula);
@@ -409,12 +409,13 @@ setupPatientAutocomplete("paciente-search", "pacientes-sugerencias", "cedula_pac
     const condSearch = document.getElementById("condicion-search");
     const motivo = document.getElementById("motivo_de_visita");
     const obs = document.getElementById("observaciones");
+    const med = document.getElementById("medicamento_suministrado");
     const sintomaInput = document.getElementById("sintoma-input");
     const btnAddSintoma = document.getElementById("btn-add-sintoma");
     const diagSearch = document.getElementById("diagnostico-search");
     const submitBtn = document.getElementById("btn-registrar-consulta-submit");
 
-    const inputsToLock = [condSearch, motivo, obs, sintomaInput, btnAddSintoma, diagSearch, submitBtn];
+    const inputsToLock = [condSearch, motivo, obs, med, sintomaInput, btnAddSintoma, diagSearch, submitBtn];
     
     if (cedula) {
         inputsToLock.forEach(input => {
@@ -437,6 +438,7 @@ setupPatientAutocomplete("paciente-search", "pacientes-sugerencias", "cedula_pac
         
         if (motivo) motivo.value = "";
         if (obs) obs.value = "";
+        if (med) med.value = "";
         if (sintomaInput) sintomaInput.value = "";
         if (diagSearch) diagSearch.value = "";
     }
@@ -449,12 +451,13 @@ if (registrarForm) {
         const condSearch = document.getElementById("condicion-search");
         const motivo = document.getElementById("motivo_de_visita");
         const obs = document.getElementById("observaciones");
+        const med = document.getElementById("medicamento_suministrado");
         const sintomaInput = document.getElementById("sintoma-input");
         const btnAddSintoma = document.getElementById("btn-add-sintoma");
         const diagSearch = document.getElementById("diagnostico-search");
         const submitBtn = document.getElementById("btn-registrar-consulta-submit");
 
-        const inputsToLock = [condSearch, motivo, obs, sintomaInput, btnAddSintoma, diagSearch, submitBtn];
+        const inputsToLock = [condSearch, motivo, obs, med, sintomaInput, btnAddSintoma, diagSearch, submitBtn];
         
         inputsToLock.forEach(input => {
             if (input) input.disabled = true;
@@ -497,9 +500,10 @@ setupPatientAutocomplete("paciente-search-buscar", "pacientes-sugerencias-buscar
                 card.style.border = "1px solid #ddd";
 
                 let html = `<strong>Fecha:</strong> ${c.fecha_consulta}<br>`;
-                html += `<strong>Médico:</strong> ${c.medico_apellido}, ${c.medico_nombre} (${c.id_medico})<br>`;
+                html += `<strong>Médico:</strong> ${c.medico_nombre} ${c.medico_apellido} (${c.id_medico})<br>`;
                 html += `<strong>Motivo:</strong> ${c.motivo_de_visita}<br>`;
                 html += `<strong>Observaciones:</strong> ${c.observaciones || 'Ninguna'}<br>`;
+                html += `<strong>Medicamento Suministrado:</strong> ${c.medicamento_suministrado || 'Ninguno'}<br>`;
 
                 if (c.sintomas && c.sintomas.length > 0) {
                     html += `<strong>Síntomas:</strong> ${c.sintomas.join(', ')}<br>`;
@@ -568,6 +572,7 @@ function loadConsultaIntoEditForm(c) {
     const editIdInput = document.getElementById("edit_id_consulta");
     const editMotivoInput = document.getElementById("edit_motivo_de_visita");
     const editObsInput = document.getElementById("edit_observaciones");
+    const editMedInput = document.getElementById("edit_medicamento_suministrado");
     const editSintomasLista = document.getElementById("edit-sintomas-lista");
     const editDiagsLista = document.getElementById("edit-diagnosticos-seleccionados");
     const editCondsLista = document.getElementById("edit-condiciones-seleccionadas");
@@ -577,6 +582,7 @@ function loadConsultaIntoEditForm(c) {
     editIdInput.value = c.id;
     editMotivoInput.value = c.motivo_de_visita;
     editObsInput.value = c.observaciones;
+    if (editMedInput) editMedInput.value = c.medicamento_suministrado || "";
 
     editSintomasLista.innerHTML = "";
     editDiagsLista.innerHTML = "";

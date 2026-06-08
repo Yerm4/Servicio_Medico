@@ -67,11 +67,7 @@ CREATE TABLE `sintomas_consulta` (
 -- 3. CREACIÓN DE TABLAS INTERMEDIAS (SIN LLAVES PRIMARIAS)
 -- ========================================================
 
-CREATE TABLE `patologias_usuarios` (
-  `cedula_usuario` integer NOT NULL,
-  `codigo_icd` varchar(10) NOT NULL,
-  PRIMARY KEY (`cedula_usuario`, `codigo_icd`)
-) ENGINE=InnoDB;
+
 
 CREATE TABLE `condiciones_usuarios` (
   `cedula_usuario` integer NOT NULL,
@@ -106,9 +102,7 @@ ALTER TABLE `diagnosticos_consulta` ADD FOREIGN KEY (`id_consulta`) REFERENCES `
 ALTER TABLE `diagnosticos_consulta` ADD FOREIGN KEY (`codigo_icd_diagnostico`) REFERENCES `lista_patologias` (`codigo_icd`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `sintomas_consulta` ADD FOREIGN KEY (`id_consulta`) REFERENCES `consulta_medica` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- Relaciones de Usuarios con Patologías y Condiciones
-ALTER TABLE `patologias_usuarios` ADD FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `patologias_usuarios` ADD FOREIGN KEY (`codigo_icd`) REFERENCES `lista_patologias` (`codigo_icd`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- Relaciones de Usuarios con Condiciones
 ALTER TABLE `condiciones_usuarios` ADD FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `condiciones_usuarios` ADD FOREIGN KEY (`id_condicion`) REFERENCES `lista_condiciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 

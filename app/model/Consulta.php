@@ -74,19 +74,20 @@ class Consulta {
         }
     }
 
-    public function registrarConsulta($cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones = []) {
+    public function registrarConsulta($cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones = [], $medicamentoSuministrado = '') {
         try {
             $this->db->beginTransaction();
 
             // 1. Insert into consulta_medica
-            $sqlConsulta = "INSERT INTO consulta_medica (id_usuario, id_medico, motivo_de_visita, observaciones) 
-                            VALUES (:id_usuario, :id_medico, :motivo, :observaciones)";
+            $sqlConsulta = "INSERT INTO consulta_medica (id_usuario, id_medico, motivo_de_visita, observaciones, medicamento_suministrado) 
+                            VALUES (:id_usuario, :id_medico, :motivo, :observaciones, :medicamento_suministrado)";
             $stmtConsulta = $this->db->prepare($sqlConsulta);
             $stmtConsulta->execute([
                 ':id_usuario' => (int)$cedulaPaciente,
                 ':id_medico' => (int)$cedulaMedico,
                 ':motivo' => $motivo,
-                ':observaciones' => $observaciones
+                ':observaciones' => $observaciones,
+                ':medicamento_suministrado' => $medicamentoSuministrado
             ]);
 
             $idConsulta = $this->db->lastInsertId();
@@ -150,7 +151,7 @@ class Consulta {
 
     public function obtenerConsultasPorPaciente($cedula) {
         try {
-            $sql = "SELECT c.id, c.id_usuario, c.id_medico, c.motivo_de_visita, c.observaciones, c.fecha_consulta,
+            $sql = "SELECT c.id, c.id_usuario, c.id_medico, c.motivo_de_visita, c.observaciones, c.medicamento_suministrado, c.fecha_consulta,
                            u.nombre AS medico_nombre, u.apellido AS medico_apellido 
                     FROM consulta_medica c
                     LEFT JOIN usuarios u ON c.id_medico = u.cedula
@@ -193,17 +194,18 @@ class Consulta {
         }
     }
 
-    public function actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones = []) {
+    public function actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones = [], $medicamentoSuministrado = '') {
         try {
             $this->db->beginTransaction();
 
             // Update main record
-            $sql = "UPDATE consulta_medica SET motivo_de_visita = :motivo, observaciones = :observaciones 
+            $sql = "UPDATE consulta_medica SET motivo_de_visita = :motivo, observaciones = :observaciones, medicamento_suministrado = :medicamento_suministrado 
                     WHERE id = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ':motivo' => $motivo,
                 ':observaciones' => $observaciones,
+                ':medicamento_suministrado' => $medicamentoSuministrado,
                 ':id' => $idConsulta
             ]);
 

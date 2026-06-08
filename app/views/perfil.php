@@ -159,6 +159,10 @@ unset($_SESSION['inputs']);
                             <textarea class="action-card__input" id="observaciones" name="observaciones" disabled></textarea>
                         </label>
 
+                        <label for="medicamento_suministrado" class="action-card__label">Medicamento Suministrado (Opcional)
+                            <input type="text" class="action-card__input" id="medicamento_suministrado" name="medicamento_suministrado" placeholder="Ej. Paracetamol 500mg" disabled>
+                        </label>
+
                         <label class="action-card__label">Añadir Síntomas
                             <div class="sintomas-input-group" style="display: flex; gap: 8px;">
                                 <input type="text" id="sintoma-input" class="action-card__input" placeholder="Ej. Fiebre, Tos" disabled>
@@ -214,6 +218,10 @@ unset($_SESSION['inputs']);
 
                         <label for="edit_observaciones" class="action-card__label">Observaciones
                             <textarea class="action-card__input" id="edit_observaciones" name="observaciones"></textarea>
+                        </label>
+
+                        <label for="edit_medicamento_suministrado" class="action-card__label">Medicamento Suministrado (Opcional)
+                            <input type="text" class="action-card__input" id="edit_medicamento_suministrado" name="medicamento_suministrado" placeholder="Ej. Paracetamol 500mg">
                         </label>
 
                         <label class="action-card__label">Síntomas
