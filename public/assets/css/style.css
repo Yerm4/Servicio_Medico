@@ -1,3 +1,18 @@
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../font/Montserrat-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../font/Montserrat-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
 :root {
     --color-fafafa: #fafafa;
     --color-ebebeb: #ebebeb;
@@ -6,7 +21,7 @@
 } 
 
 * {
-    font-family: monospace;
+    font-family: 'Montserrat', monospace;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -43,7 +58,6 @@ a {
     align-items: center;
     font-size: 1.25rem;
     gap: 10px;
-    font-weight: bolder;
 }
 
 .top-menu a{
@@ -117,7 +131,7 @@ main {
 }
 
 .action-card:hover {
-    transform: scale(1.02);
+    transform: scale(1.01);
 }
 
 .action-card__logo {
@@ -179,7 +193,7 @@ main {
 .action-card__button {
     padding: 8px; 
     border-radius: 10px;
-    border: 1px solid black;
+    outline: 1px solid black;
     background-color: #33f;
     color: #fff;
     width: 100%;
@@ -225,7 +239,7 @@ main {
 
 .modal-crud {
     border: none;
-    padding: 50px;
+    padding: 20px;
     border-radius: 20px;
     min-width: 90vw;
     margin: auto;
@@ -251,7 +265,7 @@ main {
 
 .modal-crud__boton-cerrar:hover {
     background-color: #ddd;
-    transform: scale(1.1) rotate(10deg);
+    transform: scale(1.01) rotate(10deg);
 }
 
 .action-card__prueba {
@@ -264,7 +278,7 @@ main.perfil {
     grid-template-columns: 200px 1fr;
     padding: 30px;
     gap: 10px;
-    height: 100vh;
+    min-height: 70vh;
 }
 
 .section-1--perfil {
@@ -287,16 +301,16 @@ main.perfil {
 }
 
 .side-menu a {
-    font-size: 1.8rem;
-    padding: 5px;
+    font-size: 1.2rem;
+    padding: 3px;
+    padding-left: 10px;
     background-color: #ddd;
-    border-radius: 20px;
-    text-align: center;
+    border-radius: 10px;
     transition: background-color .5s ease;
 }
 
-.side-menu a:hover {
-    background-color: #bbb;
+.side-menu a:hover, .focus {
+    background-color: #bbb !important;
 }
 /* MEDIA QUERY */
 

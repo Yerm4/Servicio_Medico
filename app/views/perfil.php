@@ -17,13 +17,13 @@ unset($_SESSION['inputs']);
         <aside class="side-menu">
         <h1>Menu</h1>
             <hr>
-            <a href="#" id="usuario">Usuarios</a>
+            <a href="#" id="usuario" class="focus">Usuarios</a>
             <a href="#" id="consulta">Consultas</a>
             <a href="#" id="sesion">Sesión</a>
         </aside>
 
-        <section class="section-1 section-1--perfil transition">
-            <div class="section-1__box" id="section-1">
+        <section class="section-1 section-1--perfil">
+            <div class="section-1__box transition" id="section-1-box">
                 
                 <div class="action-card">
                     <h2 class="action-card__title">Gestión de usuarios</h2>

@@ -1,114 +1,133 @@
-let section1 = document.getElementById("section-1")
+let section1Box = document.getElementById("section-1-box")
 let consulta = document.getElementById("consulta")
 let modales = document.querySelectorAll(".modal-crud")
 
-// --- SECCIÓN: GENERACIÓN DE CONTENIDO DINÁMICO ---
+function desFocus () {
+    usuario.classList.remove("focus")
+    consulta.classList.remove("focus")
+    sesion.classList.remove("focus")
+}
 
 consulta.addEventListener("click", (e) => {
+    consulta.style.pointerEvents = "none"
+    desFocus()
+    consulta.classList.add("focus")
+    section1Box.style.opacity = 0
 
-    const actionCard = document.createElement('div');
-    actionCard.className = 'action-card';
+        const actionCard = document.createElement('div');
+        actionCard.className = 'action-card';
 
-    const cardTitle = document.createElement('h2');
-    cardTitle.className = 'action-card__title';
-    cardTitle.textContent = 'Gestión de consultas';
+        const cardTitle = document.createElement('h2');
+        cardTitle.className = 'action-card__title';
+        cardTitle.textContent = 'Gestión de consultas';
 
-    const buttonGrid = document.createElement('div');
-    buttonGrid.className = 'action-card__button-grid';
+        const buttonGrid = document.createElement('div');
+        buttonGrid.className = 'action-card__button-grid';
 
-    const btnIniciar = document.createElement('a');
-    btnIniciar.name = 'openModal';
-    btnIniciar.setAttribute('data-modal', 'modalRegistrarConsulta');
-    btnIniciar.className = 'action-card__button action-card__button--grid-principal';
-    btnIniciar.href = '#';
-    btnIniciar.textContent = 'Iniciar consulta';
+        const btnIniciar = document.createElement('a');
+        btnIniciar.name = 'openModal';
+        btnIniciar.setAttribute('data-modal', 'modalRegistrarConsulta');
+        btnIniciar.className = 'action-card__button action-card__button--grid-principal';
+        btnIniciar.href = '#';
+        btnIniciar.textContent = 'Iniciar consulta';
 
-    const btnActualizar = document.createElement('a');
-    btnActualizar.name = 'openModal';
-    btnActualizar.setAttribute('data-modal', 'modalActualizarConsulta');
-    btnActualizar.className = 'action-card__button';
-    btnActualizar.href = '#';
-    btnActualizar.textContent = 'Actualiza consulta';
+        const btnActualizar = document.createElement('a');
+        btnActualizar.name = 'openModal';
+        btnActualizar.setAttribute('data-modal', 'modalActualizarConsulta');
+        btnActualizar.className = 'action-card__button';
+        btnActualizar.href = '#';
+        btnActualizar.textContent = 'Actualiza consulta';
 
-    const btnBuscar = document.createElement('a');
-    btnBuscar.name = 'openModal';
-    btnBuscar.setAttribute('data-modal', 'modalBuscarConsulta');
-    btnBuscar.className = 'action-card__button';
-    btnBuscar.href = '#';
-    btnBuscar.textContent = 'Buscar consulta';
+        const btnBuscar = document.createElement('a');
+        btnBuscar.name = 'openModal';
+        btnBuscar.setAttribute('data-modal', 'modalBuscarConsulta');
+        btnBuscar.className = 'action-card__button';
+        btnBuscar.href = '#';
+        btnBuscar.textContent = 'Buscar consulta';
 
-    buttonGrid.appendChild(btnIniciar);
-    buttonGrid.appendChild(btnActualizar);
-    buttonGrid.appendChild(btnBuscar);
-    actionCard.appendChild(cardTitle);
-    actionCard.appendChild(buttonGrid);
-
-    section1.style.opacity = "0"
+        buttonGrid.appendChild(btnIniciar);
+        buttonGrid.appendChild(btnActualizar);
+        buttonGrid.appendChild(btnBuscar);
+        actionCard.appendChild(cardTitle);
+        actionCard.appendChild(buttonGrid);
 
     setTimeout(() => {
-        section1.textContent = " "
-        section1.appendChild(actionCard)
-        section1.style.opacity = "1"
+        section1Box.textContent = " "
+        section1Box.appendChild(actionCard)
+        section1Box.style.opacity = "1"
+        consulta.style.pointerEvents = "auto"
     }, 500);
-    
-    // ¡Ya no necesitas setTimeout ni re-buscar aquí!
 })
 
 let usuario = document.getElementById("usuario")
 usuario.addEventListener("click", (e) => {
-    section1.textContent = " "
-    const actionCardUsuario = document.createElement('div');
-    actionCardUsuario.className = 'action-card';
+    usuario.style.pointerEvents = "none"
+    desFocus()
+    usuario.classList.add("focus")
+    section1Box.style.opacity = 0
 
-    const cardTitle = document.createElement('h2');
-    cardTitle.className = 'action-card__title';
-    cardTitle.textContent = 'Gestión de usuarios';
+        const actionCard = document.createElement('div');
+        actionCard.className = 'action-card';
 
-    const buttonGrid = document.createElement('div');
-    buttonGrid.className = 'action-card__button-grid';
+        const cardTitle = document.createElement('h2');
+        cardTitle.className = 'action-card__title';
+        cardTitle.textContent = 'Gestión de usuarios';
 
-    const btnRegistrar = document.createElement('a');
-    btnRegistrar.name = 'openModal';
-    btnRegistrar.setAttribute('data-modal', 'modalRegistrarUsuario');
-    btnRegistrar.className = 'action-card__button';
-    btnRegistrar.href = '#';
-    btnRegistrar.textContent = 'Registrar usuario';
+        const buttonGrid = document.createElement('div');
+        buttonGrid.className = 'action-card__button-grid';
 
-    const btnActualizar = document.createElement('a');
-    btnActualizar.name = 'openModal';
-    btnActualizar.setAttribute('data-modal', 'modalActualizarUsuario');
-    btnActualizar.className = 'action-card__button';
-    btnActualizar.href = '#';
-    btnActualizar.textContent = 'Actualizar usuario';
+        const btnRegistrar = document.createElement('a');
+        btnRegistrar.name = 'openModal';
+        btnRegistrar.setAttribute('data-modal', 'modalRegistrarUsuario');
+        btnRegistrar.className = 'action-card__button';
+        btnRegistrar.href = '#';
+        btnRegistrar.textContent = 'Registrar usuario';
 
-    const btnBuscar = document.createElement('a');
-    btnBuscar.name = 'openModal';
-    btnBuscar.setAttribute('data-modal', 'modalBuscarUsuario');
-    btnBuscar.className = 'action-card__button';
-    btnBuscar.href = '#';
-    btnBuscar.textContent = 'Buscar usuario';
+        const btnActualizar = document.createElement('a');
+        btnActualizar.name = 'openModal';
+        btnActualizar.setAttribute('data-modal', 'modalActualizarUsuario');
+        btnActualizar.className = 'action-card__button';
+        btnActualizar.href = '#';
+        btnActualizar.textContent = 'Actualizar usuario';
 
-    const btnEliminar = document.createElement('a');
-    btnEliminar.name = 'openModal';
-    btnEliminar.setAttribute('data-modal', 'modalEliminarUsuario');
-    btnEliminar.className = 'action-card__button';
-    btnEliminar.href = '#';
-    btnEliminar.textContent = 'Eliminar usuario';
+        const btnBuscar = document.createElement('a');
+        btnBuscar.name = 'openModal';
+        btnBuscar.setAttribute('data-modal', 'modalBuscarUsuario');
+        btnBuscar.className = 'action-card__button';
+        btnBuscar.href = '#';
+        btnBuscar.textContent = 'Buscar usuario';
 
-    buttonGrid.appendChild(btnRegistrar);
-    buttonGrid.appendChild(btnActualizar);
-    buttonGrid.appendChild(btnBuscar);
-    buttonGrid.appendChild(btnEliminar);
+        const btnEliminar = document.createElement('a');
+        btnEliminar.name = 'openModal';
+        btnEliminar.setAttribute('data-modal', 'modalEliminarUsuario');
+        btnEliminar.className = 'action-card__button';
+        btnEliminar.href = '#';
+        btnEliminar.textContent = 'Eliminar usuario';
 
-    actionCardUsuario.appendChild(cardTitle);
-    actionCardUsuario.appendChild(buttonGrid);
+        buttonGrid.appendChild(btnRegistrar);
+        buttonGrid.appendChild(btnActualizar);
+        buttonGrid.appendChild(btnBuscar);
+        buttonGrid.appendChild(btnEliminar);
 
-    section1.appendChild(actionCardUsuario)
+        actionCard.appendChild(cardTitle);
+        actionCard.appendChild(buttonGrid);
+
+    setTimeout(() => {
+        section1Box.textContent = " "
+        section1Box.appendChild(actionCard)
+        section1Box.style.opacity = "1"
+        usuario.style.pointerEvents = "auto"
+    }, 500);
+
 })
 
 let sesion = document.getElementById("sesion")
 sesion.addEventListener("click", (e) => {
-    section1.textContent = ""
+    sesion.style.pointerEvents = "none"
+    desFocus()
+    sesion.classList.add("focus")
+    section1Box.style.opacity = 0
+    
     const actionCard = document.createElement('div');
     actionCard.className = 'action-card';
 
@@ -123,7 +142,12 @@ sesion.addEventListener("click", (e) => {
     actionCard.appendChild(cardTitle);
     actionCard.appendChild(btnLogout);
 
-    section1.appendChild(actionCard)
+    setTimeout(() => {
+        section1Box.textContent = " "
+        section1Box.appendChild(actionCard)
+        section1Box.style.opacity = "1"
+        sesion.style.pointerEvents = "auto"
+    }, 500);
 })
 
 // --- SECCIÓN: CONTROLADORES DE EVENTOS ---
@@ -145,10 +169,10 @@ if (loginCardCedula) {
 
 /**
  * SOLUCIÓN AQUÍ: DELEGACIÓN DE EVENTOS PARA ABRIR MODALES
- * Escuchamos los clicks en 'section1'. Si el click vino de un botón con name="openModal",
+ * Escuchamos los clicks en 'section1Box'. Si el click vino de un botón con name="openModal",
  * actuamos de inmediato, sin importar en qué momento se creó ese botón.
  */
-section1.addEventListener("click", (event) => {
+section1Box.addEventListener("click", (event) => {
     // Buscamos si el elemento clickeado (o su padre cercano) tiene el atributo name="openModal"
     const boton = event.target.closest('[name="openModal"]');
     
