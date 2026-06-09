@@ -54,7 +54,7 @@ a {
 
 .top-menu a:hover {
     background-color: #cacaca;
-    transform: scale(1.03);
+    transform: scale(1.01);
 }
 
 .top-menu__perfil {
@@ -259,6 +259,45 @@ main {
     margin: auto;
 }
 
+main.perfil {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    padding: 30px;
+    gap: 10px;
+    height: 100vh;
+}
+
+.section-1--perfil {
+    background-color: #fff;
+    padding-top: 100px;   
+}
+
+.transition {
+    transition: opacity .5s ease;
+}
+
+.side-menu {
+    padding: 20px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 10px;
+    outline: 2px solid #000
+}
+
+.side-menu a {
+    font-size: 1.8rem;
+    padding: 5px;
+    background-color: #ddd;
+    border-radius: 20px;
+    text-align: center;
+    transition: background-color .5s ease;
+}
+
+.side-menu a:hover {
+    background-color: #bbb;
+}
 /* MEDIA QUERY */
 
 @media screen and (min-width: 1001px) {

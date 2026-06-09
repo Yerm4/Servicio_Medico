@@ -23,23 +23,6 @@
                     <?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : "" ?>
                     <?php unset($_SESSION["login_notif"]) ?>
                 </div>
-                <div class="action-card">
-                    <h1 class="action-card__title">Registro!</h1>
-                    <form class="action-card__form" action="" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                        <label class="action-card__label"> Cedula
-                            <input class="action-card__input" type="text" name="cedula" id="">
-                        </label>
-                        <label class="action-card__label"> Contraseña
-                            <input class="action-card__input" type="password" name="password">
-                        </label>
-                        <input type="hidden" name="form" value="registro">
-                        <button class="action-card__button" type="submit">Registro</button>
-                    </form>
-                <?= isset($_SESSION["registro_notif"]) ? $_SESSION["registro_notif"] : "" ?>
-                <?php unset($_SESSION["registro_notif"])?>
-    
-                </div>
             </div>
         </section>
     </main>

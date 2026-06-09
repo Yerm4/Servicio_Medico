@@ -170,30 +170,6 @@ INSERT INTO `nucleo_pnf` (`id_nucleo`, `id_pnf`) VALUES
 (4, 4);
 
 
--- ========================================================
--- 5. DATOS DE PATOLOGÍAS (CÓDIGOS ICD-10 COMUNES)
--- ========================================================
-
-INSERT INTO `lista_patologias` (`codigo_icd`, `patologia`) VALUES
-('A09', 'Diarrea y gastroenteritis de presunto origen infeccioso'),
-('B35', 'Dermatofitosis (micosis)'),
-('E11', 'Diabetes mellitus no insulinodependiente'),
-('G44', 'Otros síndromes de cefalea (dolor de cabeza)'),
-('I10', 'Hipertensión esencial (primaria)'),
-('J00', 'Rinofaringitis aguda (resfriado común)'),
-('J02', 'Faringitis aguda'),
-('J03', 'Amigdalitis aguda'),
-('K21', 'Enfermedad por reflujo gastroesofágico'),
-('K29', 'Gastritis y duodenitis'),
-('L03', 'Celulitis (infección cutánea)'),
-('M54', 'Dorsalgia (dolor de espalda)'),
-('N39', 'Infección del tracto urinario, sitio no especificado'),
-('R50', 'Fiebre de origen desconocido');
-
-
-
-
-
 
 
 

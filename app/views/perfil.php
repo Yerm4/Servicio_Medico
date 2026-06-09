@@ -13,41 +13,38 @@ unset($_SESSION['inputs']);
 
 ?>
 
-<main class="perfil">
-    <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
-        <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Operación Exitosa!' : '¡Atención!'; ?>
-        <div class="notification-banner notification-banner--<?= $_SESSION["registro_status"] ?>">
-            <h2><?= htmlspecialchars($titulo) ?></h2>
-            <p><?= htmlspecialchars($_SESSION["registro_msg"]) ?></p>
-        </div>
-        <?php 
-            unset($_SESSION["registro_status"]);
-            unset($_SESSION["registro_msg"]);
-        ?>
-    <?php endif; ?>
-        <section class="section-1">
-            <div class="section-1__box">
+<main class="perfil">    
+        <aside class="side-menu">
+        <h1>Menu</h1>
+            <hr>
+            <a href="#" id="usuario">Usuarios</a>
+            <a href="#" id="consulta">Consultas</a>
+            <a href="#" id="sesion">Sesión</a>
+        </aside>
+
+        <section class="section-1 section-1--perfil transition">
+            <div class="section-1__box" id="section-1">
+                
                 <div class="action-card">
                     <h2 class="action-card__title">Gestión de usuarios</h2>
                     <div class="action-card__button-grid">    
-                        <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar paciente</a>
-                        <a name="openModal" data-modal="modalActualizarUsuario" class="action-card__button" href="">Actualizar paciente</a>
+                        <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
+                        <a name="openModal" data-modal="modalActualizarUsuario" class="action-card__button" href="">Actualizar usuario</a>
                         <a name="openModal" data-modal="modalBuscarUsuario" class="action-card__button" href="">Buscar usuario</a>
-                        <a name="openModal" data-modal="modalEliminarUsuario" class="action-card__button" href="">ar usuario</a>
+                        <a name="openModal" data-modal="modalEliminarUsuario" class="action-card__button" href="">Eliminar usuario</a>
                     </div>
                 </div>
-                <div class="action-card">
-                    <h2 class="action-card__title">Gestión de consultas</h2>
-                    <div class="action-card__button-grid">    
-                        <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal" href="">Iniciar consulta</a>
-                        <a name="openModal" data-modal="modalActualizarConsulta" class="action-card__button" href="">Actualiza consulta</a>
-                        <a name="openModal" data-modal="modalBuscarConsulta" class="action-card__button" href="">Buscar consulta</a>
+                <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
+                    <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Operación Exitosa!' : '¡Atención!'; ?>
+                    <div class="notification-banner notification-banner--<?= $_SESSION["registro_status"] ?>">
+                        <h2><?= htmlspecialchars($titulo) ?></h2>
+                        <p><?= htmlspecialchars($_SESSION["registro_msg"]) ?></p>
                     </div>
-                </div>
-                <div class="action-card">
-                    <h2>Gestión de sesión</h2>
-                    <a href="logout" style="color: blue">Cerrar sesión</a>
-                </div>
+                    <?php 
+                        unset($_SESSION["registro_status"]);
+                        unset($_SESSION["registro_msg"]);
+                    ?>
+                <?php endif; ?>
             </div>
         </section>
         <dialog id="modalRegistrarUsuario" class="modal-crud">
@@ -277,7 +274,7 @@ unset($_SESSION['inputs']);
         
     </main>
     <footer>
-
+        <script src="assets/script/append.js" defer></script>
     </footer>
 </body>
 </html>

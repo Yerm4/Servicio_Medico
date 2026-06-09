@@ -10,6 +10,7 @@
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="assets/script/code.js" defer></script>
+    
     <title>Consultorio</title>
 </head>
 <body>
@@ -22,7 +23,7 @@
             <div class="top-menu__links">
                 <a href="inicio" class="top-menu__link">Login</a>
                 <a href="perfil" class="top-menu__link">Perfil</a>
-                <a href="form" class="top-menu__link">Más</a>
+                <a href="form" class="top-menu__link">Registro</a>
             </div>
             <div class="top-menu__login">
                 <a href="#" class="top-menu__login-lang">ESP</a>
