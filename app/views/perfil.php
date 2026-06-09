@@ -66,14 +66,14 @@ unset($_SESSION['inputs']);
                     <td class="tabla-usuarios__desc"> <?=e($registro["nombre"])?></td>
                     <td class="tabla-usuarios__desc"><?=e($registro["apellido"])?></td>
                     <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
-                    <td class="tabla-usuarios__desc"><?=e($registro["sexo"])?></td>
+                    <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
                     <td class="tabla-usuarios__desc">0</td>
                     <td class="tabla-usuarios__desc">15 A.C</td>
                 </tr>
                 <?php endforeach?>
             </table>
 
-        <?php endif?>
+            <?php endif?>
         </section>
         <dialog id="modalRegistrarUsuario" class="modal-crud">
             <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
