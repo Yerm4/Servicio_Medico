@@ -60,7 +60,9 @@ class Controller {
         }
     }
 
-    public function registrarConsulta() {
+    public function consultar () {
+        $consulta = new Usuario($this->pdo);
+        return $consulta->consultarUsuarios();
         
     }
 }

@@ -47,4 +47,17 @@ class Usuario {
             return false;
         }
     }
+
+    public function consultarUsuarios() {
+        try {
+            $sql = "SELECT * FROM usuarios ORDER BY fecha_creacion DESC LIMIT 5";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        catch (PDOException $e) {
+
+        }
+    }
 }

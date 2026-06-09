@@ -183,6 +183,9 @@ section1Box.addEventListener("click", (event) => {
 
 modales.forEach(modal => {
     modal.addEventListener("click", (event) => {
+        if (event.clientX === 0 && event.clientY === 0) {
+            return; 
+        }
         const modalPosicion = modal.getBoundingClientRect()
         const clickAfuera = (
             event.clientX < modalPosicion.left ||

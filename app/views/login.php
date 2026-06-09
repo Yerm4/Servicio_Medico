@@ -4,7 +4,7 @@
             <div class="action-card">
                 <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
                 <h3 class="action-card__title">Servicio de Salud universitaria UPTAEB</h3>
-                <p class="action-card__p">Control de Acceso<p/>
+                <p class="action-card__p">Control de Acceso</p>
                 
                 <form class="action-card__form" action="" method="POST">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">

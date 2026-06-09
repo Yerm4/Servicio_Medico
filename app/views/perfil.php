@@ -1,6 +1,10 @@
 <?php
+
+use app\controller\Controller;
+
 if ($_SESSION["cedula"]) {
-    
+    $controller = new Controller($pdo);
+    $usuariosEncontrados = $controller->consultar();
 }
 
 else {
@@ -46,6 +50,30 @@ unset($_SESSION['inputs']);
                     ?>
                 <?php endif; ?>
             </div>
+            <?php if($usuariosEncontrados): ?>
+
+            <table>
+                <tr>
+                    <th class="tabla-usuarios__title">Nombre</th>
+                    <th class="tabla-usuarios__title">Apellido</th>
+                    <th class="tabla-usuarios__title">Edad</th>
+                    <th class="tabla-usuarios__title">Sexo</th>
+                    <th class="tabla-usuarios__title">Novias</th>
+                    <th class="tabla-usuarios__title">Ultima Consulta</th>
+                </tr>
+                <?php foreach ($usuariosEncontrados as $registro): ?>
+                    <tr>
+                    <td class="tabla-usuarios__desc"> <?=e($registro["nombre"])?></td>
+                    <td class="tabla-usuarios__desc"><?=e($registro["apellido"])?></td>
+                    <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
+                    <td class="tabla-usuarios__desc"><?=e($registro["sexo"])?></td>
+                    <td class="tabla-usuarios__desc">0</td>
+                    <td class="tabla-usuarios__desc">15 A.C</td>
+                </tr>
+                <?php endforeach?>
+            </table>
+
+        <?php endif?>
         </section>
         <dialog id="modalRegistrarUsuario" class="modal-crud">
             <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
