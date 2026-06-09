@@ -30,8 +30,9 @@
 body {
     color: #000;
     background-color: #eee;
+    transition: opacity .8s ease-in;
+    opacity: 0;
 }
-
 
 a {
     text-decoration: none;
@@ -307,6 +308,7 @@ main.perfil {
     background-color: #ddd;
     border-radius: 10px;
     transition: background-color .5s ease;
+    font-weight: bolder;
 }
 
 .side-menu a:hover, .focus {

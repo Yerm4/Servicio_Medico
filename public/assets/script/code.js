@@ -1,4 +1,5 @@
 
+    document.body.style.opacity = 1
 
 // Add symptoms logic
 const btnAddSintoma = document.getElementById("btn-add-sintoma");
