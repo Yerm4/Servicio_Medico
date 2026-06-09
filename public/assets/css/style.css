@@ -211,7 +211,7 @@ main {
 }
 
 .action-card__button:focus-visible {
-    outline: 3px red solid
+    outline: 2px #f22 solid
 }
 
 
@@ -286,7 +286,9 @@ main.perfil {
 
 .section-1--perfil {
     background-color: #fff;
-    padding-top: 100px;   
+    padding-top: 100px;
+    outline: 2px solid #000;
+    border-radius: 10px ;
 }
 
 .section-1--perfil .action-card {

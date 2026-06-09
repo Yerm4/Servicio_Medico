@@ -1,4 +1,3 @@
-
 <main class="login">
         <section class="section-1">
             <div class="section-1__box">

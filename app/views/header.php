@@ -21,9 +21,13 @@
                 <p class="top-menu__perfil-name">Hola!</p>
             </div>
             <div class="top-menu__links">
+                <?php if (!isset($_SESSION["cedula"])): ?>
                 <a href="inicio" class="top-menu__link">Login</a>
-                <a href="perfil" class="top-menu__link">Perfil</a>
                 <a href="form" class="top-menu__link">Registro</a>
+                <?php endif ?>
+                <?php if (isset($_SESSION["cedula"])) : ?>
+                    <a href="perfil" class="top-menu__link">Perfil</a>
+                <?php endif ?>
             </div>
             <div class="top-menu__login">
                 <a href="#" class="top-menu__login-lang">ESP</a>
