@@ -150,9 +150,6 @@ sesion.addEventListener("click", (e) => {
     }, 500);
 })
 
-// --- SECCIÓN: CONTROLADORES DE EVENTOS ---
-
-// Validación de cédula (Mantenemos tu lógica igual)
 const loginCardCedula = document.getElementsByName("cedula")
 if (loginCardCedula) {
     loginCardCedula.forEach(inputCedula => {
@@ -167,26 +164,23 @@ if (loginCardCedula) {
     });    
 }
 
-/**
- * SOLUCIÓN AQUÍ: DELEGACIÓN DE EVENTOS PARA ABRIR MODALES
- * Escuchamos los clicks en 'section1Box'. Si el click vino de un botón con name="openModal",
- * actuamos de inmediato, sin importar en qué momento se creó ese botón.
- */
+
 section1Box.addEventListener("click", (event) => {
-    // Buscamos si el elemento clickeado (o su padre cercano) tiene el atributo name="openModal"
+
     const boton = event.target.closest('[name="openModal"]');
     
     if (boton) {
         event.preventDefault();
         let modalId = boton.dataset.modal;
         let modalAbrir = document.getElementById(modalId);
+        
         if (modalAbrir) {
             modalAbrir.showModal();
+            modalAbrir.style.opacity = 1
         }
     }
 });
 
-// Cerrar modales haciendo click fuera (Mantenemos tu lógica igual ya que los modales suelen ser fijos)
 modales.forEach(modal => {
     modal.addEventListener("click", (event) => {
         const modalPosicion = modal.getBoundingClientRect()
@@ -197,17 +191,33 @@ modales.forEach(modal => {
             event.clientY > modalPosicion.bottom 
         )
         if (clickAfuera) {
+            modal.style.opacity = 0
+            setTimeout(() => {
             modal.close()
+            }, 500);
         }
     })
 })
 
-// Cerrar modales con el botón interno (También por delegación si los botones están dentro del modal estático)
 const modalBotonCerrar = document.querySelectorAll('[name="modalBotonCerrar"]')
 modalBotonCerrar.forEach(cerrar => {
     cerrar.addEventListener("click", (event) => {
-        const modal = cerrar.dataset.modal
-        let modalCerrar = document.getElementById(modal)
-        modalCerrar.close()
+        const modalId = cerrar.dataset.modal
+        let modal = document.getElementById(modalId)
+        modal.style.opacity = 0
+        setTimeout(() => {
+            modal.close()
+        }, 500);
+        
+    })
+})
+
+modales.forEach(modal => {
+    modal.addEventListener("cancel", (e) => {    
+        e.preventDefault()
+        modal.style.opacity = 0
+        setTimeout(() => {
+            modal.close()
+        }, 500);
     })
 })
