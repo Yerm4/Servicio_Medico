@@ -289,6 +289,10 @@ main.perfil {
     padding-top: 100px;   
 }
 
+.section-1--perfil .action-card {
+    max-width: initial;
+}
+
 .transition {
     transition: opacity .5s ease;
 }
@@ -313,8 +317,8 @@ main.perfil {
     font-weight: bolder;
 }
 
-.side-menu a:hover, .focus {
-    background-color: #bbb !important;
+.side-menu a:hover, .side-menu .focus {
+    background-color: #bbb
 }
 /* MEDIA QUERY */
 
