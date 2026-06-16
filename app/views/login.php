@@ -1,3 +1,7 @@
+<?php 
+    isset($_SESSION["cedula"]) ? header("Location: perfil") : "";
+?>
+
 <main class="login">
         <section class="section-1">
             <div class="section-1__box">
@@ -19,7 +23,7 @@
                     <button class="action-card__button" type="submit">Ingresar al sistema</button>
                 </form>
                     <p class="action-card__disclaimer">@ 2026 PNF Informatica - Universidad Politecnica Territorial de Lara Andres Eloy Blanco</p>
-                    <?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : "" ?>
+                    <strong><?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : "" ?></strong>
                     <?php unset($_SESSION["login_notif"]) ?>
                 </div>
             </div>

@@ -60,10 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $form = isset($_POST["form"]) ? $_POST["form"] : '';
     switch($form) {
-        case "registro":
-            $controller->registrar();
-            break;
-
         case "registro_paciente":
             $controllerPaciente->Registrar();    
             break;
@@ -121,16 +117,12 @@ switch($paginaActual) {
         include __DIR__."/../app/views/login.php";
         break;
 
-    case "registrar": 
-        include __DIR__."/../app/views/registropaciente.php";
+    case "registro":
+        include __DIR__."/../app/views/registro.php";
         break;
 
     case "perfil": 
         include __DIR__."/../app/views/perfil.php";
-        break;
-
-    case "form":
-        include __DIR__."/../app/views/formModelo.php";
         break;
 
     case "logout":
@@ -179,5 +171,10 @@ function calcularEdad(?string $fechaNacimiento): string {
         return 'Error de formato';
     }
 }
+
+
+$rawUri = $_SERVER['REQUEST_URI'];
+$cleanPath = parse_url($rawUri, PHP_URL_PATH);
+$currentPage = trim($cleanPath, '/');
 
 ?>

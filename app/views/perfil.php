@@ -39,6 +39,14 @@ unset($_SESSION['inputs']);
                     </div>
                 </div>
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
+                        <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
+                        <div>
+                            <h2><?= $titulo; unset($_SESSION["registro_status"])?></h2>
+                            <h2><?= $_SESSION["registro_msg"]; unset($_SESSION["registro_msg"]) ?></h2>
+                        </div>
+                        
+                        <?php endif; ?>
+                <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                     <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Operación Exitosa!' : '¡Atención!'; ?>
                     <div class="notification-banner notification-banner--<?= $_SESSION["registro_status"] ?>">
                         <h2><?= htmlspecialchars($titulo) ?></h2>
@@ -54,21 +62,23 @@ unset($_SESSION['inputs']);
 
             <table>
                 <tr>
+                    <th class="tabla-usuarios__title">Cedula</th>
                     <th class="tabla-usuarios__title">Nombre</th>
                     <th class="tabla-usuarios__title">Apellido</th>
+                    <th class="tabla-usuarios__title">Tipo</th>
                     <th class="tabla-usuarios__title">Edad</th>
                     <th class="tabla-usuarios__title">Sexo</th>
-                    <th class="tabla-usuarios__title">Novias</th>
-                    <th class="tabla-usuarios__title">Ultima Consulta</th>
+                    <th class="tabla-usuarios__title">Telefono</th>
                 </tr>
                 <?php foreach ($usuariosEncontrados as $registro): ?>
                     <tr>
+                    <td class="tabla-usuarios__desc"> <?=e($registro["cedula"])?></td>
                     <td class="tabla-usuarios__desc"> <?=e($registro["nombre"])?></td>
                     <td class="tabla-usuarios__desc"><?=e($registro["apellido"])?></td>
+                    <td class="tabla-usuarios__desc"><?= $registro["tipo"] === 0 ? "Estudiante" : "Docente" ?></td>
                     <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
                     <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
-                    <td class="tabla-usuarios__desc">0</td>
-                    <td class="tabla-usuarios__desc">15 A.C</td>
+                    <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
                 </tr>
                 <?php endforeach?>
             </table>

@@ -13,13 +13,13 @@
     <header>
         <div class="top-menu">
             <div class="top-menu__perfil">
-                <img class="top-menu__perfil-img" src="assets/media//img/mini/Mayano_Top_Gun.webp" alt="">
-                <p class="top-menu__perfil-name">Hola!</p>
+                <img class="top-menu__perfil-img" src="assets/media/img/uptaeb.jpg" alt="">
+                <p class="top-menu__perfil-name">Bienvenido!</p>
             </div>
             <div class="top-menu__links">
                 <?php if (!isset($_SESSION["cedula"])): ?>
                 <a href="inicio" class="top-menu__link">Login</a>
-                <a href="form" class="top-menu__link">Registro</a>
+                <a href="registro" class="top-menu__link">Registro</a>
                 <?php endif ?>
                 <?php if (isset($_SESSION["cedula"])) : ?>
                     <a href="perfil" class="top-menu__link">Perfil</a>

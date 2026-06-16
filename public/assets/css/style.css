@@ -268,11 +268,6 @@ main {
     transform: scale(1.01) rotate(10deg);
 }
 
-.action-card__prueba {
-    max-width: 90vw;
-    margin: auto;
-}
-
 main.perfil {
     display: grid;
     grid-template-columns: 200px 1fr;
@@ -290,7 +285,7 @@ main.perfil {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
 }
 
 .section-1--perfil .action-card {
@@ -350,7 +345,7 @@ main.perfil {
     }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 450px) {
     .action-card {
     max-width: 330px; 
     }
@@ -365,4 +360,9 @@ table {
 tr, th, td {
     border-bottom: 1px solid #0009;
     padding: 5px;
+}
+
+.registro .action-card {
+    max-width: 90vw;
+    margin: auto
 }

@@ -32,24 +32,36 @@ class PacienteController {
                 $nucleo_id
             );
 
-            if ($resultado === true) {
+            if ($resultado == true) {
                 unset($_SESSION['inputs']); 
                 $_SESSION["registro_status"] = "success";
                 $_SESSION["registro_msg"] = "¡Paciente registrado de manera exitosa!";
-                
-                header("Location: perfil"); 
+                $_SESSION["cedula"] = "23";
+                header("Location: perfil");
                 exit();
             } else {
                 throw new Exception($resultado);
             }
 
-        } catch (Exception $e) {
+        } 
+        
+        catch (Exception $e) {
             $_SESSION['inputs'] = $_POST; 
             $_SESSION["registro_status"] = "error";
             $_SESSION["registro_msg"] = $e->getMessage();
             
-            header("Location: perfil"); 
-            exit();
+            $rawUri = $_SERVER['REQUEST_URI'];
+            $cleanPath = parse_url($rawUri, PHP_URL_PATH);
+            $currentPage = trim($cleanPath, '/');
+            if ($currentPage === "registro") {
+                header("Location: registro");
+                exit();
+            }
+
+            if ($currentPage === "perfil") {
+                header("Location: perfil"); 
+                exit();
+            }
         }
     }
 }

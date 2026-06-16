@@ -27,7 +27,7 @@ class Paciente
             return "La cédula de identidad ya se encuentra registrada en el sistema.";
         }
 
-        $contraseñaCreada = $cedula . 'uptaeb';
+        $contraseñaCreada = $cedula.'uptaeb';
         $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
 
         $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo) 
@@ -35,7 +35,7 @@ class Paciente
 
         $stmt = $this->db->prepare($sql);
 
-        return $stmt->execute([
+        $stmt->execute([
             ':cedula'           => (int)$cedula, 
             ':nombre'           => $nombre,
             ':apellido'         => $apellido,
@@ -47,6 +47,8 @@ class Paciente
             ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
             ':sexo'             => (int)$sexo
         ]);
+
+        return true;
 
         } catch (PDOException $error) {
             return "Error al registrar paciente: " . $error->getMessage();
