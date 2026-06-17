@@ -366,3 +366,43 @@ tr, th, td {
     max-width: 90vw;
     margin: auto
 }
+
+/* Autocomplete suggestions styling */
+.sugerencias-box {
+    background-color: #fff;
+    border: 1px solid #ddd !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+    padding: 4px 0;
+}
+
+.sugerencia-item {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: #333;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sugerencia-item:hover {
+    background-color: #f0f4ff;
+    color: var(--color-blue, #33f);
+}
+
+.sugerencia-item-empty {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    color: #777;
+    background-color: #fafafa;
+}
+
+.sugerencia-item-empty a {
+    color: var(--color-blue, #33f) !important;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.sugerencia-item-empty a:hover {
+    color: #00a !important;
+}

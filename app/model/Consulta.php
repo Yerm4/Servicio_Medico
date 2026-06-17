@@ -13,7 +13,7 @@ class Consulta {
 
     public function obtenerTodosLosUsuarios() {
         try {
-            $sql = "SELECT cedula, nombre, apellido, tipo FROM usuarios ORDER BY apellido, nombre";
+            $sql = "SELECT cedula, nombre, apellido, tipo FROM usuarios WHERE activo = 1 ORDER BY apellido, nombre";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,7 +25,8 @@ class Consulta {
     public function buscarUsuario($query) {
         try {
             $sql = "SELECT cedula, nombre, apellido FROM usuarios 
-                    WHERE cedula LIKE :query OR nombre LIKE :query OR apellido LIKE :query 
+                    WHERE (cedula LIKE :query OR nombre LIKE :query OR apellido LIKE :query) 
+                    AND activo = 1
                     LIMIT 10";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([':query' => '%' . $query . '%']);

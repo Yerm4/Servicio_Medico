@@ -41,6 +41,10 @@
             <label for="nombre_contacto_emergencia" class="action-card__label">Nombre de Contacto de Emergencia
             <input type="text" class="action-card__input" id="nombre_contacto_emergencia" name="nombre_contacto_emergencia" value="<?php echo isset($inputs['nombre_contacto_de_emergencia']) ? $inputs['nombre_contacto_emergencia'] : ''; ?>" required>
         </label>
+        
+        <label for="direccion" class="action-card__label">Dirección
+            <input type="text" class="action-card__input" id="direccion" name="direccion" value="<?php echo isset($inputs['direccion']) ? $inputs['direccion'] : ''; ?>" required>
+        </label>
 
     </div>
         

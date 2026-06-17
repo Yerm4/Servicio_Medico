@@ -13,6 +13,8 @@ CREATE TABLE `usuarios` (
   `tlfprincipal` varchar(20) NOT NULL,
   `tlfemergencia` varchar(20) NOT NULL,
   `nombre_contacto_emergencia` text NOT NULL,
+  `direccion` text NOT NULL,
+  `activo` tinyint NOT NULL DEFAULT 1,
   `rol` tinyint NOT NULL DEFAULT 0,
   `sexo` tinyint NOT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()

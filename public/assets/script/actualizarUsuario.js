@@ -30,8 +30,9 @@ if (tablaUsuarios && modalActualizar) {
                 document.getElementById('edit_tipo').value = usuario.tipo;
                 document.getElementById('edit_fecha_nacimiento').value = usuario.fecha_nacimiento || '';
                 document.getElementById('edit_tlfprincipal').value = usuario.tlfprincipal || '';
-                document.getElementById('edit_tlfsecundario').value = usuario.tlfsecundario || '';
-                document.getElementById('edit_correo').value = usuario.correo || '';
+                document.getElementById('edit_nombre_contacto_emergencia').value = usuario.nombre_contacto_emergencia || '';
+                document.getElementById('edit_tlfemergencia').value = usuario.tlfemergencia || '';
+                document.getElementById('edit_direccion').value = usuario.direccion || '';
 
                 // Para activar el botón de radio correcto del Sexo (1 = Masculino, 2 = Femenino)
                 if (parseInt(usuario.sexo) === 1) {

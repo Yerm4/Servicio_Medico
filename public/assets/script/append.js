@@ -134,7 +134,7 @@ if (loginCardCedula) {
             if (cedulaValue.length < 7 || cedulaValue.length > 8) {
                 inputCedula.style.border = "2px red solid"
             } else {
-                inputCordula.style.border = "2px green solid"
+                inputCedula.style.border = "2px green solid"
             }
         })
     });    
@@ -142,8 +142,7 @@ if (loginCardCedula) {
 
 
 section1Box.addEventListener("click", (event) => {
-
-    const boton = event.target.closest('[name="openModal"]');
+    const boton = event.target.closest('[data-modal]');
     
     if (boton) {
         event.preventDefault();
@@ -151,8 +150,12 @@ section1Box.addEventListener("click", (event) => {
         let modalAbrir = document.getElementById(modalId);
         
         if (modalAbrir) {
-            modalAbrir.showModal();
-            modalAbrir.style.opacity = 1
+            try {
+                modalAbrir.showModal();
+                modalAbrir.style.opacity = 1;
+            } catch (e) {
+                console.error("Error opening modal:", e);
+            }
         }
     }
 });

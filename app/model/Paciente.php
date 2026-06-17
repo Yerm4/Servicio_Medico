@@ -13,7 +13,7 @@ class Paciente
             $this->db = $conexion;
         }
 
-        public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo) {
+        public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '') {
         
             try {
 
@@ -30,8 +30,8 @@ class Paciente
         $contraseñaCreada = $cedula.'uptaeb';
         $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
 
-        $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo) 
-                VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo)";
+        $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion) 
+                VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion)";
 
         $stmt = $this->db->prepare($sql);
 
@@ -45,7 +45,8 @@ class Paciente
             ':tlfprincipal'     => $tlfprincipal,
             ':tlfemergencia'    => $tlfemergencia,
             ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
-            ':sexo'             => (int)$sexo
+            ':sexo'             => (int)$sexo,
+            ':direccion'        => $direccion
         ]);
 
         return true;

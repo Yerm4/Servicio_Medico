@@ -332,8 +332,52 @@ function setupPatientAutocomplete(inputId, suggestionsId, hiddenId, onSelectCall
                     } else {
                         const div = document.createElement("div");
                         div.className = "sugerencia-item-empty";
-                        div.textContent = "No se encontraron pacientes";
-                        suggestionsBox.appendChild(div);
+                        if (inputId === "paciente-search") {
+                            div.innerHTML = `No se encontraron pacientes. <a href="#" id="crear-paciente-link" style="color: var(--color-blue, #33f); text-decoration: underline; font-weight: bold; cursor: pointer; margin-left: 5px;">¿Crear usuario?</a>`;
+                            suggestionsBox.appendChild(div);
+                            const link = div.querySelector("#crear-paciente-link");
+                            if (link) {
+                                link.addEventListener("mousedown", (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    
+                                    const typedVal = searchInput.value.trim();
+                                    const cedulaInput = document.getElementById("cedula");
+                                    const nombreInput = document.getElementById("nombre");
+                                    
+                                    if (cedulaInput) cedulaInput.value = "";
+                                    if (nombreInput) nombreInput.value = "";
+                                    
+                                    if (/^\d+$/.test(typedVal)) {
+                                        if (cedulaInput) cedulaInput.value = typedVal;
+                                    } else {
+                                        if (nombreInput) nombreInput.value = typedVal;
+                                    }
+                                    
+                                    const currentModal = document.getElementById("modalRegistrarConsulta");
+                                    if (currentModal) {
+                                        currentModal.style.opacity = 0;
+                                        setTimeout(() => {
+                                            currentModal.close();
+                                        }, 500);
+                                    }
+                                    
+                                    const registerModal = document.getElementById("modalRegistrarUsuario");
+                                    if (registerModal) {
+                                        setTimeout(() => {
+                                            registerModal.showModal();
+                                            registerModal.style.opacity = 1;
+                                        }, 550);
+                                    }
+                                    
+                                    suggestionsBox.innerHTML = "";
+                                    suggestionsBox.style.display = "none";
+                                });
+                            }
+                        } else {
+                            div.textContent = "No se encontraron pacientes";
+                            suggestionsBox.appendChild(div);
+                        }
                         suggestionsBox.style.display = "block";
                     }
                 });

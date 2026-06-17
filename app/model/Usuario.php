@@ -50,7 +50,7 @@ class Usuario {
 
     public function consultarUsuarios() {
         try {
-            $sql = "SELECT * FROM usuarios ORDER BY fecha_creacion DESC LIMIT 19";
+            $sql = "SELECT * FROM usuarios WHERE activo = 1 ORDER BY fecha_creacion DESC LIMIT 19";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -64,7 +64,7 @@ class Usuario {
     public function eliminarUsuario($cedula) {
     try {
         
-        $sql = "DELETE FROM usuarios WHERE cedula = :cedula";
+        $sql = "UPDATE usuarios SET activo = 0 WHERE cedula = :cedula";
 
         $stmt = $this->pdo->prepare($sql);
         
@@ -84,9 +84,10 @@ class Usuario {
         try {
         
             $sql = "SELECT * FROM usuarios 
-                    WHERE cedula LIKE :query 
+                    WHERE (cedula LIKE :query 
                     OR nombre LIKE :query 
-                    OR apellido LIKE :query 
+                    OR apellido LIKE :query)
+                    AND activo = 1
                     LIMIT 10"; 
                     
             $stmt = $this->pdo->prepare($sql);
@@ -102,7 +103,7 @@ class Usuario {
         }
     }
 
-public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo) {
+public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion = '') {
     try {
         $sql = "UPDATE usuarios 
                 SET nombre = :nombre, 
@@ -112,7 +113,8 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
                     tlfprincipal = :tlfprincipal, 
                     nombre_contacto_emergencia = :nombre_contacto_emergencia, 
                     tlfemergencia = :tlfemergencia, 
-                    sexo = :sexo 
+                    sexo = :sexo,
+                    direccion = :direccion
                 WHERE cedula = :cedula";
                 
         $stmt = $this->pdo->prepare($sql);
@@ -126,6 +128,7 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
             'nombre_contacto_emergencia'  => $nombre_contacto_emergencia,
             'tlfemergencia'               => $tlfemergencia,
             'sexo'                        => $sexo,
+            'direccion'                   => $direccion,
             'cedula'                      => (int)$cedula
         ]);
         

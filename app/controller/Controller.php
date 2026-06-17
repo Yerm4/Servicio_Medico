@@ -20,7 +20,7 @@ class Controller {
         if (!empty($cedula) && !empty($password) && strlen($cedula) >= 7 && strlen($cedula) <= 8) {
             $model = new Usuario($this->pdo);
             $usuarioEncontrado = $model->loginUsuario($cedula);
-            if ($usuarioEncontrado && password_verify($password, $usuarioEncontrado["contrasena"])) {
+            if ($usuarioEncontrado && (int)$usuarioEncontrado["activo"] === 1 && password_verify($password, $usuarioEncontrado["contrasena"])) {
                 session_regenerate_id(true);
                 $_SESSION["login_notif"] = "Logueado";
                 $_SESSION["cedula"] = $usuarioEncontrado["cedula"];
@@ -114,6 +114,7 @@ if (isset($_POST['form']) && $_POST['form'] === 'actualizar_usuario') {
     $tlfprincipal               = isset($_POST['tlfprincipal']) ? trim($_POST['tlfprincipal']) : '';
     $nombre_contacto_emergencia = isset($_POST['nombre_contacto_emergencia']) ? trim($_POST['nombre_contacto_emergencia']) : '';
     $tlfemergencia              = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
+    $direccion                  = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
     $sexo                       = isset($_POST['sexo']) ? (int)$_POST['sexo'] : 1;
 
     if (!empty($cedula)) {
@@ -122,7 +123,7 @@ if (isset($_POST['form']) && $_POST['form'] === 'actualizar_usuario') {
         // Pasamos exactamente los parámetros que tu tabla necesita actualizar
         $guardado = $model->actualizarUsuarioCompleto(
             $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
-            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo
+            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion
         );
 
         if ($guardado) {

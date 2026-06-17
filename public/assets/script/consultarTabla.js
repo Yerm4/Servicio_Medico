@@ -102,6 +102,7 @@ if (cuerpoTabla && elModalActualizar) {
     document.getElementById('edit_tlfprincipal').value = usuario.tlfprincipal || '';
     document.getElementById('edit_nombre_contacto_emergencia').value = usuario.nombre_contacto_emergencia || '';
     document.getElementById('edit_tlfemergencia').value = usuario.tlfemergencia || '';
+    document.getElementById('edit_direccion').value = usuario.direccion || '';
 
     // Manejo de los botones de selección de sexo
     if (usuario.sexo == 1) {

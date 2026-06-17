@@ -22,14 +22,14 @@ class PacienteController {
             $nombre_contacto_emergencia = isset($_POST['nombre_contacto_emergencia']) ? trim($_POST['nombre_contacto_emergencia']) : '';
             $tlfemergencia     = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
             $sexo              = isset($_POST['sexo']) ? $_POST['sexo'] : '';
-            $nucleo_id         = isset($_POST['nucleo_id']) ? $_POST['nucleo_id'] : '';
+            $direccion         = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
 
             $modeloPaciente = new Paciente($this->db);
             
             $resultado = $modeloPaciente->registrarPaciente(
                 $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
                 $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, 
-                $nucleo_id
+                $direccion
             );
 
             if ($resultado == true) {
