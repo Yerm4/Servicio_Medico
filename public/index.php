@@ -69,10 +69,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case "actualizar_consulta":
             $controllerConsulta->actualizar();
             break;
+        case "eliminar_usuario":
+            $controller->eliminar(); 
+            break;
         case "login":
             $controller->login();
             break;
+        case "buscar_usuario":
+            $controller->buscar();
+        break;
     }
+
 }
 
 $ruta = isset($_GET["ruta"]) ? trim($_GET["ruta"], "/") : "login";

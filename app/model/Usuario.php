@@ -50,7 +50,7 @@ class Usuario {
 
     public function consultarUsuarios() {
         try {
-            $sql = "SELECT * FROM usuarios ORDER BY fecha_creacion DESC LIMIT 5";
+            $sql = "SELECT * FROM usuarios ORDER BY fecha_creacion DESC LIMIT 19";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -58,6 +58,47 @@ class Usuario {
 
         catch (PDOException $e) {
 
+        }
+    }
+
+    public function eliminarUsuario($cedula) {
+    try {
+        
+        $sql = "DELETE FROM usuarios WHERE cedula = :cedula";
+
+        $stmt = $this->pdo->prepare($sql);
+        
+        $resultado = $stmt->execute([
+            "cedula" => $cedula
+        ]);
+        
+        return $resultado; 
+
+        } 
+        catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function buscarUsuarios($query) {
+        try {
+        
+            $sql = "SELECT * FROM usuarios 
+                    WHERE cedula LIKE :query 
+                    OR nombre LIKE :query 
+                    OR apellido LIKE :query 
+                    LIMIT 10"; 
+                    
+            $stmt = $this->pdo->prepare($sql);
+            
+            $stmt->execute([
+                'query' => '%' . $query . '%'
+            ]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            return [];
         }
     }
 }

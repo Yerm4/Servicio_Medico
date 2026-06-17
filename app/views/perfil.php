@@ -27,17 +27,48 @@ unset($_SESSION['inputs']);
         </aside>
 
         <section class="section-1 section-1--perfil">
+            
+            <div class="buscador-caja">
+                <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input" autocomplete="off">
+            </div>
+
+            <?php if($usuariosEncontrados): ?>
+
+            <table id="tablaRegistros">
+                <thead>
+                <tr>
+                    <th class="tabla-usuarios__title">Cedula</th>
+                    <th class="tabla-usuarios__title">Nombre</th>
+                    <th class="tabla-usuarios__title">Apellido</th>
+                    <th class="tabla-usuarios__title">Tipo</th>
+                    <th class="tabla-usuarios__title">Edad</th>
+                    <th class="tabla-usuarios__title">Sexo</th>
+                    <th class="tabla-usuarios__title">Telefono</th>
+                </tr>
+                </thead>
+                <tbody id="cuerpoTablaUsuarios">
+                <?php foreach ($usuariosEncontrados as $registro): ?>
+                    <tr>
+                    <td class="tabla-usuarios__desc"> <?=e($registro["cedula"])?></td>
+                    <td class="tabla-usuarios__desc"> <?=e($registro["nombre"])?></td>
+                    <td class="tabla-usuarios__desc"><?=e($registro["apellido"])?></td>
+                    <td class="tabla-usuarios__desc"><?= $registro["tipo"] === 0 ? "Estudiante" : "Docente" ?></td>
+                    <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
+                    <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
+                    <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
+                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
+                </tr>
+                <?php endforeach?>
+                </tbody>
+            </table>
+
+            <?php endif?>
+
             <div class="section-1__box transition" id="section-1-box">
-                
-                <div class="action-card">
-                    <h2 class="action-card__title">Gestión de usuarios</h2>
-                    <div class="action-card__button-grid">    
-                        <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
-                        <a name="openModal" data-modal="modalActualizarUsuario" class="action-card__button" href="">Actualizar usuario</a>
-                        <a name="openModal" data-modal="modalBuscarUsuario" class="action-card__button" href="">Buscar usuario</a>
-                        <a name="openModal" data-modal="modalEliminarUsuario" class="action-card__button" href="">Eliminar usuario</a>
-                    </div>
+                    <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
                 </div>
+                
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                         <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
                         <div>
@@ -58,32 +89,6 @@ unset($_SESSION['inputs']);
                     ?>
                 <?php endif; ?>
             </div>
-            <?php if($usuariosEncontrados): ?>
-
-            <table>
-                <tr>
-                    <th class="tabla-usuarios__title">Cedula</th>
-                    <th class="tabla-usuarios__title">Nombre</th>
-                    <th class="tabla-usuarios__title">Apellido</th>
-                    <th class="tabla-usuarios__title">Tipo</th>
-                    <th class="tabla-usuarios__title">Edad</th>
-                    <th class="tabla-usuarios__title">Sexo</th>
-                    <th class="tabla-usuarios__title">Telefono</th>
-                </tr>
-                <?php foreach ($usuariosEncontrados as $registro): ?>
-                    <tr>
-                    <td class="tabla-usuarios__desc"> <?=e($registro["cedula"])?></td>
-                    <td class="tabla-usuarios__desc"> <?=e($registro["nombre"])?></td>
-                    <td class="tabla-usuarios__desc"><?=e($registro["apellido"])?></td>
-                    <td class="tabla-usuarios__desc"><?= $registro["tipo"] === 0 ? "Estudiante" : "Docente" ?></td>
-                    <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
-                    <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
-                    <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
-                </tr>
-                <?php endforeach?>
-            </table>
-
-            <?php endif?>
         </section>
         <dialog id="modalRegistrarUsuario" class="modal-crud">
             <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
@@ -111,6 +116,8 @@ unset($_SESSION['inputs']);
     </main>
     <footer>
         <script src="assets/script/append.js" defer></script>
+        <script src="assets/script/eliminar.js" defer></script>
+        <script src="assets/script/consultarTabla.js" defer></script>
     </footer>
 </body>
 </html>

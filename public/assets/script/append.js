@@ -83,31 +83,7 @@ usuario.addEventListener("click", (e) => {
         btnRegistrar.href = '#';
         btnRegistrar.textContent = 'Registrar usuario';
 
-        const btnActualizar = document.createElement('a');
-        btnActualizar.name = 'openModal';
-        btnActualizar.setAttribute('data-modal', 'modalActualizarUsuario');
-        btnActualizar.className = 'action-card__button';
-        btnActualizar.href = '#';
-        btnActualizar.textContent = 'Actualizar usuario';
-
-        const btnBuscar = document.createElement('a');
-        btnBuscar.name = 'openModal';
-        btnBuscar.setAttribute('data-modal', 'modalBuscarUsuario');
-        btnBuscar.className = 'action-card__button';
-        btnBuscar.href = '#';
-        btnBuscar.textContent = 'Buscar usuario';
-
-        const btnEliminar = document.createElement('a');
-        btnEliminar.name = 'openModal';
-        btnEliminar.setAttribute('data-modal', 'modalEliminarUsuario');
-        btnEliminar.className = 'action-card__button';
-        btnEliminar.href = '#';
-        btnEliminar.textContent = 'Eliminar usuario';
-
         buttonGrid.appendChild(btnRegistrar);
-        buttonGrid.appendChild(btnActualizar);
-        buttonGrid.appendChild(btnBuscar);
-        buttonGrid.appendChild(btnEliminar);
 
         actionCard.appendChild(cardTitle);
         actionCard.appendChild(buttonGrid);
