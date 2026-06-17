@@ -57,7 +57,7 @@ unset($_SESSION['inputs']);
                     <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
                     <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
                     <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
-                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="editar-usuario" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
                 </tr>
                 <?php endforeach?>
                 </tbody>
@@ -93,14 +93,8 @@ unset($_SESSION['inputs']);
         <dialog id="modalRegistrarUsuario" class="modal-crud">
             <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
         </dialog>
-        <dialog id="modalBuscarUsuario" class="modal-crud">
-            <p>aaaaaaaaaaaaaaaabuscar</p>
-        </dialog>
         <dialog id="modalActualizarUsuario" class="modal-crud">
-            <p>aaaaaaaaaaaaactualizar</p>
-        </dialog>
-        <dialog id="modalEliminarUsuario" class="modal-crud">
-            <p>eliminar</p>
+            <?php include_once __DIR__."/modalActualizarUsuario.php" ?>
         </dialog>
         <!-- Consultas Medicas -->
         <dialog id="modalRegistrarConsulta" class="modal-crud">

@@ -78,6 +78,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case "buscar_usuario":
             $controller->buscar();
         break;
+        case "obtener_usuario":
+            $controller->obtenerUsuarioPorCedula();
+            break;
+        case "actualizar_usuario":
+            $controller->actualizar();
+            break;
     }
 
 }

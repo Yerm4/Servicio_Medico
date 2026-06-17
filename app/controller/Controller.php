@@ -83,4 +83,57 @@ class Controller {
         echo json_encode($resultados);
         exit();
     }
+    // Al final de tu clase Controller en Controller.php
+
+public function obtenerUsuarioPorCedula() {
+    header('Content-Type: application/json');
+    $cedula = isset($_POST['id']) ? trim($_POST['id']) : '';
+
+    $model = new Usuario($this->pdo);
+    $usuario = $model->loginUsuario($cedula); // Tu método que busca por cédula exacta
+
+    if ($usuario) {
+        echo json_encode($usuario);
+    } else {
+        echo json_encode(['error' => 'No se encontró el registro.']);
+    }
+    exit();
+}
+
+public function actualizar() {
+    // En app/controller/Controller.php
+
+if (isset($_POST['form']) && $_POST['form'] === 'actualizar_usuario') {
+    header('Content-Type: application/json');
+
+    $cedula                     = isset($_POST['cedula']) ? trim($_POST['cedula']) : '';
+    $nombre                     = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+    $apellido                   = isset($_POST['apellido']) ? trim($_POST['apellido']) : '';
+    $tipo                       = isset($_POST['tipo']) ? (int)$_POST['tipo'] : 0;
+    $fecha_nacimiento           = isset($_POST['fecha_nacimiento']) ? trim($_POST['fecha_nacimiento']) : null;
+    $tlfprincipal               = isset($_POST['tlfprincipal']) ? trim($_POST['tlfprincipal']) : '';
+    $nombre_contacto_emergencia = isset($_POST['nombre_contacto_emergencia']) ? trim($_POST['nombre_contacto_emergencia']) : '';
+    $tlfemergencia              = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
+    $sexo                       = isset($_POST['sexo']) ? (int)$_POST['sexo'] : 1;
+
+    if (!empty($cedula)) {
+        $model = new Usuario($this->pdo);
+        
+        // Pasamos exactamente los parámetros que tu tabla necesita actualizar
+        $guardado = $model->actualizarUsuarioCompleto(
+            $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
+            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo
+        );
+
+        if ($guardado) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'No se realizaron cambios o hubo un fallo en la base de datos.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Cédula inválida.']);
+    }
+    exit();
+}
+}
 }

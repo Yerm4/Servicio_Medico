@@ -101,4 +101,41 @@ class Usuario {
             return [];
         }
     }
+
+public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo) {
+    try {
+        $sql = "UPDATE usuarios 
+                SET nombre = :nombre, 
+                    apellido = :apellido, 
+                    tipo = :tipo, 
+                    fecha_nacimiento = :fecha_nacimiento, 
+                    tlfprincipal = :tlfprincipal, 
+                    nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                    tlfemergencia = :tlfemergencia, 
+                    sexo = :sexo 
+                WHERE cedula = :cedula";
+                
+        $stmt = $this->pdo->prepare($sql);
+        
+        $resultado = $stmt->execute([
+            'nombre'                      => $nombre,
+            'apellido'                    => $apellido,
+            'tipo'                        => $tipo,
+            'fecha_nacimiento'            => $fecha_nacimiento,
+            'tlfprincipal'                => $tlfprincipal,
+            'nombre_contacto_emergencia'  => $nombre_contacto_emergencia,
+            'tlfemergencia'               => $tlfemergencia,
+            'sexo'                        => $sexo,
+            'cedula'                      => (int)$cedula
+        ]);
+        
+        return $resultado;
+        
+    } catch (PDOException $e) {
+        // Puedes descomentar la siguiente línea si necesitas debuggear fallos de tipos de datos en la DB:
+        // echo $e->getMessage();
+        return false;
+    }
+
+}
 }
