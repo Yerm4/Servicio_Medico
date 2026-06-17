@@ -69,13 +69,6 @@ usuario.addEventListener("click", (e) => {
         const actionCard = document.createElement('div');
         actionCard.className = 'action-card';
 
-        const cardTitle = document.createElement('h2');
-        cardTitle.className = 'action-card__title';
-        cardTitle.textContent = 'Gestión de usuarios';
-
-        const buttonGrid = document.createElement('div');
-        buttonGrid.className = 'action-card__button-grid';
-
         const btnRegistrar = document.createElement('a');
         btnRegistrar.name = 'openModal';
         btnRegistrar.setAttribute('data-modal', 'modalRegistrarUsuario');
@@ -83,10 +76,7 @@ usuario.addEventListener("click", (e) => {
         btnRegistrar.href = '#';
         btnRegistrar.textContent = 'Registrar usuario';
 
-        buttonGrid.appendChild(btnRegistrar);
-
-        actionCard.appendChild(cardTitle);
-        actionCard.appendChild(buttonGrid);
+        actionCard.appendChild(btnRegistrar);
 
     setTimeout(() => {
         section1Box.textContent = " "

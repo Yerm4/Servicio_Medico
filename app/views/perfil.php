@@ -44,6 +44,8 @@ unset($_SESSION['inputs']);
                     <th class="tabla-usuarios__title">Edad</th>
                     <th class="tabla-usuarios__title">Sexo</th>
                     <th class="tabla-usuarios__title">Telefono</th>
+                    <th class="tabla-usuarios__title"></th>
+                    <th class="tabla-usuarios__title"></th>
                 </tr>
                 </thead>
                 <tbody id="cuerpoTablaUsuarios">
@@ -56,8 +58,8 @@ unset($_SESSION['inputs']);
                     <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
                     <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
                     <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
-                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
                     <td class="tabla-usuarios__desc"> <button class="editar-usuario" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
                 </tr>
                 <?php endforeach?>
                 </tbody>
@@ -66,8 +68,10 @@ unset($_SESSION['inputs']);
             <?php endif?>
 
             <div class="section-1__box transition" id="section-1-box">
+                <div class="action-card">
                     <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
                 </div>
+            </div>
                 
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                         <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>

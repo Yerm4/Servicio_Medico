@@ -406,3 +406,8 @@ tr, th, td {
 .sugerencia-item-empty a:hover {
     color: #00a !important;
 }
+
+#inputBuscarUsuario {
+    width: 300px;
+    max-width: 100%;
+}

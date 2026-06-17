@@ -57,10 +57,10 @@ if (inputBuscar && cuerpoTabla) {
                     <td class="tabla-usuarios__desc">${sexoUsuario}</td>
                     <td class="tabla-usuarios__desc">${usuario.tlfprincipal || ''}</td>
                     <td class="tabla-usuarios__desc">
-                        <button class="eliminar-usuario" data-id="${usuario.cedula}">Eliminar</button>
+                        <button class="editar-usuario" data-id="${usuario.cedula}">Actualizar</button>
                     </td>
                     <td class="tabla-usuarios__desc">
-                        <button class="editar-usuario" data-id="${usuario.cedula}">Actualizar</button>
+                        <button class="eliminar-usuario" data-id="${usuario.cedula}">Eliminar</button>
                     </td>
                 `;
                 cuerpoTabla.appendChild(fila);
