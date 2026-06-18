@@ -23,11 +23,12 @@
             <label for="edit_tipo" class="action-card__label">Tipo de Usuario
                 <select class="action-card__select" id="edit_tipo" name="tipo" required>
                     <option value="" disabled>Seleccione...</option>
-                    <option value="0">Estudiante</option>
-                    <option value="1">Docente</option>
-                    <option value="2">Obrero</option>
+                    <option value="1">Estudiante</option>
+                    <option value="2">Docente</option>
                     <option value="3">Administrativo</option>
-                    <option value="4">Comunidad</option>
+                    <option value="4">Obrero</option>
+                    <option value="5">Comunidad</option>
+                    <option value="6">Personal Médico</option>
                 </select>
             </label>
 
@@ -39,7 +40,7 @@
                 <input type="tel" class="action-card__input" id="edit_tlfprincipal" name="tlfprincipal" required>
             </label>
 
-            <label for="edit_nombre_contacto_emergencia" class="action-card__label">Contacto de Emergencia
+            <label for="edit_nombre_contacto_emergencia" class="action-card__label">Nombre del Contacto de Emergencia
                 <input type="text" class="action-card__input" id="edit_nombre_contacto_emergencia" name="nombre_contacto_emergencia" required>
             </label>
 

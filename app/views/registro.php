@@ -1,5 +1,8 @@
 <?php 
-    isset($_SESSION["cedula"]) ? header("Location: perfil") : "";
+if (isset($_SESSION["cedula"])) {
+    header("Location: perfil");
+    exit();
+}
 ?>
 
 <main class="registro">

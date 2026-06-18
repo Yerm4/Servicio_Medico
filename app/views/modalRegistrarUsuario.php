@@ -13,13 +13,15 @@
             </label>
 
             <label for="tipo" class="action-card__label">Tipo de Usuario
-                <select class="action-card__select" id="tipo" name="tipo">
+                <select class="action-card__select" id="tipo" name="tipo" required>
                     <?php $t = isset($inputs['tipo']) ? $inputs['tipo'] : ''; ?>
                     <option value="" <?php echo ($t === '') ? 'selected' : ''; ?> disabled>Seleccione...</option>
-                    <option value="0" <?php echo ($t === '0') ? 'selected' : ''; ?>>Estudiante</option>
-                    <option value="1" <?php echo ($t === '1') ? 'selected' : ''; ?>>Docente</option>
-                    <option value="2" <?php echo ($t === '2') ? 'selected' : ''; ?>>Obrero</option>
+                    <option value="1" <?php echo ($t === '1') ? 'selected' : ''; ?>>Estudiante</option>
+                    <option value="2" <?php echo ($t === '2') ? 'selected' : ''; ?>>Docente</option>
                     <option value="3" <?php echo ($t === '3') ? 'selected' : ''; ?>>Administrativo</option>
+                    <option value="4" <?php echo ($t === '4') ? 'selected' : ''; ?>>Obrero</option>
+                    <option value="5" <?php echo ($t === '5') ? 'selected' : ''; ?>>Comunidad</option>
+                    <option value="6" <?php echo ($t === '6') ? 'selected' : ''; ?>>Personal Médico</option>
                 </select>
             </label>
         <label for="nombre" class="action-card__label">Nombres
@@ -35,11 +37,11 @@
         <label for="tlfprincipal" class="action-card__label">Teléfono Principal
             <input type="text" class="action-card__input" id="tlfprincipal" name="tlfprincipal" value="<?php echo isset($inputs['tlfprincipal']) ? $inputs['tlfprincipal'] : ''; ?>" required>
         </label>
-        <label for="tlfemergencia" class="action-card__label">Contacto de Emergencia
+        <label for="tlfemergencia" class="action-card__label">Teléfono de Emergencia
             <input type="text" class="action-card__input" id="tlfemergencia" name="tlfemergencia" value="<?php echo isset($inputs['tlfemergencia']) ? $inputs['tlfemergencia'] : ''; ?>" required>
         </label>
-            <label for="nombre_contacto_emergencia" class="action-card__label">Nombre de Contacto de Emergencia
-            <input type="text" class="action-card__input" id="nombre_contacto_emergencia" name="nombre_contacto_emergencia" value="<?php echo isset($inputs['nombre_contacto_de_emergencia']) ? $inputs['nombre_contacto_emergencia'] : ''; ?>" required>
+        <label for="nombre_contacto_emergencia" class="action-card__label">Nombre del Contacto de Emergencia
+            <input type="text" class="action-card__input" id="nombre_contacto_emergencia" name="nombre_contacto_emergencia" value="<?php echo isset($inputs['nombre_contacto_emergencia']) ? $inputs['nombre_contacto_emergencia'] : ''; ?>" required>
         </label>
         
         <label for="direccion" class="action-card__label">Dirección

@@ -30,8 +30,15 @@ class Paciente
         $contraseñaCreada = $cedula.'uptaeb';
         $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
 
-        $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion) 
-                VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion)";
+        $stmtConfig = $this->db->prepare("SELECT rol_defecto FROM configuracion LIMIT 1");
+        $stmtConfig->execute();
+        $rolDefecto = $stmtConfig->fetchColumn();
+        if ($rolDefecto === false) {
+            $rolDefecto = 3;
+        }
+
+        $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
+                VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion, :rol)";
 
         $stmt = $this->db->prepare($sql);
 
@@ -46,7 +53,8 @@ class Paciente
             ':tlfemergencia'    => $tlfemergencia,
             ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
             ':sexo'             => (int)$sexo,
-            ':direccion'        => $direccion
+            ':direccion'        => $direccion,
+            ':rol'              => (int)$rolDefecto
         ]);
 
         return true;
