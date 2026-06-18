@@ -31,7 +31,7 @@ unset($_SESSION['inputs']);
             <div class="buscador-caja">
                 <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input" autocomplete="off">
                 
-                <div class="section-1__box transition" id="section-1-box">
+                <div class="section-1__box section-1__box--boton transition" id="section-1-box">
                     <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
                 </div>
             </div>

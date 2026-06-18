@@ -411,3 +411,15 @@ tr, th, td {
     width: 300px;
     max-width: 100%;
 }
+
+.buscador-caja {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.section-1__box--boton {
+    margin: 10px;
+    gap: 10px;
+}

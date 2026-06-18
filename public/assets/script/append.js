@@ -88,21 +88,6 @@ sesion.addEventListener("click", (e) => {
     }, 500);
 })
 
-const loginCardCedula = document.getElementsByName("cedula")
-if (loginCardCedula) {
-    loginCardCedula.forEach(inputCedula => {
-        inputCedula.addEventListener("input", (event) => {
-            const cedulaValue = event.target.value
-            if (cedulaValue.length < 7 || cedulaValue.length > 8) {
-                inputCedula.style.border = "2px red solid"
-            } else {
-                inputCedula.style.border = "2px green solid"
-            }
-        })
-    });    
-}
-
-
 section1Box.addEventListener("click", (event) => {
     const boton = event.target.closest('[data-modal]');
     
