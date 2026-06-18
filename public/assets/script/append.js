@@ -14,16 +14,6 @@ consulta.addEventListener("click", (e) => {
     consulta.classList.add("focus")
     section1Box.style.opacity = 0
 
-        const actionCard = document.createElement('div');
-        actionCard.className = 'action-card';
-
-        const cardTitle = document.createElement('h2');
-        cardTitle.className = 'action-card__title';
-        cardTitle.textContent = 'Gestión de consultas';
-
-        const buttonGrid = document.createElement('div');
-        buttonGrid.className = 'action-card__button-grid';
-
         const btnIniciar = document.createElement('a');
         btnIniciar.name = 'openModal';
         btnIniciar.setAttribute('data-modal', 'modalRegistrarConsulta');
@@ -45,15 +35,11 @@ consulta.addEventListener("click", (e) => {
         btnBuscar.href = '#';
         btnBuscar.textContent = 'Buscar consulta';
 
-        buttonGrid.appendChild(btnIniciar);
-        buttonGrid.appendChild(btnActualizar);
-        buttonGrid.appendChild(btnBuscar);
-        actionCard.appendChild(cardTitle);
-        actionCard.appendChild(buttonGrid);
-
     setTimeout(() => {
         section1Box.textContent = " "
-        section1Box.appendChild(actionCard)
+        section1Box.appendChild(btnIniciar)
+        section1Box.appendChild(btnBuscar)
+        section1Box.appendChild(btnActualizar)
         section1Box.style.opacity = "1"
         consulta.style.pointerEvents = "auto"
     }, 500);
@@ -66,9 +52,6 @@ usuario.addEventListener("click", (e) => {
     usuario.classList.add("focus")
     section1Box.style.opacity = 0
 
-        const actionCard = document.createElement('div');
-        actionCard.className = 'action-card';
-
         const btnRegistrar = document.createElement('a');
         btnRegistrar.name = 'openModal';
         btnRegistrar.setAttribute('data-modal', 'modalRegistrarUsuario');
@@ -76,11 +59,9 @@ usuario.addEventListener("click", (e) => {
         btnRegistrar.href = '#';
         btnRegistrar.textContent = 'Registrar usuario';
 
-        actionCard.appendChild(btnRegistrar);
-
     setTimeout(() => {
         section1Box.textContent = " "
-        section1Box.appendChild(actionCard)
+        section1Box.appendChild(btnRegistrar)
         section1Box.style.opacity = "1"
         usuario.style.pointerEvents = "auto"
     }, 500);
@@ -93,24 +74,15 @@ sesion.addEventListener("click", (e) => {
     desFocus()
     sesion.classList.add("focus")
     section1Box.style.opacity = 0
-    
-    const actionCard = document.createElement('div');
-    actionCard.className = 'action-card';
-
-    const cardTitle = document.createElement('h2');
-    cardTitle.textContent = 'Gestión de sesión';
 
     const btnLogout = document.createElement('a');
     btnLogout.href = 'logout';
     btnLogout.style.color = 'blue';
     btnLogout.textContent = 'Cerrar sesión';
 
-    actionCard.appendChild(cardTitle);
-    actionCard.appendChild(btnLogout);
-
     setTimeout(() => {
         section1Box.textContent = " "
-        section1Box.appendChild(actionCard)
+        section1Box.appendChild(btnLogout)
         section1Box.style.opacity = "1"
         sesion.style.pointerEvents = "auto"
     }, 500);

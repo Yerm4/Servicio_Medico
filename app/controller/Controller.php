@@ -85,19 +85,19 @@ class Controller {
     }
     // Al final de tu clase Controller en Controller.php
 
-public function obtenerUsuarioPorCedula() {
-    header('Content-Type: application/json');
-    $cedula = isset($_POST['id']) ? trim($_POST['id']) : '';
+    public function obtenerUsuarioPorCedula() {
+        header('Content-Type: application/json');
+        $cedula = isset($_POST['id']) ? trim($_POST['id']) : '';
 
-    $model = new Usuario($this->pdo);
-    $usuario = $model->loginUsuario($cedula); // Tu método que busca por cédula exacta
+        $model = new Usuario($this->pdo);
+        $usuario = $model->loginUsuario($cedula); // Tu método que busca por cédula exacta
 
-    if ($usuario) {
-        echo json_encode($usuario);
-    } else {
-        echo json_encode(['error' => 'No se encontró el registro.']);
-    }
-    exit();
+        if ($usuario) {
+            echo json_encode($usuario);
+        } else {
+            echo json_encode(['error' => 'No se encontró el registro.']);
+        }
+        exit();
 }
 
 public function actualizar() {

@@ -53,11 +53,11 @@
 
             <label class="action-card__label">Sexo
                 <label for="edit_sexo_m">Masculino
-                    <input type="radio\" name="sexo" id="edit_sexo_m" value="1" required>
+                    <input type="radio" name="sexo" id="edit_sexo_m" value="1" required>
                 </label>
             
                 <label for="edit_sexo_f">Femenino
-                    <input type="radio\" name="sexo" id="edit_sexo_f" value="2">
+                    <input type="radio" name="sexo" id="edit_sexo_f" value="2">
                 </label>
             </label>
         </div>

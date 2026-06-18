@@ -30,7 +30,12 @@ unset($_SESSION['inputs']);
             
             <div class="buscador-caja">
                 <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input" autocomplete="off">
+                
+                <div class="section-1__box transition" id="section-1-box">
+                    <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
+                </div>
             </div>
+            
 
             <?php if($usuariosEncontrados): ?>
 
@@ -58,20 +63,14 @@ unset($_SESSION['inputs']);
                     <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
                     <td class="tabla-usuarios__desc"><?= $registro["sexo"] === 1 ? "Masculino" : "Femenino" ?></td>
                     <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
-                    <td class="tabla-usuarios__desc"> <button class="editar-usuario" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
-                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="editar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
                 </tr>
                 <?php endforeach?>
                 </tbody>
             </table>
 
             <?php endif?>
-
-            <div class="section-1__box transition" id="section-1-box">
-                <div class="action-card">
-                    <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
-                </div>
-            </div>
                 
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                         <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
