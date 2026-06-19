@@ -93,6 +93,7 @@ a {
 }
 
 .top-menu__login {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -422,4 +423,24 @@ tr, th, td {
 .section-1__box--boton {
     margin: 10px;
     gap: 10px;
+}
+
+.avatar {
+    padding: 5px;
+    outline: 1px solid black;
+    border-radius: 10px;
+}
+
+.avatar:hover {
+    cursor: pointer;
+}
+
+.avatar__menu {
+    display: none;
+}
+
+.avatar__menu--visible {
+    display: block;
+    position: absolute;
+    bottom: -50px
 }

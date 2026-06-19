@@ -150,3 +150,9 @@ modales.forEach(modal => {
         }, 500);
     })
 })
+
+const avatar = document.getElementById("avatar")
+const avatarMenu = document.getElementById("avatarMenu")
+    avatar.addEventListener("mouseenter", (e) => {
+        avatarMenu.classList.add("avatar__menu--visible")
+    })
