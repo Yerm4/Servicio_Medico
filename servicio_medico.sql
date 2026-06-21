@@ -172,6 +172,21 @@ INSERT INTO `lista_roles` (`id_rol`, `nombre_rol`, `descripcion_rol`) VALUES
 (3, 'Médico', 'Gestión de consultas y diagnósticos'),
 (4, 'Director', 'Control total del sistema');
 
+INSERT INTO `lista_permisos` (`id_permiso`, `nombre_permiso`, `descripcion_permiso`) VALUES
+(1, 'gestionar_usuarios', 'Permite registrar, actualizar y eliminar usuarios'),
+(2, 'gestionar_consultas', 'Permite registrar y buscar consultas médicas'),
+(3, 'generar_reportes', 'Permite generar reportes de morbilidad médica'),
+(4, 'gestionar_roles_permisos', 'Permite administrar roles, permisos y configuración del sistema');
+
+INSERT INTO `roles_permisos` (`id_rol`, `id_permiso`) VALUES
+(2, 1),
+(3, 2),
+(3, 3),
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4);
+
 INSERT INTO `configuracion` (`rol_defecto`) VALUES (1);
 
 INSERT INTO `lista_tipos` (`id_tipo`, `nombre_tipo`, `descripcion_tipo`) VALUES
@@ -179,5 +194,5 @@ INSERT INTO `lista_tipos` (`id_tipo`, `nombre_tipo`, `descripcion_tipo`) VALUES
 (2, 'Docente', ''),
 (3, 'Administrativo', ''),
 (4, 'Obrero', ''),
-(5, 'Comunidad', ''),
 (6, 'Personal Médico', '');
+

@@ -23,12 +23,12 @@
             <label for="edit_tipo" class="action-card__label">Tipo de Usuario
                 <select class="action-card__select" id="edit_tipo" name="tipo" required>
                     <option value="" disabled>Seleccione...</option>
-                    <option value="1">Estudiante</option>
-                    <option value="2">Docente</option>
-                    <option value="3">Administrativo</option>
-                    <option value="4">Obrero</option>
-                    <option value="5">Comunidad</option>
-                    <option value="6">Personal Médico</option>
+                    <?php 
+                    $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
+                    foreach ($tipos as $tipo): 
+                    ?>
+                        <option value="<?php echo e($tipo['id_tipo']); ?>"><?php echo e($tipo['nombre_tipo']); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </label>
 

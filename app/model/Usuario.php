@@ -407,4 +407,14 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
             return false;
         }
     }
+
+    public function obtenerTipos() {
+        try {
+            $stmt = $this->pdo->prepare("SELECT id_tipo, nombre_tipo FROM lista_tipos ORDER BY id_tipo ASC");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

@@ -14,14 +14,15 @@
 
             <label for="tipo" class="action-card__label">Tipo de Usuario
                 <select class="action-card__select" id="tipo" name="tipo" required>
-                    <?php $t = isset($inputs['tipo']) ? $inputs['tipo'] : ''; ?>
+                    <?php $t = isset($inputs['tipo']) ? (string)$inputs['tipo'] : ''; ?>
                     <option value="" <?php echo ($t === '') ? 'selected' : ''; ?> disabled>Seleccione...</option>
-                    <option value="1" <?php echo ($t === '1') ? 'selected' : ''; ?>>Estudiante</option>
-                    <option value="2" <?php echo ($t === '2') ? 'selected' : ''; ?>>Docente</option>
-                    <option value="3" <?php echo ($t === '3') ? 'selected' : ''; ?>>Administrativo</option>
-                    <option value="4" <?php echo ($t === '4') ? 'selected' : ''; ?>>Obrero</option>
-                    <option value="5" <?php echo ($t === '5') ? 'selected' : ''; ?>>Comunidad</option>
-                    <option value="6" <?php echo ($t === '6') ? 'selected' : ''; ?>>Personal Médico</option>
+                    <?php 
+                    $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
+                    foreach ($tipos as $tipo): 
+                        $idTipoStr = (string)$tipo['id_tipo'];
+                    ?>
+                        <option value="<?php echo e($tipo['id_tipo']); ?>" <?php echo ($t === $idTipoStr) ? 'selected' : ''; ?>><?php echo e($tipo['nombre_tipo']); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </label>
         <label for="nombre" class="action-card__label">Nombres
