@@ -49,6 +49,21 @@
             <input type="text" class="action-card__input" id="direccion" name="direccion" value="<?php echo isset($inputs['direccion']) ? $inputs['direccion'] : ''; ?>" required>
         </label>
 
+        <?php if ($tieneGestionarRolesPermisos): ?>
+        <label for="rol" class="action-card__label">Rol de Acceso
+            <select class="action-card__select" id="rol" name="rol" required>
+                <?php 
+                $rolesList = isset($userModel) ? $userModel->obtenerRoles() : [];
+                $defRol = isset($userModel) ? $userModel->obtenerRolDefecto() : 1;
+                $rInput = isset($inputs['rol']) ? (int)$inputs['rol'] : $defRol;
+                foreach ($rolesList as $rolOpt): 
+                ?>
+                    <option value="<?= e($rolOpt['id_rol']) ?>" <?= $rInput === (int)$rolOpt['id_rol'] ? 'selected' : '' ?>><?= e($rolOpt['nombre_rol']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <?php endif; ?>
+
     </div>
         
         <label class="action-card__label">Sexo

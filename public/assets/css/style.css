@@ -451,3 +451,46 @@ tr, th, td {
     margin: 10px;
     gap: 10px;
 }
+
+/* Custom list items for medical consultation selections */
+.sintoma-item,
+.diagnostico-item,
+.condicion-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 6px 10px !important;
+    background-color: #fafafa !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    margin-top: 5px !important;
+    font-size: 0.9em !important;
+}
+
+.btn-remove-sintoma,
+.btn-remove-diagnostico,
+.btn-remove-condicion {
+    cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+    color: #e53e3e !important;
+    font-weight: bold !important;
+    font-size: 1.1em !important;
+    padding: 0 4px !important;
+    outline: none !important;
+    transition: color 0.2s ease, transform 0.2s ease !important;
+}
+
+.btn-remove-sintoma:hover,
+.btn-remove-diagnostico:hover,
+.btn-remove-condicion:hover {
+    color: #c53030 !important;
+    transform: scale(1.15) !important;
+}
+
+.btn-remove-sintoma:focus,
+.btn-remove-diagnostico:focus,
+.btn-remove-condicion:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}

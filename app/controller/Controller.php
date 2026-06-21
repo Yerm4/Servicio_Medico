@@ -117,13 +117,22 @@ if (isset($_POST['form']) && $_POST['form'] === 'actualizar_usuario') {
     $direccion                  = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
     $sexo                       = isset($_POST['sexo']) ? (int)$_POST['sexo'] : 1;
 
-    if (!empty($cedula)) {
+    $rol = null;
+    if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
         $model = new Usuario($this->pdo);
+        if ($model->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
+            $rol = (int)$_POST['rol'];
+        }
+    }
+
+    if (!empty($cedula)) {
+        if (!isset($model)) {
+            $model = new Usuario($this->pdo);
+        }
         
-        // Pasamos exactamente los parámetros que tu tabla necesita actualizar
         $guardado = $model->actualizarUsuarioCompleto(
             $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
-            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion
+            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion, $rol
         );
 
         if ($guardado) {

@@ -31,7 +31,7 @@
 
                         <label class="action-card__label">Añadir Síntomas
                             <div class="sintomas-input-group" style="display: flex; gap: 8px;">
-                                <input type="text" id="sintoma-input" class="action-card__input" placeholder="Ej. Fiebre, Tos" disabled>
+                                <input type="text" id="sintoma-input" class="action-card__input" placeholder="Ej. Fiebre, Tos" disabled spellcheck="false">
                                 <button type="button" id="btn-add-sintoma" class="action-card__button" style="width: auto;" disabled>Añadir</button>
                             </div>
                             <ul id="sintomas-lista" style="list-style-type: none; padding-left: 0; margin-top: 8px;"></ul>

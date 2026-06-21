@@ -47,10 +47,50 @@ $controllerConsulta = new ConsultaController($pdo);
 $userModel = new \app\model\Usuario($pdo);
 $userModel->sincronizarPermisos([
     "gestionar_usuarios" => "Permite registrar, actualizar y eliminar usuarios",
-    "gestionar_consultas" => "Permite registrar y buscar consultas médicas",
+    "ver_consultas" => "Permite ver y buscar el historial de consultas médicas",
+    "realizar_consulta" => "Permite registrar una nueva consulta médica",
+    "modificar_consulta" => "Permite registrar y actualizar consultas médicas",
     "generar_reportes" => "Permite generar reportes de morbilidad médica",
     "gestionar_roles_permisos" => "Permite administrar roles, permisos y configuración del sistema"
 ]);
+
+// Auto-associate default permissions and clean up Director role to remove ver/modify/add consultations
+try {
+    // Enforce Director (4) shouldn't have ver_consultas, realizar_consulta, modificar_consulta
+    $pIdsToRemove = [];
+    $stmtP = $pdo->prepare("SELECT id_permiso FROM lista_permisos WHERE nombre_permiso IN ('ver_consultas', 'realizar_consulta', 'modificar_consulta')");
+    $stmtP->execute();
+    $pIdsToRemove = $stmtP->fetchAll(PDO::FETCH_COLUMN);
+    if (!empty($pIdsToRemove)) {
+        $inClause = implode(',', array_map('intval', $pIdsToRemove));
+        $stmtDel = $pdo->prepare("DELETE FROM roles_permisos WHERE id_rol = 4 AND id_permiso IN ($inClause)");
+        $stmtDel->execute();
+    }
+
+    $insertMap = [
+        2 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta'],
+        3 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'generar_reportes'],
+        4 => ['gestionar_usuarios', 'generar_reportes', 'gestionar_roles_permisos']
+    ];
+
+    foreach ($insertMap as $roleId => $permNames) {
+        foreach ($permNames as $pName) {
+            $stmtId = $pdo->prepare("SELECT id_permiso FROM lista_permisos WHERE nombre_permiso = :name");
+            $stmtId->execute([':name' => $pName]);
+            $idPerm = $stmtId->fetchColumn();
+            if ($idPerm) {
+                $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM roles_permisos WHERE id_rol = :role_id AND id_permiso = :id_perm");
+                $stmtCheck->execute([':role_id' => $roleId, ':id_perm' => $idPerm]);
+                if ($stmtCheck->fetchColumn() == 0) {
+                    $stmtIns = $pdo->prepare("INSERT INTO roles_permisos (id_rol, id_permiso) VALUES (:role_id, :id_perm)");
+                    $stmtIns->execute([':role_id' => $roleId, ':id_perm' => $idPerm]);
+                }
+            }
+        }
+    }
+} catch (Exception $e) {
+    // Ignore database errors during bootstrap
+}
 
 function checkPerm(string $permiso, \app\model\Usuario $userModel): bool {
     if (!isset($_SESSION['cedula'])) {
@@ -60,11 +100,21 @@ function checkPerm(string $permiso, \app\model\Usuario $userModel): bool {
 }
 
 $tieneGestionarUsuarios = false;
-$tieneGestionarConsultas = false;
+$tieneVerConsultas = false;
+$tieneRealizarConsulta = false;
+$tieneModificarConsulta = false;
+$tieneGenerarReportes = false;
 $tieneGestionarRolesPermisos = false;
+$rolUsuario = 0;
 if (isset($_SESSION['cedula'])) {
+    $datosUsuarioLogueado = $userModel->loginUsuario($_SESSION['cedula']);
+    $rolUsuario = isset($datosUsuarioLogueado['rol']) ? (int)$datosUsuarioLogueado['rol'] : 0;
+
     $tieneGestionarUsuarios = checkPerm("gestionar_usuarios", $userModel);
-    $tieneGestionarConsultas = checkPerm("gestionar_consultas", $userModel);
+    $tieneVerConsultas = checkPerm("ver_consultas", $userModel);
+    $tieneRealizarConsulta = checkPerm("realizar_consulta", $userModel);
+    $tieneModificarConsulta = checkPerm("modificar_consulta", $userModel);
+    $tieneGenerarReportes = checkPerm("generar_reportes", $userModel);
     $tieneGestionarRolesPermisos = checkPerm("gestionar_roles_permisos", $userModel);
 }
 
@@ -82,7 +132,7 @@ if (!isset($_SESSION['cedula'])) {
         header("Location: perfil");
         exit();
     }
-    if ($paginaActual === "consultas" && !$tieneGestionarConsultas) {
+    if ($paginaActual === "consultas" && !$tieneVerConsultas) {
         header("Location: perfil");
         exit();
     }
@@ -112,14 +162,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $controllerPaciente->Registrar();    
             break;
         case "registro_consulta":
-            if (!checkPerm("gestionar_consultas", $userModel)) {
+            if (!$tieneRealizarConsulta) {
                 http_response_code(403);
                 exit("No tiene permisos para registrar consultas.");
             }
             $controllerConsulta->registrar();
             break;
         case "actualizar_consulta":
-            if (!checkPerm("gestionar_consultas", $userModel)) {
+            if (!$tieneModificarConsulta) {
                 http_response_code(403);
                 exit("No tiene permisos para actualizar consultas.");
             }
@@ -159,6 +209,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 exit();
             }
             $controller->actualizar();
+            break;
+        case "buscar_consultas":
+            if (!checkPerm("ver_consultas", $userModel)) {
+                header('Content-Type: application/json');
+                echo json_encode([]);
+                exit();
+            }
+            $controllerConsulta->buscarConsultasAjax();
+            break;
+        case "obtener_consulta":
+            if (!checkPerm("ver_consultas", $userModel)) {
+                header('Content-Type: application/json');
+                echo json_encode(['error' => 'No tiene permisos.']);
+                exit();
+            }
+            $controllerConsulta->obtenerConsultaPorIdAjax();
             break;
         case "guardar_roles_permisos":
             if (!checkPerm("gestionar_roles_permisos", $userModel)) {
@@ -255,7 +321,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
 if ($paginaActual === "buscar_patologia") {
-    if (!checkPerm("gestionar_consultas", $userModel)) {
+    if (!checkPerm("ver_consultas", $userModel)) {
         header('Content-Type: application/json');
         echo json_encode([]);
         exit();
@@ -265,7 +331,7 @@ if ($paginaActual === "buscar_patologia") {
 }
 
 if ($paginaActual === "buscar_paciente") {
-    if (!checkPerm("gestionar_consultas", $userModel)) {
+    if (!checkPerm("ver_consultas", $userModel)) {
         header('Content-Type: application/json');
         echo json_encode([]);
         exit();
@@ -275,7 +341,7 @@ if ($paginaActual === "buscar_paciente") {
 }
 
 if ($paginaActual === "buscar_consultas_paciente") {
-    if (!checkPerm("gestionar_consultas", $userModel)) {
+    if (!checkPerm("ver_consultas", $userModel)) {
         header('Content-Type: application/json');
         echo json_encode([]);
         exit();
@@ -285,7 +351,7 @@ if ($paginaActual === "buscar_consultas_paciente") {
 }
 
 if ($paginaActual === "buscar_condicion") {
-    if (!checkPerm("gestionar_consultas", $userModel)) {
+    if (!checkPerm("ver_consultas", $userModel)) {
         header('Content-Type: application/json');
         echo json_encode([]);
         exit();
@@ -295,7 +361,7 @@ if ($paginaActual === "buscar_condicion") {
 }
 
 if ($paginaActual === "buscar_condiciones_paciente") {
-    if (!checkPerm("gestionar_consultas", $userModel)) {
+    if (!checkPerm("ver_consultas", $userModel)) {
         header('Content-Type: application/json');
         echo json_encode([]);
         exit();
