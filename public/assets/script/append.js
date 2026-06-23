@@ -1,92 +1,68 @@
 let section1Box = document.getElementById("section-1-box")
 let consulta = document.getElementById("consulta")
+let usuario = document.getElementById("usuario")
+let sesion = document.getElementById("sesion")
+let configuracionLink = document.getElementById("configuracion")
 let modales = document.querySelectorAll(".modal-crud")
 
+let tablaRegistros = document.getElementById("tablaRegistros")
+let buscadorCaja = document.querySelector(".buscador-caja")
+let seccionConfiguracion = document.getElementById("seccion-configuracion")
+
 function desFocus () {
-    usuario.classList.remove("focus")
-    consulta.classList.remove("focus")
-    sesion.classList.remove("focus")
+    if (usuario) usuario.classList.remove("focus")
+    if (consulta) consulta.classList.remove("focus")
+    if (sesion) sesion.classList.remove("focus")
+    if (configuracionLink) configuracionLink.classList.remove("focus")
 }
 
-consulta.addEventListener("click", (e) => {
-    consulta.style.pointerEvents = "none"
-    desFocus()
-    consulta.classList.add("focus")
-    section1Box.style.opacity = 0
+function ocultarTodo() {
+    if (tablaRegistros) tablaRegistros.style.display = "none"
+    if (seccionConfiguracion) seccionConfiguracion.style.display = "none"
+}
 
-        const btnIniciar = document.createElement('a');
-        btnIniciar.name = 'openModal';
-        btnIniciar.setAttribute('data-modal', 'modalRegistrarConsulta');
-        btnIniciar.className = 'action-card__button action-card__button--grid-principal';
-        btnIniciar.href = '#';
-        btnIniciar.textContent = 'Iniciar consulta';
+let subTabGeneral = document.getElementById("sub-tab-general");
+let subTabRoles = document.getElementById("sub-tab-roles");
+let subContentGeneral = document.getElementById("sub-content-general");
+let subContentRoles = document.getElementById("sub-content-roles");
 
-        const btnActualizar = document.createElement('a');
-        btnActualizar.name = 'openModal';
-        btnActualizar.setAttribute('data-modal', 'modalActualizarConsulta');
-        btnActualizar.className = 'action-card__button';
-        btnActualizar.href = '#';
-        btnActualizar.textContent = 'Actualiza consulta';
+if (subTabGeneral && subTabRoles && subContentGeneral && subContentRoles) {
+    subTabGeneral.addEventListener("click", (e) => {
+        e.preventDefault();
+        subTabGeneral.style.color = "#333";
+        subTabGeneral.style.borderBottom = "3px solid blue";
+        subTabRoles.style.color = "#777";
+        subTabRoles.style.borderBottom = "none";
+        
+        subContentGeneral.style.display = "block";
+        subContentRoles.style.display = "none";
+    });
+    
+    subTabRoles.addEventListener("click", (e) => {
+        e.preventDefault();
+        subTabRoles.style.color = "#333";
+        subTabRoles.style.borderBottom = "3px solid blue";
+        subTabGeneral.style.color = "#777";
+        subTabGeneral.style.borderBottom = "none";
+        
+        subContentRoles.style.display = "block";
+        subContentGeneral.style.display = "none";
+    });
+}
 
-        const btnBuscar = document.createElement('a');
-        btnBuscar.name = 'openModal';
-        btnBuscar.setAttribute('data-modal', 'modalBuscarConsulta');
-        btnBuscar.className = 'action-card__button';
-        btnBuscar.href = '#';
-        btnBuscar.textContent = 'Buscar consulta';
-
-    setTimeout(() => {
-        section1Box.textContent = " "
-        section1Box.appendChild(btnIniciar)
-        section1Box.appendChild(btnBuscar)
-        section1Box.appendChild(btnActualizar)
-        section1Box.style.opacity = "1"
-        consulta.style.pointerEvents = "auto"
-    }, 500);
-})
-
-let usuario = document.getElementById("usuario")
-usuario.addEventListener("click", (e) => {
-    usuario.style.pointerEvents = "none"
-    desFocus()
-    usuario.classList.add("focus")
-    section1Box.style.opacity = 0
-
-        const btnRegistrar = document.createElement('a');
-        btnRegistrar.name = 'openModal';
-        btnRegistrar.setAttribute('data-modal', 'modalRegistrarUsuario');
-        btnRegistrar.className = 'action-card__button';
-        btnRegistrar.href = '#';
-        btnRegistrar.textContent = 'Registrar usuario';
-
-    setTimeout(() => {
-        section1Box.textContent = " "
-        section1Box.appendChild(btnRegistrar)
-        section1Box.style.opacity = "1"
-        usuario.style.pointerEvents = "auto"
-    }, 500);
-
-})
-
-let sesion = document.getElementById("sesion")
-sesion.addEventListener("click", (e) => {
-    sesion.style.pointerEvents = "none"
-    desFocus()
-    sesion.classList.add("focus")
-    section1Box.style.opacity = 0
-
-    const btnLogout = document.createElement('a');
-    btnLogout.href = 'logout';
-    btnLogout.style.color = 'blue';
-    btnLogout.textContent = 'Cerrar sesión';
-
-    setTimeout(() => {
-        section1Box.textContent = " "
-        section1Box.appendChild(btnLogout)
-        section1Box.style.opacity = "1"
-        sesion.style.pointerEvents = "auto"
-    }, 500);
-})
+const loginCardCedula = document.getElementsByName("cedula")
+if (loginCardCedula) {
+    loginCardCedula.forEach(inputCedula => {
+        inputCedula.addEventListener("input", (event) => {
+            const cedulaValue = event.target.value
+            if (cedulaValue.length < 7 || cedulaValue.length > 8) {
+                inputCedula.style.border = "2px red solid"
+            } else {
+                inputCedula.style.border = "2px green solid"
+            }
+        })
+    });    
+}
 
 section1Box.addEventListener("click", (event) => {
     const boton = event.target.closest('[data-modal]');
@@ -151,8 +127,23 @@ modales.forEach(modal => {
     })
 })
 
-const avatar = document.getElementById("avatar")
-const avatarMenu = document.getElementById("avatarMenu")
-    avatar.addEventListener("mouseenter", (e) => {
-        avatarMenu.classList.add("avatar__menu--visible")
-    })
+document.addEventListener("click", (e) => {
+    if (e.target && e.target.classList.contains("editar-rol")) {
+        const idRol = e.target.getAttribute("data-id");
+        const nombreRol = e.target.getAttribute("data-nombre");
+        const descripcionRol = e.target.getAttribute("data-descripcion");
+        
+        const inputId = document.getElementById("edit_id_rol");
+        const inputNombre = document.getElementById("edit_nombre_rol");
+        const inputDesc = document.getElementById("edit_descripcion_rol");
+        const modal = document.getElementById("modalEditarRol");
+        
+        if (inputId && inputNombre && inputDesc && modal) {
+            inputId.value = idRol;
+            inputNombre.value = nombreRol;
+            inputDesc.value = descripcionRol;
+            modal.showModal();
+            modal.style.opacity = 1;
+        }
+    }
+});

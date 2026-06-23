@@ -1,5 +1,5 @@
 -- Catálogo de Patologías CIE-10 (OMS en Español)
-USE `servicio_medico`;
+
 
 INSERT IGNORE INTO `lista_patologias` (`codigo_icd`, `patologia`) VALUES 
 ('F99', 'Trastorno mental, no especificado'),

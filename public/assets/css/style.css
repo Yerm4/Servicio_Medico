@@ -27,7 +27,7 @@
 body {
     color: #000;
     background-color: #eee;
-    transition: opacity .8s ease-in;
+    transition: opacity .25s ease-out;
     opacity: 0;
 }
 
@@ -277,6 +277,17 @@ main.perfil {
     min-height: 70vh;
 }
 
+@keyframes contentSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .section-1--perfil {
     background-color: #fff;
     padding: 10px;
@@ -287,6 +298,8 @@ main.perfil {
     align-items: center;
     flex-direction: column;
     gap: 30px;
+    opacity: 0;
+    animation: contentSlideUp 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 .section-1--perfil .action-card {
@@ -309,16 +322,31 @@ main.perfil {
 
 .side-menu a {
     font-size: 1.2rem;
-    padding: 3px;
-    padding-left: 10px;
-    background-color: #ddd;
+    padding: 6px 12px;
+    background-color: #f3f3f3;
     border-radius: 10px;
-    transition: background-color .5s ease;
+    transition: all .25s cubic-bezier(0.25, 0.8, 0.25, 1);
     font-weight: bolder;
+    color: #444;
+    border-left: 0px solid var(--color-blue);
 }
 
-.side-menu a:hover, .side-menu .focus {
-    background-color: #bbb
+.side-menu a:hover {
+    background-color: #eaeaea;
+    color: #000;
+    transform: translateX(4px);
+}
+
+.side-menu .focus {
+    background-color: var(--color-blue);
+    color: #fff;
+    border-left: 4px solid #0055ff;
+}
+
+.side-menu .focus:hover {
+    background-color: #2222ff;
+    color: #fff;
+    transform: none;
 }
 /* MEDIA QUERY */
 

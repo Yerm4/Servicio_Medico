@@ -1,5 +1,5 @@
 -- Catálogo de Condiciones Crónicas / Permanentes
-USE `servicio_medico`;
+
 
 INSERT IGNORE INTO `lista_condiciones` (`condicion`) VALUES
 ('Asma Bronquial'),

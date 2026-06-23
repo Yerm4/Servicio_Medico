@@ -93,16 +93,22 @@ class Consulta {
 
             $idConsulta = $this->db->lastInsertId();
 
-            // 2. Insert symptoms into sintomas_consulta
             if (!empty($sintomas) && is_array($sintomas)) {
-                $sqlSintoma = "INSERT INTO sintomas_consulta (id_consulta, sintoma) VALUES (:id_consulta, :sintoma)";
-                $stmtSintoma = $this->db->prepare($sqlSintoma);
                 foreach ($sintomas as $sintoma) {
                     $sintomaClean = trim($sintoma);
                     if ($sintomaClean !== '') {
+                        $stmtGet = $this->db->prepare("SELECT id_sintoma FROM lista_sintomas WHERE nombre_sintoma = :nombre");
+                        $stmtGet->execute([':nombre' => $sintomaClean]);
+                        $idSintoma = $stmtGet->fetchColumn();
+                        if (!$idSintoma) {
+                            $stmtIns = $this->db->prepare("INSERT INTO lista_sintomas (nombre_sintoma) VALUES (:nombre)");
+                            $stmtIns->execute([':nombre' => $sintomaClean]);
+                            $idSintoma = $this->db->lastInsertId();
+                        }
+                        $stmtSintoma = $this->db->prepare("INSERT IGNORE INTO sintomas_consulta (id_consulta, id_sintoma) VALUES (:id_consulta, :id_sintoma)");
                         $stmtSintoma->execute([
                             ':id_consulta' => $idConsulta,
-                            ':sintoma' => $sintomaClean
+                            ':id_sintoma' => $idSintoma
                         ]);
                     }
                 }
@@ -173,8 +179,7 @@ class Consulta {
             foreach ($consultas as &$c) {
                 $c['condiciones_cronicas'] = $condiciones;
 
-                // Fetch symptoms
-                $sqlSintomas = "SELECT sintoma FROM sintomas_consulta WHERE id_consulta = :id_consulta";
+                $sqlSintomas = "SELECT l.nombre_sintoma FROM sintomas_consulta s INNER JOIN lista_sintomas l ON s.id_sintoma = l.id_sintoma WHERE s.id_consulta = :id_consulta";
                 $stmtS = $this->db->prepare($sqlSintomas);
                 $stmtS->execute([':id_consulta' => $c['id']]);
                 $c['sintomas'] = $stmtS->fetchAll(PDO::FETCH_COLUMN);
@@ -210,21 +215,26 @@ class Consulta {
                 ':id' => $idConsulta
             ]);
 
-            // Delete old symptoms
             $sqlDelSintomas = "DELETE FROM sintomas_consulta WHERE id_consulta = :id_consulta";
             $stmtDelS = $this->db->prepare($sqlDelSintomas);
             $stmtDelS->execute([':id_consulta' => $idConsulta]);
 
-            // Insert new symptoms
             if (!empty($sintomas) && is_array($sintomas)) {
-                $sqlInsSintoma = "INSERT INTO sintomas_consulta (id_consulta, sintoma) VALUES (:id_consulta, :sintoma)";
-                $stmtInsS = $this->db->prepare($sqlInsSintoma);
                 foreach ($sintomas as $sintoma) {
                     $sintomaClean = trim($sintoma);
                     if ($sintomaClean !== '') {
-                        $stmtInsS->execute([
+                        $stmtGet = $this->db->prepare("SELECT id_sintoma FROM lista_sintomas WHERE nombre_sintoma = :nombre");
+                        $stmtGet->execute([':nombre' => $sintomaClean]);
+                        $idSintoma = $stmtGet->fetchColumn();
+                        if (!$idSintoma) {
+                            $stmtIns = $this->db->prepare("INSERT INTO lista_sintomas (nombre_sintoma) VALUES (:nombre)");
+                            $stmtIns->execute([':nombre' => $sintomaClean]);
+                            $idSintoma = $this->db->lastInsertId();
+                        }
+                        $stmtSintoma = $this->db->prepare("INSERT IGNORE INTO sintomas_consulta (id_consulta, id_sintoma) VALUES (:id_consulta, :id_sintoma)");
+                        $stmtSintoma->execute([
                             ':id_consulta' => $idConsulta,
-                            ':sintoma' => $sintomaClean
+                            ':id_sintoma' => $idSintoma
                         ]);
                     }
                 }
@@ -281,6 +291,42 @@ class Consulta {
         } catch (PDOException $e) {
             $this->db->rollBack();
             return "Error al actualizar la consulta médica: " . $e->getMessage();
+        }
+    }
+
+    public function obtenerConsultasRecientes($limit = 10) {
+        try {
+            $sql = "SELECT c.id, c.id_usuario, c.id_medico, c.motivo_de_visita, c.observaciones, c.medicamento_suministrado, c.fecha_consulta,
+                           u.nombre AS paciente_nombre, u.apellido AS paciente_apellido,
+                           m.nombre AS medico_nombre, m.apellido AS medico_apellido 
+                    FROM consulta_medica c
+                    LEFT JOIN usuarios u ON c.id_usuario = u.cedula
+                    LEFT JOIN usuarios m ON c.id_medico = m.cedula
+                    ORDER BY c.fecha_consulta DESC
+                    LIMIT :limit";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($consultas as &$c) {
+                $sqlSintomas = "SELECT l.nombre_sintoma FROM sintomas_consulta s INNER JOIN lista_sintomas l ON s.id_sintoma = l.id_sintoma WHERE s.id_consulta = :id_consulta";
+                $stmtS = $this->db->prepare($sqlSintomas);
+                $stmtS->execute([':id_consulta' => $c['id']]);
+                $c['sintomas'] = $stmtS->fetchAll(PDO::FETCH_COLUMN);
+
+                $sqlDiagnosticos = "SELECT d.codigo_icd_diagnostico, p.patologia 
+                                    FROM diagnosticos_consulta d
+                                    LEFT JOIN lista_patologias p ON d.codigo_icd_diagnostico = p.codigo_icd
+                                    WHERE d.id_consulta = :id_consulta";
+                $stmtD = $this->db->prepare($sqlDiagnosticos);
+                $stmtD->execute([':id_consulta' => $c['id']]);
+                $c['diagnosticos'] = $stmtD->fetchAll(PDO::FETCH_ASSOC);
+            }
+
+            return $consultas;
+        } catch (PDOException $e) {
+            return [];
         }
     }
 }

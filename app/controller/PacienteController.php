@@ -36,7 +36,6 @@ class PacienteController {
                 unset($_SESSION['inputs']); 
                 $_SESSION["registro_status"] = "success";
                 $_SESSION["registro_msg"] = "¡Paciente registrado de manera exitosa!";
-                $_SESSION["cedula"] = "23";
                 header("Location: perfil");
                 exit();
             } else {

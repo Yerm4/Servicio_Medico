@@ -7,7 +7,7 @@ use PDOException;
 class Config {
     public static function conexion() {
         $host = $_ENV["DB_HOST"] ?? "localhost";
-        $db = $_ENV["DB_NAME"] ?? "servicio_medico";
+        $db = $_ENV["DB_NAME"] ?? "proyecto_medico";
         $user = $_ENV["DB_USER"] ?? "root";
         $password = isset($_ENV["DB_PASS"]) ? $_ENV["DB_PASS"] : "";
 
