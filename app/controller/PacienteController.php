@@ -24,18 +24,26 @@ class PacienteController {
             $sexo              = isset($_POST['sexo']) ? $_POST['sexo'] : '';
             $direccion         = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
 
+            $rol = null;
+            if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
+                $userModel = new \app\model\Usuario($this->db);
+                if ($userModel->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
+                    $rol = (int)$_POST['rol'];
+                }
+            }
+
             $modeloPaciente = new Paciente($this->db);
             
             $resultado = $modeloPaciente->registrarPaciente(
                 $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
                 $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, 
-                $direccion
+                $direccion, $rol
             );
 
             if ($resultado == true) {
                 unset($_SESSION['inputs']); 
                 $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "¡Paciente registrado de manera exitosa!";
+                $_SESSION["registro_msg"] = "Usuario registrado de manera exitosa!";
                 header("Location: perfil");
                 exit();
             } else {

@@ -110,35 +110,62 @@ class Usuario {
         }
     }
 
-public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion = '') {
+public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion = '', $rol = null) {
     try {
-        $sql = "UPDATE usuarios 
-                SET nombre = :nombre, 
-                    apellido = :apellido, 
-                    tipo = :tipo, 
-                    fecha_nacimiento = :fecha_nacimiento, 
-                    tlfprincipal = :tlfprincipal, 
-                    nombre_contacto_emergencia = :nombre_contacto_emergencia, 
-                    tlfemergencia = :tlfemergencia, 
-                    sexo = :sexo,
-                    direccion = :direccion
-                WHERE cedula = :cedula";
-                
-        $stmt = $this->pdo->prepare($sql);
-        
-        $resultado = $stmt->execute([
-            'nombre'                      => $nombre,
-            'apellido'                    => $apellido,
-            'tipo'                        => $tipo,
-            'fecha_nacimiento'            => $fecha_nacimiento,
-            'tlfprincipal'                => $tlfprincipal,
-            'nombre_contacto_emergencia'  => $nombre_contacto_emergencia,
-            'tlfemergencia'               => $tlfemergencia,
-            'sexo'                        => $sexo,
-            'direccion'                   => $direccion,
-            'cedula'                      => (int)$cedula
-        ]);
-        
+        if ($rol !== null) {
+            $sql = "UPDATE usuarios 
+                    SET nombre = :nombre, 
+                        apellido = :apellido, 
+                        tipo = :tipo, 
+                        fecha_nacimiento = :fecha_nacimiento, 
+                        tlfprincipal = :tlfprincipal, 
+                        nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                        tlfemergencia = :tlfemergencia, 
+                        sexo = :sexo,
+                        direccion = :direccion,
+                        rol = :rol
+                    WHERE cedula = :cedula";
+            $stmt = $this->pdo->prepare($sql);
+            $params = [
+                'nombre'                      => $nombre,
+                'apellido'                    => $apellido,
+                'tipo'                        => $tipo,
+                'fecha_nacimiento'            => $fecha_nacimiento,
+                'tlfprincipal'                => $tlfprincipal,
+                'nombre_contacto_emergencia'  => $nombre_contacto_emergencia,
+                'tlfemergencia'               => $tlfemergencia,
+                'sexo'                        => $sexo,
+                'direccion'                   => $direccion,
+                'rol'                         => $rol,
+                'cedula'                      => (int)$cedula
+            ];
+        } else {
+            $sql = "UPDATE usuarios 
+                    SET nombre = :nombre, 
+                        apellido = :apellido, 
+                        tipo = :tipo, 
+                        fecha_nacimiento = :fecha_nacimiento, 
+                        tlfprincipal = :tlfprincipal, 
+                        nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                        tlfemergencia = :tlfemergencia, 
+                        sexo = :sexo,
+                        direccion = :direccion
+                    WHERE cedula = :cedula";
+            $stmt = $this->pdo->prepare($sql);
+            $params = [
+                'nombre'                      => $nombre,
+                'apellido'                    => $apellido,
+                'tipo'                        => $tipo,
+                'fecha_nacimiento'            => $fecha_nacimiento,
+                'tlfprincipal'                => $tlfprincipal,
+                'nombre_contacto_emergencia'  => $nombre_contacto_emergencia,
+                'tlfemergencia'               => $tlfemergencia,
+                'sexo'                        => $sexo,
+                'direccion'                   => $direccion,
+                'cedula'                      => (int)$cedula
+            ];
+        }
+        $resultado = $stmt->execute($params);
         return $resultado;
         
     } catch (PDOException $e) {
@@ -405,6 +432,16 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
         } catch (PDOException $e) {
             $this->pdo->rollBack();
             return false;
+        }
+    }
+
+    public function obtenerTipos() {
+        try {
+            $stmt = $this->pdo->prepare("SELECT id_tipo, nombre_tipo FROM lista_tipos ORDER BY id_tipo ASC");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
         }
     }
 }

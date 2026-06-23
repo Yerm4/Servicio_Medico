@@ -13,7 +13,7 @@ class Paciente
             $this->db = $conexion;
         }
 
-        public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '') {
+        public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null) {
         
             try {
 
@@ -30,11 +30,14 @@ class Paciente
         $contraseñaCreada = $cedula.'uptaeb';
         $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
 
-        $stmtConfig = $this->db->prepare("SELECT rol_defecto FROM configuracion LIMIT 1");
-        $stmtConfig->execute();
-        $rolDefecto = $stmtConfig->fetchColumn();
-        if ($rolDefecto === false) {
-            $rolDefecto = 3;
+        if ($rol === null) {
+            $stmtConfig = $this->db->prepare("SELECT rol_defecto FROM configuracion LIMIT 1");
+            $stmtConfig->execute();
+            $rolDefecto = $stmtConfig->fetchColumn();
+            if ($rolDefecto === false) {
+                $rolDefecto = 1;
+            }
+            $rol = (int)$rolDefecto;
         }
 
         $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
@@ -54,7 +57,7 @@ class Paciente
             ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
             ':sexo'             => (int)$sexo,
             ':direccion'        => $direccion,
-            ':rol'              => (int)$rolDefecto
+            ':rol'              => (int)$rol
         ]);
 
         return true;

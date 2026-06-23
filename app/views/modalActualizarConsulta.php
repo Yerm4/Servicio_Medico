@@ -1,11 +1,14 @@
 <div class="action-card">
                 <h3 class="action-card__title">Actualizar Consulta Médica</h3>
-                <div class="action-card__form--grid">
-                    <label class="action-card__label">Buscar Paciente
-                        <input type="text" id="paciente-search-actualizar" class="action-card__input" placeholder="Escriba cédula o nombre del paciente..." autocomplete="off">
-                        <input type="hidden" id="cedula_paciente_actualizar">
-                        <div id="pacientes-sugerencias-actualizar" class="sugerencias-box" style="border: 1px solid #ccc; max-height: 200px; overflow-y: auto; display: none;"></div>
-                    </label>
+                
+                <div id="seccion-busqueda-paciente-actualizar">
+                    <div class="action-card__form--grid">
+                        <label class="action-card__label">Buscar Paciente
+                            <input type="text" id="paciente-search-actualizar" class="action-card__input" placeholder="Escriba cédula o nombre del paciente..." autocomplete="off">
+                            <input type="hidden" id="cedula_paciente_actualizar">
+                            <div id="pacientes-sugerencias-actualizar" class="sugerencias-box" style="border: 1px solid #ccc; max-height: 200px; overflow-y: auto; display: none;"></div>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Contenedor para mostrar condiciones crónicas actuales del paciente al editar -->
@@ -35,7 +38,7 @@
 
                         <label class="action-card__label">Síntomas
                             <div class="sintomas-input-group" style="display: flex; gap: 8px;">
-                                <input type="text" id="edit-sintoma-input" class="action-card__input" placeholder="Ej. Fiebre, Tos">
+                                <input type="text" id="edit-sintoma-input" class="action-card__input" placeholder="Ej. Fiebre, Tos" spellcheck="false">
                                 <button type="button" id="btn-edit-add-sintoma" class="action-card__button" style="width: auto;">Añadir</button>
                             </div>
                             <ul id="edit-sintomas-lista" style="list-style-type: none; padding-left: 0; margin-top: 8px;"></ul>

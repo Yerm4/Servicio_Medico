@@ -27,11 +27,11 @@ $consultasRecientes = [];
 $misConsultas = [];
 $consultaModel = new \app\model\Consulta($pdo);
 
-if ($paginaActual === 'consultas' && $tieneGestionarConsultas) {
-    $consultasRecientes = $consultaModel->obtenerConsultasRecientes(10);
+if ($paginaActual === 'consultas' && $tieneVerConsultas) {
+    $consultasRecientes = $consultaModel->obtenerConsultasRecientes(20);
 }
 
-if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarConsultas && !$tieneGestionarRolesPermisos) {
+if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos) {
     $misConsultas = $consultaModel->obtenerConsultasPorPaciente($_SESSION["cedula"]);
 }
 ?>
@@ -39,36 +39,36 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
         <aside class="side-menu">
         <h1>Menu</h1>
             <hr>
-            <?php if (!$tieneGestionarUsuarios && !$tieneGestionarConsultas && !$tieneGestionarRolesPermisos): ?>
+            <?php if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
             <a href="perfil" id="historial" class="<?= $paginaActual === 'perfil' ? 'focus' : '' ?>">Mi Historial</a>
             <?php endif; ?>
             <?php if ($tieneGestionarUsuarios): ?>
             <a href="usuarios" id="usuario" class="<?= $paginaActual === 'usuarios' ? 'focus' : '' ?>">Usuarios</a>
             <?php endif; ?>
-            <?php if ($tieneGestionarConsultas): ?>
+            <?php if ($tieneVerConsultas): ?>
             <a href="consultas" id="consulta" class="<?= $paginaActual === 'consultas' ? 'focus' : '' ?>">Consultas</a>
             <?php endif; ?>
             <?php if ($tieneGestionarRolesPermisos): ?>
             <a href="configuracion" id="configuracion" class="<?= $paginaActual === 'configuracion' ? 'focus' : '' ?>">Configuración</a>
             <?php endif; ?>
-            <a href="sesion" id="sesion" class="<?= $paginaActual === 'sesion' ? 'focus' : '' ?>">Sesión</a>
         </aside>
 
         <section class="section-1 section-1--perfil">
             
             <div class="buscador-caja">
                 <?php if ($paginaActual === 'usuarios' && $tieneGestionarUsuarios): ?>
-                <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input" autocomplete="off">
+                <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input" autocomplete="off" style="margin-bottom: 15px;">
+                <?php endif; ?>
+                <?php if ($paginaActual === 'consultas' && $tieneVerConsultas): ?>
+                <input type="text" id="inputBuscarConsulta" placeholder="Buscar consulta por paciente, médico, cédula o motivo" class="action-card__input" autocomplete="off" style="width: 500px; max-width: 100%; margin-bottom: 15px;">
                 <?php endif; ?>
                 
                 <div class="section-1__box transition" id="section-1-box">
                     <?php if ($paginaActual === 'usuarios' && $tieneGestionarUsuarios): ?>
                         <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
-                    <?php elseif ($paginaActual === 'consultas' && $tieneGestionarConsultas): ?>
+                    <?php elseif ($paginaActual === 'consultas' && $tieneVerConsultas && $tieneRealizarConsulta): ?>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; width: 100%;">
                             <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal" href="#" style="max-width: 250px;">Iniciar consulta</a>
-                            <a name="openModal" data-modal="modalBuscarConsulta" class="action-card__button" href="#" style="max-width: 250px;">Buscar consulta</a>
-                            <a name="openModal" data-modal="modalActualizarConsulta" class="action-card__button" href="#" style="max-width: 250px;">Actualizar consulta</a>
                         </div>
                     <?php elseif ($paginaActual === 'configuracion' && $tieneGestionarRolesPermisos): ?>
                         <span style="font-weight: bold;">Configuración del Sistema</span>
@@ -114,22 +114,23 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
 
             <?php endif?>
 
-            <?php if ($paginaActual === 'consultas' && $tieneGestionarConsultas): ?>
-                <?php if (!empty($consultasRecientes)): ?>
-                    <div style="width: 100%; margin-top: 20px;">
-                        <h3 style="margin-bottom: 15px; text-align: center;">Consultas Recientes</h3>
-                        <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                            <thead>
-                                <tr style="border-bottom: 2px solid #ddd; background: #fafafa;">
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Fecha</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Paciente</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Médico</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Motivo</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Síntomas</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Diagnóstico (CIE-10)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+            <?php if ($paginaActual === 'consultas' && $tieneVerConsultas): ?>
+                <div style="width: 100%; margin-top: 20px;">
+                    <h3 style="margin-bottom: 15px; text-align: center;">Consultas Recientes</h3>
+                    <table id="tablaRegistrosConsultas" style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #ddd; background: #fafafa;">
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Fecha</th>
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Paciente</th>
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Médico</th>
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Motivo</th>
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Síntomas</th>
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Diagnóstico (CIE-10)</th>
+                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaConsultas">
+                            <?php if (!empty($consultasRecientes)): ?>
                                 <?php foreach ($consultasRecientes as $c): ?>
                                     <tr style="border-bottom: 1px solid #eee;">
                                         <td style="padding: 10px; font-size: 0.9em; white-space: nowrap;"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
@@ -140,15 +141,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
                                         <td style="padding: 10px; font-size: 0.9em;"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
                                         <td style="padding: 10px; font-size: 0.9em;"><?= e($c['motivo_de_visita']) ?></td>
                                         <td style="padding: 10px; font-size: 0.9em;">
-                                            <?php if (!empty($c['sintomas'])): ?>
-                                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                                                    <?php foreach ($c['sintomas'] as $sintoma): ?>
-                                                        <span style="background: #eef2ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-size: 0.85em;"><?= e($sintoma) ?></span>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                            <?php else: ?>
-                                                <span style="color: #999;">Ninguno</span>
-                                            <?php endif; ?>
+                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span style="color: #999;">Ninguno</span>' ?>
                                         </td>
                                         <td style="padding: 10px; font-size: 0.9em;">
                                             <?php if (!empty($c['diagnosticos'])): ?>
@@ -161,19 +154,28 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
                                                 <span style="color: #999;">Sin diagnóstico</span>
                                             <?php endif; ?>
                                         </td>
+                                        <td style="padding: 10px; font-size: 0.9em; display: flex; gap: 5px;">
+                                            <button class="ver-detalles-consulta action-card__button" data-id="<?= e($c['id']) ?>" style="background: #4a5568; color: #fff;">Ver detalles</button>
+                                            <?php if ($tieneModificarConsulta): ?>
+                                                <button class="editar-consulta action-card__button" data-id="<?= e($c['id']) ?>">Actualizar</button>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 30px; color: #666;">No hay ninguna consulta asociada a ese usuario.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button id="btnCargarMasConsultas" class="action-card__button" style="display: none; width: auto; margin: 0 auto;">Cargar más</button>
                     </div>
-                <?php else: ?>
-                    <div style="text-align: center; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 20px; width: 100%;">
-                        <p style="color: #666; margin: 0;">No se han registrado consultas recientes en el sistema.</p>
-                    </div>
-                <?php endif; ?>
+                </div>
             <?php endif; ?>
 
-            <?php if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarConsultas && !$tieneGestionarRolesPermisos): ?>
+            <?php if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
                 <?php if (!empty($misConsultas)): ?>
                     <div style="width: 100%; margin-top: 20px;">
                         <h3 style="margin-bottom: 15px; text-align: center;">Mi Historial Médico</h3>
@@ -195,15 +197,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
                                         <td style="padding: 10px; font-size: 0.9em;"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
                                         <td style="padding: 10px; font-size: 0.9em;"><?= e($c['motivo_de_visita']) ?></td>
                                         <td style="padding: 10px; font-size: 0.9em;">
-                                            <?php if (!empty($c['sintomas'])): ?>
-                                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                                                    <?php foreach ($c['sintomas'] as $sintoma): ?>
-                                                        <span style="background: #eef2ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-size: 0.85em;"><?= e($sintoma) ?></span>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                            <?php else: ?>
-                                                <span style="color: #999;">Ninguno</span>
-                                            <?php endif; ?>
+                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span style="color: #999;">Ninguno</span>' ?>
                                         </td>
                                         <td style="padding: 10px; font-size: 0.9em;">
                                             <?php if (!empty($c['diagnosticos'])): ?>
@@ -224,7 +218,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
                     </div>
                 <?php else: ?>
                     <div style="text-align: center; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 20px; width: 100%;">
-                        <p style="color: #666; margin: 0; font-size: 1.1em;">No tienes ninguna consulta médica registrada en tu historial.</p>
+                        <p style="color: #666; margin: 0; font-size: 1.1em;">No hay consultas médicas asociadas a este usuario.</p>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -368,14 +362,6 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
             <?php endif; ?>
                 
                 <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
-                        <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Registro Exitoso!' : '¡Atención!'; ?>
-                        <div>
-                            <h2><?= $titulo; unset($_SESSION["registro_status"])?></h2>
-                            <h2><?= $_SESSION["registro_msg"]; unset($_SESSION["registro_msg"]) ?></h2>
-                        </div>
-                        
-                        <?php endif; ?>
-                <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                     <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Operación Exitosa!' : '¡Atención!'; ?>
                     <div class="notification-banner notification-banner--<?= $_SESSION["registro_status"] ?>">
                         <h2><?= htmlspecialchars($titulo) ?></h2>
@@ -396,7 +382,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
             <?php include_once __DIR__."/modalActualizarUsuario.php" ?>
         </dialog>
         <?php endif; ?>
-        <?php if ($tieneGestionarConsultas): ?>
+        <?php if ($tieneVerConsultas): ?>
         <dialog id="modalRegistrarConsulta" class="modal-crud">
             <?php include_once __DIR__."/modalRegistrarConsulta.php" ?>
         </dialog>
@@ -436,6 +422,33 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneGestionarCo
             </svg>
         </dialog>
         <?php endif; ?>
+        <script>
+            const ES_MEDICO_O_DIRECTOR = <?= $tieneModificarConsulta ? 'true' : 'false' ?>;
+        </script>
+
+        <dialog id="modalVerDetallesConsulta" class="modal-crud">
+            <div class="action-card" style="max-width: 600px;">
+                <h3 class="action-card__title">Detalles de la Consulta Médica</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px; text-align: left; background: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
+                    <div><strong>Fecha:</strong> <span id="det_fecha"></span></div>
+                    <div><strong>Paciente:</strong> <span id="det_paciente"></span></div>
+                    <div><strong>Médico Tratante:</strong> <span id="det_medico"></span></div>
+                    <div><strong>Motivo de Visita:</strong> <span id="det_motivo"></span></div>
+                    <div><strong>Observaciones:</strong> <span id="det_observaciones"></span></div>
+                    <div><strong>Medicamento Suministrado:</strong> <span id="det_medicamento"></span></div>
+                    <div><strong>Síntomas:</strong> <span id="det_sintomas"></span></div>
+                    <div><strong>Diagnósticos (CIE-10):</strong> <div id="det_diagnosticos" style="margin-top: 5px; padding-left: 10px; border-left: 3px solid #b91c1c;"></div></div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="action-card__button" onclick="const m = document.getElementById('modalVerDetallesConsulta'); m.style.opacity = 0; setTimeout(() => m.close(), 500);" style="width: auto;">Cerrar</button>
+                </div>
+            </div>
+            <svg class="modal-crud__boton-cerrar" name="modalBotonCerrar" data-modal="modalVerDetallesConsulta" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve" style="cursor: pointer;">
+                <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+            </svg>
+        </dialog>
         
     </main>
     <footer>

@@ -60,12 +60,12 @@ a {
 
 .top-menu a{
     transition: background-color .5s ease, transform .5s ease;
-    border-radius: 20px;
+    border-radius: 10px;
     padding: 5px;
 }
 
 .top-menu a:hover {
-    background-color: #cacaca;
+    background-color: #eaeaea;
     transform: scale(1.01);
 }
 
@@ -462,13 +462,70 @@ tr, th, td {
 .avatar:hover {
     cursor: pointer;
 }
-
 .avatar__menu {
-    display: none;
+    position: absolute;
+    left: -100px;
+    top: 30px;
+    width: max-content;
+    background-color: #fff;
+    padding: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .5s ease;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+.avatar__link {
+    font-size: 1rem;
 }
 
-.avatar__menu--visible {
-    display: block;
-    position: absolute;
-    bottom: -50px
+.top-menu__login:hover .avatar__menu {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* Custom list items for medical consultation selections */
+.sintoma-item,
+.diagnostico-item,
+.condicion-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 6px 10px !important;
+    background-color: #fafafa !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    margin-top: 5px !important;
+    font-size: 0.9em !important;
+}
+
+.btn-remove-sintoma,
+.btn-remove-diagnostico,
+.btn-remove-condicion {
+    cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+    color: #e53e3e !important;
+    font-weight: bold !important;
+    font-size: 1.1em !important;
+    padding: 0 4px !important;
+    outline: none !important;
+    transition: color 0.2s ease, transform 0.2s ease !important;
+}
+
+.btn-remove-sintoma:hover,
+.btn-remove-diagnostico:hover,
+.btn-remove-condicion:hover {
+    color: #c53030 !important;
+    transform: scale(1.15) !important;
+}
+
+.btn-remove-sintoma:focus,
+.btn-remove-diagnostico:focus,
+.btn-remove-condicion:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }

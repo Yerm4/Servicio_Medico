@@ -26,11 +26,22 @@ if (isset($_SESSION["cedula"])) {
                     <button class="action-card__button" type="submit">Ingresar al sistema</button>
                 </form>
                     <p class="action-card__disclaimer">@ 2026 PNF Informatica - Universidad Politecnica Territorial de Lara Andres Eloy Blanco</p>
-                    <strong><?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : "" ?></strong>
-                    <?php unset($_SESSION["login_notif"]) ?>
+                    <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="#">No tienes una cuenta? Registrate!</a>
+                    <strong><?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : ""; unset($_SESSION["login_notif"]) ?></strong>
+                    <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
+                        <?php $titulo = $_SESSION["registro_status"] === 'success' ? 'Registro xitoso!' : '¡Atención!'; ?>
+                        <div>
+                            <strong><?= $titulo; unset($_SESSION["registro_status"])?></strong>
+                            <strong><?= $_SESSION["registro_msg"]; unset($_SESSION["registro_msg"]) ?></strong>
+                        </div>
+                        
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
+        <dialog id="modalRegistrarUsuario" class="modal-crud">
+            <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
+        </dialog>
     </main>
     <footer>
 

@@ -37,14 +37,8 @@ class ConsultaController {
 
             $cedulaMedico = isset($_SESSION['cedula']) ? $_SESSION['cedula'] : '';
 
-            if (empty($cedulaPaciente)) {
-                throw new Exception("Debe seleccionar un paciente.");
-            }
-            if (empty($motivo)) {
-                throw new Exception("El motivo de la visita es obligatorio.");
-            }
-            if (empty($cedulaMedico)) {
-                throw new Exception("Sesión inválida de personal médico.");
+            if (empty($cedulaPaciente) || empty($motivo) || empty($cedulaMedico)) {
+                throw new Exception("La consulta no fue registrada, revisa que todos los campos estén llenos");
             }
 
             $modeloConsulta = new Consulta($this->db);
@@ -53,11 +47,11 @@ class ConsultaController {
             if ($resultado === true) {
                 unset($_SESSION['inputs']);
                 $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "¡Consulta registrada de manera exitosa!";
+                $_SESSION["registro_msg"] = "La consulta fue registrada exitosamente";
                 header("Location: perfil");
                 exit();
             } else {
-                throw new Exception($resultado);
+                throw new Exception("La consulta no fue registrada, revisa que todos los campos estén llenos");
             }
         } catch (Exception $e) {
             $_SESSION['inputs'] = $_POST;
@@ -116,11 +110,8 @@ class ConsultaController {
                 $condiciones = array_filter(array_map('intval', explode(',', $condiciones)));
             }
 
-            if ($idConsulta <= 0) {
-                throw new Exception("ID de consulta inválido.");
-            }
-            if (empty($motivo)) {
-                throw new Exception("El motivo de la visita es obligatorio.");
+            if ($idConsulta <= 0 || empty($motivo)) {
+                throw new Exception("La consulta no fue actualizada, revisa que todos los campos estén llenos");
             }
 
             $modeloConsulta = new Consulta($this->db);
@@ -129,11 +120,11 @@ class ConsultaController {
             if ($resultado === true) {
                 unset($_SESSION['inputs']);
                 $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "¡Consulta médica actualizada de manera exitosa!";
+                $_SESSION["registro_msg"] = "La consulta fue actualizada exitosamente";
                 header("Location: perfil");
                 exit();
             } else {
-                throw new Exception($resultado);
+                throw new Exception("La consulta no fue actualizada, revisa que todos los campos estén llenos");
             }
         } catch (Exception $e) {
             $_SESSION['inputs'] = $_POST;
@@ -180,6 +171,36 @@ class ConsultaController {
         $modeloConsulta = new Consulta($this->db);
         $resultados = $modeloConsulta->obtenerCondicionesPaciente($cedula);
         echo json_encode($resultados);
+        exit();
+    }
+
+    public function buscarConsultasAjax() {
+        header('Content-Type: application/json');
+        $query = isset($_POST['query']) ? trim($_POST['query']) : '';
+        $modeloConsulta = new Consulta($this->db);
+        if (empty($query)) {
+            $resultados = $modeloConsulta->obtenerConsultasRecientes(10);
+        } else {
+            $resultados = $modeloConsulta->buscarConsultas($query, 20);
+        }
+        echo json_encode($resultados);
+        exit();
+    }
+
+    public function obtenerConsultaPorIdAjax() {
+        header('Content-Type: application/json');
+        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+        if ($id <= 0) {
+            echo json_encode(['error' => 'ID de consulta inválido.']);
+            exit();
+        }
+        $modeloConsulta = new Consulta($this->db);
+        $consulta = $modeloConsulta->obtenerConsultaPorId($id);
+        if ($consulta) {
+            echo json_encode($consulta);
+        } else {
+            echo json_encode(['error' => 'No se encontró la consulta médica.']);
+        }
         exit();
     }
 }

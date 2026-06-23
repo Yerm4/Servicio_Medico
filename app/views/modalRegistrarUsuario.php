@@ -1,6 +1,6 @@
 <div class="action-card">
     <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
-    <h3 class="action-card__title">Registrate!</h3>
+    <h3 class="action-card__title">Registro</h3>
     <p class="action-card__p">Control de Acceso</p>
     
     <form class="action-card__form--registrar-usuarios" action="index.php" method="POST">
@@ -14,14 +14,15 @@
 
             <label for="tipo" class="action-card__label">Tipo de Usuario
                 <select class="action-card__select" id="tipo" name="tipo" required>
-                    <?php $t = isset($inputs['tipo']) ? $inputs['tipo'] : ''; ?>
+                    <?php $t = isset($inputs['tipo']) ? (string)$inputs['tipo'] : ''; ?>
                     <option value="" <?php echo ($t === '') ? 'selected' : ''; ?> disabled>Seleccione...</option>
-                    <option value="1" <?php echo ($t === '1') ? 'selected' : ''; ?>>Estudiante</option>
-                    <option value="2" <?php echo ($t === '2') ? 'selected' : ''; ?>>Docente</option>
-                    <option value="3" <?php echo ($t === '3') ? 'selected' : ''; ?>>Administrativo</option>
-                    <option value="4" <?php echo ($t === '4') ? 'selected' : ''; ?>>Obrero</option>
-                    <option value="5" <?php echo ($t === '5') ? 'selected' : ''; ?>>Comunidad</option>
-                    <option value="6" <?php echo ($t === '6') ? 'selected' : ''; ?>>Personal Médico</option>
+                    <?php 
+                    $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
+                    foreach ($tipos as $tipo): 
+                        $idTipoStr = (string)$tipo['id_tipo'];
+                    ?>
+                        <option value="<?php echo e($tipo['id_tipo']); ?>" <?php echo ($t === $idTipoStr) ? 'selected' : ''; ?>><?php echo e($tipo['nombre_tipo']); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </label>
         <label for="nombre" class="action-card__label">Nombres
@@ -47,6 +48,21 @@
         <label for="direccion" class="action-card__label">Dirección
             <input type="text" class="action-card__input" id="direccion" name="direccion" value="<?php echo isset($inputs['direccion']) ? $inputs['direccion'] : ''; ?>" required>
         </label>
+
+        <?php if ($tieneGestionarRolesPermisos): ?>
+        <label for="rol" class="action-card__label">Rol de Acceso
+            <select class="action-card__select" id="rol" name="rol" required>
+                <?php 
+                $rolesList = isset($userModel) ? $userModel->obtenerRoles() : [];
+                $defRol = isset($userModel) ? $userModel->obtenerRolDefecto() : 1;
+                $rInput = isset($inputs['rol']) ? (int)$inputs['rol'] : $defRol;
+                foreach ($rolesList as $rolOpt): 
+                ?>
+                    <option value="<?= e($rolOpt['id_rol']) ?>" <?= $rInput === (int)$rolOpt['id_rol'] ? 'selected' : '' ?>><?= e($rolOpt['nombre_rol']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <?php endif; ?>
 
     </div>
         
