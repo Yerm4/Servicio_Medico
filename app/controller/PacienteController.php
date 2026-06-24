@@ -23,8 +23,8 @@ class PacienteController {
             $tlfemergencia     = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
             $sexo              = isset($_POST['sexo']) ? $_POST['sexo'] : '';
             $direccion         = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
-
             $rol = null;
+            
             if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
                 $userModel = new \app\model\Usuario($this->db);
                 if ($userModel->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {

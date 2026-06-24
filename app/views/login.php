@@ -27,7 +27,13 @@ if (isset($_SESSION["cedula"])) {
                 </form>
                     <p class="action-card__disclaimer">@ 2026 PNF Informatica - Universidad Politecnica Territorial de Lara Andres Eloy Blanco</p>
                     <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="#">No tienes una cuenta? Registrate!</a>
-                    <strong><?= isset($_SESSION["login_notif"]) ? $_SESSION["login_notif"] : ""; unset($_SESSION["login_notif"]) ?></strong>
+                    
+                    <?php if (!empty($_SESSION["login_notif"])): ?>
+                        <div>
+                            <strong><?= $_SESSION["login_notif"]; unset($_SESSION["login_notif"])?></strong>
+                        </div>
+                        
+                    <?php endif; ?>
                     <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
                         <?php $titulo = $_SESSION["registro_status"] === 'success' ? 'Registro xitoso!' : '¡Atención!'; ?>
                         <div>
