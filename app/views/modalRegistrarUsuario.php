@@ -6,7 +6,7 @@
     <form class="action-card__form--registrar-usuarios" action="index.php" method="POST">
     <div class="action-card__form--grid">
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-        <input type="hidden" name="form" value="registro_paciente">
+        <input type="hidden" name="form" value="registrar_usuario">
         
             <label for="cedula" class="action-card__label">Cédula de Identidad
                 <input type="tel" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>

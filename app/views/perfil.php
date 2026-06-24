@@ -57,23 +57,23 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
             
             <div class="buscador-caja">
                 <?php if ($paginaActual === 'usuarios' && $tieneGestionarUsuarios): ?>
-                <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input" autocomplete="off" style="margin-bottom: 15px;">
+                <input type="text" id="inputBuscarUsuario" placeholder="Buscar por cédula o nombre" class="action-card__input input-margin-bottom" autocomplete="off">
                 <?php endif; ?>
                 <?php if ($paginaActual === 'consultas' && $tieneVerConsultas): ?>
-                <input type="text" id="inputBuscarConsulta" placeholder="Buscar consulta por paciente, médico, cédula o motivo" class="action-card__input" autocomplete="off" style="width: 500px; max-width: 100%; margin-bottom: 15px;">
+                <input type="text" id="inputBuscarConsulta" placeholder="Buscar consulta por paciente, médico, cédula o motivo" class="action-card__input input-buscar-consulta" autocomplete="off">
                 <?php endif; ?>
                 
                 <div class="section-1__box transition" id="section-1-box">
                     <?php if ($paginaActual === 'usuarios' && $tieneGestionarUsuarios): ?>
                         <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
                     <?php elseif ($paginaActual === 'consultas' && $tieneVerConsultas && $tieneRealizarConsulta): ?>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; width: 100%;">
-                            <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal" href="#" style="max-width: 250px;">Iniciar consulta</a>
+                        <div class="box-iniciar-consulta">
+                            <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#">Iniciar consulta</a>
                         </div>
                     <?php elseif ($paginaActual === 'configuracion' && $tieneGestionarRolesPermisos): ?>
-                        <span style="font-weight: bold;">Configuración del Sistema</span>
+                        <span class="texto-configuracion-sistema">Configuración del Sistema</span>
                     <?php elseif ($paginaActual === 'sesion'): ?>
-                        <a href="logout" style="color: blue; font-weight: bold; font-size: 1.25rem; text-decoration: underline;">Cerrar sesión</a>
+                        <a href="logout" class="link-cerrar-sesion">Cerrar sesión</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -115,47 +115,47 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
             <?php endif?>
 
             <?php if ($paginaActual === 'consultas' && $tieneVerConsultas): ?>
-                <div style="width: 100%; margin-top: 20px;">
-                    <h3 style="margin-bottom: 15px; text-align: center;">Consultas Recientes</h3>
-                    <table id="tablaRegistrosConsultas" style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <div class="contenedor-tabla-consultas">
+                    <h3 class="titulo-tabla-consultas">Consultas Recientes</h3>
+                    <table id="tablaRegistrosConsultas" class="tabla-consultas">
                         <thead>
-                            <tr style="border-bottom: 2px solid #ddd; background: #fafafa;">
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Fecha</th>
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Paciente</th>
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Médico</th>
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Motivo</th>
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Síntomas</th>
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Diagnóstico (CIE-10)</th>
-                                <th style="padding: 10px; text-align: left; font-size: 0.9em;">Acciones</th>
+                            <tr class="tr-head-consultas">
+                                <th class="th-consultas">Fecha</th>
+                                <th class="th-consultas">Paciente</th>
+                                <th class="th-consultas">Médico</th>
+                                <th class="th-consultas">Motivo</th>
+                                <th class="th-consultas">Síntomas</th>
+                                <th class="th-consultas">Diagnóstico (CIE-10)</th>
+                                <th class="th-consultas">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="cuerpoTablaConsultas">
                             <?php if (!empty($consultasRecientes)): ?>
                                 <?php foreach ($consultasRecientes as $c): ?>
-                                    <tr style="border-bottom: 1px solid #eee;">
-                                        <td style="padding: 10px; font-size: 0.9em; white-space: nowrap;"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
-                                        <td style="padding: 10px; font-size: 0.9em;">
+                                    <tr class="tr-body-consultas">
+                                        <td class="td-consultas-nowrap"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
+                                        <td class="td-consultas">
                                             <strong><?= e(($c['paciente_nombre'] ?? '') . ' ' . ($c['paciente_apellido'] ?? '')) ?></strong>
-                                            <div style="font-size: 0.8em; color: #666;">C.I. <?= e($c['id_usuario']) ?></div>
+                                            <div class="td-paciente-sub">C.I. <?= e($c['id_usuario']) ?></div>
                                         </td>
-                                        <td style="padding: 10px; font-size: 0.9em;"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
-                                        <td style="padding: 10px; font-size: 0.9em;"><?= e($c['motivo_de_visita']) ?></td>
-                                        <td style="padding: 10px; font-size: 0.9em;">
-                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span style="color: #999;">Ninguno</span>' ?>
+                                        <td class="td-consultas"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
+                                        <td class="td-consultas"><?= e($c['motivo_de_visita']) ?></td>
+                                        <td class="td-consultas">
+                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span class="sintomas-ninguno">Ninguno</span>' ?>
                                         </td>
-                                        <td style="padding: 10px; font-size: 0.9em;">
+                                        <td class="td-consultas">
                                             <?php if (!empty($c['diagnosticos'])): ?>
                                                 <?php foreach ($c['diagnosticos'] as $diag): ?>
-                                                    <div style="margin-bottom: 2px;">
-                                                        <strong style="color: #b91c1c;"><?= e($diag['codigo_icd_diagnostico']) ?></strong> - <?= e($diag['patologia'] ?? 'Sin detalle') ?>
+                                                    <div class="diagnostico-item-tabla">
+                                                        <strong class="diagnostico-codigo"><?= e($diag['codigo_icd_diagnostico']) ?></strong> - <?= e($diag['patologia'] ?? 'Sin detalle') ?>
                                                     </div>
                                                 <?php endforeach; ?>
                                             <?php else: ?>
-                                                <span style="color: #999;">Sin diagnóstico</span>
+                                                <span class="sintomas-ninguno">Sin diagnóstico</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td style="padding: 10px; font-size: 0.9em; display: flex; gap: 5px;">
-                                            <button class="ver-detalles-consulta action-card__button" data-id="<?= e($c['id']) ?>" style="background: #4a5568; color: #fff;">Ver detalles</button>
+                                        <td class="td-acciones-btn">
+                                            <button class="ver-detalles-consulta action-card__button btn-detalles-consulta" data-id="<?= e($c['id']) ?>">Ver detalles</button>
                                             <?php if ($tieneModificarConsulta): ?>
                                                 <button class="editar-consulta action-card__button" data-id="<?= e($c['id']) ?>">Actualizar</button>
                                             <?php endif; ?>
@@ -164,82 +164,82 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 30px; color: #666;">No hay ninguna consulta asociada a ese usuario.</td>
+                                    <td colspan="7" class="td-tabla-vacia">No hay ninguna consulta asociada a ese usuario.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <button id="btnCargarMasConsultas" class="action-card__button" style="display: none; width: auto; margin: 0 auto;">Cargar más</button>
+                    <div class="contenedor-btn-cargar">
+                        <button id="btnCargarMasConsultas" class="action-card__button btn-cargar-mas">Cargar más</button>
                     </div>
                 </div>
             <?php endif; ?>
 
             <?php if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
                 <?php if (!empty($misConsultas)): ?>
-                    <div style="width: 100%; margin-top: 20px;">
-                        <h3 style="margin-bottom: 15px; text-align: center;">Mi Historial Médico</h3>
-                        <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div class="contenedor-tabla-consultas">
+                        <h3 class="titulo-tabla-consultas">Mi Historial Médico</h3>
+                        <table class="tabla-consultas">
                             <thead>
-                                <tr style="border-bottom: 2px solid #ddd; background: #fafafa;">
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Fecha</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Médico Tratante</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Motivo</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Síntomas</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Diagnóstico</th>
-                                    <th style="padding: 10px; text-align: left; font-size: 0.9em;">Tratamiento</th>
+                                <tr class="tr-head-consultas">
+                                    <th class="th-consultas">Fecha</th>
+                                    <th class="th-consultas">Médico Tratante</th>
+                                    <th class="th-consultas">Motivo</th>
+                                    <th class="th-consultas">Síntomas</th>
+                                    <th class="th-consultas">Diagnóstico</th>
+                                    <th class="th-consultas">Tratamiento</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($misConsultas as $c): ?>
-                                    <tr style="border-bottom: 1px solid #eee;">
-                                        <td style="padding: 10px; font-size: 0.9em; white-space: nowrap;"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
-                                        <td style="padding: 10px; font-size: 0.9em;"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
-                                        <td style="padding: 10px; font-size: 0.9em;"><?= e($c['motivo_de_visita']) ?></td>
-                                        <td style="padding: 10px; font-size: 0.9em;">
-                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span style="color: #999;">Ninguno</span>' ?>
+                                    <tr class="tr-body-consultas">
+                                        <td class="td-consultas-nowrap"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
+                                        <td class="td-consultas"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
+                                        <td class="td-consultas"><?= e($c['motivo_de_visita']) ?></td>
+                                        <td class="td-consultas">
+                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span class="sintomas-ninguno">Ninguno</span>' ?>
                                         </td>
-                                        <td style="padding: 10px; font-size: 0.9em;">
+                                        <td class="td-consultas">
                                             <?php if (!empty($c['diagnosticos'])): ?>
                                                 <?php foreach ($c['diagnosticos'] as $diag): ?>
-                                                    <div style="margin-bottom: 2px;">
-                                                        <strong style="color: #b91c1c;"><?= e($diag['codigo_icd_diagnostico']) ?></strong> - <?= e($diag['patologia'] ?? 'Sin detalle') ?>
+                                                    <div class="diagnostico-item-tabla">
+                                                        <strong class="diagnostico-codigo"><?= e($diag['codigo_icd_diagnostico']) ?></strong> - <?= e($diag['patologia'] ?? 'Sin detalle') ?>
                                                     </div>
                                                 <?php endforeach; ?>
                                             <?php else: ?>
-                                                <span style="color: #999;">Sin diagnóstico</span>
+                                                <span class="sintomas-ninguno">Sin diagnóstico</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td style="padding: 10px; font-size: 0.9em;"><?= e($c['medicamento_suministrado'] ?: 'Ninguno') ?></td>
+                                        <td class="td-consultas"><?= e($c['medicamento_suministrado'] ?: 'Ninguno') ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
                 <?php else: ?>
-                    <div style="text-align: center; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 20px; width: 100%;">
-                        <p style="color: #666; margin: 0; font-size: 1.1em;">No hay consultas médicas asociadas a este usuario.</p>
+                    <div class="contenedor-historial-vacio">
+                        <p class="texto-historial-vacio">No hay consultas médicas asociadas a este usuario.</p>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
 
             <?php if ($paginaActual === 'configuracion' && $tieneGestionarRolesPermisos): ?>
-            <div id="seccion-configuracion" class="configuracion-container" style="display: block; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 20px;">
-                <div class="nested-tabs-menu" style="display: flex; gap: 15px; border-bottom: 2px solid #eee; margin-bottom: 25px; padding-bottom: 10px;">
-                    <a href="#" id="sub-tab-general" class="sub-tab-link active" style="font-weight: bold; text-decoration: none; color: #333; border-bottom: 3px solid blue; padding-bottom: 10px;">General</a>
-                    <a href="#" id="sub-tab-roles" class="sub-tab-link" style="font-weight: bold; text-decoration: none; color: #777; padding-bottom: 10px;">Roles y Permisos</a>
+            <div id="seccion-configuracion" class="configuracion-container seccion-configuracion-box">
+                <div class="nested-tabs-menu" class="menu-subtabs">
+                    <a href="#" id="sub-tab-general" class="sub-tab-link subtab-link-comun subtab-link-general">General</a>
+                    <a href="#" id="sub-tab-roles" class="sub-tab-link subtab-link-comun subtab-link-roles">Roles y Permisos</a>
                 </div>
 
-                <div id="sub-content-general" class="sub-tab-content" style="display: block;">
-                    <div style="background: #fdfdfd; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
-                        <h3 style="margin-top: 0; margin-bottom: 15px;">Configuración General</h3>
-                        <form action="index.php" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <div id="sub-content-general" class="sub-tab-content subcontent-general-box">
+                    <div class="configuracion-bloque-formulario">
+                        <h3 class="titulo-configuracion-interna">Configuración General</h3>
+                        <form action="index.php" method="POST" class="form-configuracion-flex">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <input type="hidden" name="form" value="guardar_configuracion">
                             
-                            <label style="display: flex; flex-direction: column; gap: 5px; max-width: 350px;">
-                                <span style="font-weight: bold; font-size: 0.9em;">Rol por defecto en registro</span>
-                                <select name="rol_defecto" required class="action-card__select" style="width: 100%;">
+                            <label class="label-rol-defecto">
+                                <span class="texto-label-negrita">Rol por defecto en registro</span>
+                                <select name="rol_defecto" required class="action-card__select select-rol-defecto">
                                     <?php 
                                         $currentDefRol = $userModel->obtenerRolDefecto();
                                         foreach ($roles as $role): 
@@ -250,49 +250,49 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                                 </select>
                             </label>
                             
-                            <div style="text-align: left; margin-top: 10px;">
-                                <button type="submit" class="action-card__button" style="width: auto;">Guardar Configuración</button>
+                            <div class="contenedor-btn-izq">
+                                <button type="submit" class="action-card__button btn-guardar-config">Guardar Configuración</button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div id="sub-content-roles" class="sub-tab-content" style="display: none;">
-                    <div style="background: #fdfdfd; border: 1px solid #eee; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                        <h3 style="margin-top: 0; margin-bottom: 15px;">Crear Nuevo Rol</h3>
-                        <form action="index.php" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <div id="sub-content-roles" class="sub-tab-content subcontent-roles-box">
+                    <div class="contenedor-form-nuevo-rol">
+                        <h3 class="titulo-configuracion-interna">Crear Nuevo Rol</h3>
+                        <form action="index.php" method="POST" class="form-configuracion-flex">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <input type="hidden" name="form" value="registrar_rol">
                             
-                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                                <label style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 5px;">
-                                    <span style="font-weight: bold; font-size: 0.9em;">Nombre del Rol</span>
-                                    <input type="text" name="nombre_rol" required class="action-card__input" placeholder="Ej. Enfermero" style="width: 100%;">
+                            <div class="fila-inputs-rol">
+                                <label class="col-nombre-rol">
+                                    <span class="texto-label-negrita">Nombre del Rol</span>
+                                    <input type="text" name="nombre_rol" required class="action-card__input input-ancho-total" placeholder="Ej. Enfermero">
                                 </label>
                                 
-                                <label style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 5px;">
-                                    <span style="font-weight: bold; font-size: 0.9em;">Descripción</span>
-                                    <input type="text" name="descripcion_rol" class="action-card__input" placeholder="Ej. Personal de soporte médico" style="width: 100%;">
+                                <label class="col-descripcion-rol">
+                                    <span class="texto-label-negrita">Descripción</span>
+                                    <input type="text" name="descripcion_rol" class="action-card__input input-ancho-total" placeholder="Ej. Personal de soporte médico">
                                 </label>
                             </div>
                             
-                            <div style="text-align: right;">
-                                <button type="submit" class="action-card__button" style="width: auto;">Crear Rol</button>
+                            <div class="contenedor-btn-der">
+                                <button type="submit" class="action-card__button btn-crear-rol">Crear Rol</button>
                             </div>
                         </form>
                     </div>
 
-                    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 30px;">
+                    <hr class="separador-configuracion">
 
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="margin-top: 0; margin-bottom: 15px;">Roles Registrados</h3>
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <div class="contenedor-roles-registrados">
+                        <h3 class="titulo-configuracion-interna">Roles Registrados</h3>
+                        <table class="tabla-consultas">
                             <thead>
-                                <tr style="border-bottom: 2px solid #ddd; background: #fafafa;">
-                                    <th style="text-align: left; padding: 10px; font-size: 0.9em;">ID</th>
-                                    <th style="text-align: left; padding: 10px; font-size: 0.9em;">Nombre del Rol</th>
-                                    <th style="text-align: left; padding: 10px; font-size: 0.9em;">Descripción</th>
-                                    <th style="text-align: center; padding: 10px; font-size: 0.9em;">Acciones</th>
+                                <tr class="tr-head-consultas">
+                                    <th class="tabla-roles-cabecera-izq">ID</th>
+                                    <th class="tabla-roles-cabecera-izq">Nombre del Rol</th>
+                                    <th class="tabla-roles-cabecera-izq">Descripción</th>
+                                    <th class="tabla-roles-cabecera-centro">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -300,17 +300,17 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                                     $currentDefRol = $userModel->obtenerRolDefecto();
                                     foreach ($roles as $role): 
                                 ?>
-                                    <tr style="border-bottom: 1px solid #eee;">
-                                        <td style="padding: 10px;"><?= e($role['id_rol']) ?></td>
-                                        <td style="padding: 10px;"><strong><?= e($role['nombre_rol']) ?></strong></td>
-                                        <td style="padding: 10px;"><?= e($role['descripcion_rol']) ?></td>
-                                        <td style="padding: 10px; text-align: center; display: flex; justify-content: center; gap: 10px;">
-                                            <button type="button" class="action-card__button editar-rol" data-id="<?= e($role['id_rol']) ?>" data-nombre="<?= e($role['nombre_rol']) ?>" data-descripcion="<?= e($role['descripcion_rol']) ?>" style="padding: 5px 10px; font-size: 0.85em; width: auto; height: auto;">Editar</button>
-                                            <form action="index.php" method="POST" onsubmit="return confirm('¿Está seguro de eliminar este rol? Se reasignarán los usuarios asociados al rol por defecto.');" style="margin: 0; display: inline;">
+                                    <tr class="tr-body-consultas">
+                                        <td class="td-roles-comun"><?= e($role['id_rol']) ?></td>
+                                        <td class="td-roles-comun"><strong><?= e($role['nombre_rol']) ?></strong></td>
+                                        <td class="td-roles-comun"><?= e($role['descripcion_rol']) ?></td>
+                                        <td class="td-roles-acciones">
+                                            <button type="button" class="action-card__button editar-rol btn-editar-rol-lista" data-id="<?= e($role['id_rol']) ?>" data-nombre="<?= e($role['nombre_rol']) ?>" data-descripcion="<?= e($role['descripcion_rol']) ?>">Editar</button>
+                                            <form action="index.php" method="POST" onsubmit="return confirm('¿Está seguro de eliminar este rol? Se reasignarán los usuarios asociados al rol por defecto.');" class="form-eliminar-inline">
                                                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                 <input type="hidden" name="form" value="eliminar_rol">
                                                 <input type="hidden" name="id_rol" value="<?= e($role['id_rol']) ?>">
-                                                <button type="submit" class="action-card__button action-card__button--red" style="padding: 5px 10px; font-size: 0.85em; width: auto; height: auto;">Eliminar</button>
+                                                <button type="submit" class="action-card__button action-card__button--red btn-eliminar-rol-lista">Eliminar</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -319,33 +319,33 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                         </table>
                     </div>
 
-                    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 30px;">
+                    <hr class="separador-configuracion">
 
-                    <h3 style="margin-top: 0; margin-bottom: 15px;">Matriz de Asignación de Permisos</h3>
+                    <h3 class="titulo-configuracion-interna">Matriz de Asignación de Permisos</h3>
                     <form action="index.php" method="POST">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <input type="hidden" name="form" value="guardar_roles_permisos">
-                        <table style="width: 100%; border-collapse: collapse;">
+                        <table class="tabla-consultas">
                             <thead>
-                                <tr style="border-bottom: 2px solid #ddd;">
-                                    <th style="text-align: left; padding: 10px;">Permiso / Descripción</th>
+                                <tr class="tr-head-consultas">
+                                    <th class="th-matriz-permiso-desc">Permiso / Descripción</th>
                                     <?php foreach ($roles as $role): ?>
-                                        <th style="padding: 10px; text-align: center;"><?= e($role['nombre_role'] ?? $role['nombre_rol']) ?></th>
+                                        <th class="th-matriz-rol"><?= e($role['nombre_role'] ?? $role['nombre_rol']) ?></th>
                                     <?php endforeach; ?>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($permisos as $perm): ?>
-                                    <tr style="border-bottom: 1px solid #eee;">
-                                        <td style="padding: 10px; text-align: left;">
-                                            <div style="font-weight: bold;"><?= e($perm['nombre_permiso']) ?></div>
-                                            <div style="font-size: 0.85em; color: #666;"><?= e($perm['descripcion_permiso']) ?></div>
+                                    <tr class="tr-body-consultas">
+                                        <td class="td-matriz-desc">
+                                            <div class="texto-configuracion-sistema"><?= e($perm['nombre_permiso']) ?></div>
+                                            <div class="texto-matriz-permiso-sub"><?= e($perm['descripcion_permiso']) ?></div>
                                         </td>
                                         <?php foreach ($roles as $role): ?>
                                             <?php 
                                                 $checked = isset($rolePermMap[$role['id_rol']][$perm['id_permiso']]) ? 'checked' : '';
                                             ?>
-                                            <td style="text-align: center; padding: 10px;">
+                                            <td class="td-matriz-checkbox">
                                                 <input type="checkbox" name="permisos[<?= $role['id_rol'] ?>][]" value="<?= $perm['id_permiso'] ?>" <?= $checked ?>>
                                             </td>
                                         <?php endforeach; ?>
@@ -353,8 +353,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
-                        <div style="margin-top: 20px; text-align: right;">
-                            <button type="submit" class="action-card__button">Guardar Matriz de Permisos</button>
+                        <div class="contenedor-btn-der class-margin-top-20"> <button type="submit" class="action-card__button">Guardar Matriz de Permisos</button>
                         </div>
                     </form>
                 </div>
@@ -397,22 +396,22 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
         <dialog id="modalEditarRol" class="modal-crud">
             <div class="action-card">
                 <h3 class="action-card__title">Editar Rol</h3>
-                <form action="index.php" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <form action="index.php" method="POST" class="form-configuracion-flex">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="form" value="actualizar_rol">
                     <input type="hidden" name="id_rol" id="edit_id_rol">
                     
-                    <label class="action-card__label" style="display: flex; flex-direction: column; gap: 5px;">
-                        <span style="font-weight: bold; font-size: 0.9em;">Nombre del Rol</span>
+                    <label class="action-card__label col-nombre-rol">
+                        <span class="texto-label-negrita">Nombre del Rol</span>
                         <input type="text" name="nombre_rol" id="edit_nombre_rol" required class="action-card__input">
                     </label>
                     
-                    <label class="action-card__label" style="display: flex; flex-direction: column; gap: 5px;">
-                        <span style="font-weight: bold; font-size: 0.9em;">Descripción</span>
+                    <label class="action-card__label col-nombre-rol">
+                        <span class="texto-label-negrita">Descripción</span>
                         <input type="text" name="descripcion_rol" id="edit_descripcion_rol" class="action-card__input">
                     </label>
                     
-                    <div class="action-card__button-grid" style="margin-top: 10px;">
+                    <div class="action-card__button-grid class-margin-top-10">
                         <button type="submit" class="action-card__button">Guardar Cambios</button>
                     </div>
                 </form>
@@ -427,10 +426,10 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
         </script>
 
         <dialog id="modalVerDetallesConsulta" class="modal-crud">
-            <div class="action-card" style="max-width: 600px;">
+            <div class="action-card modal-detalles-ancho">
                 <h3 class="action-card__title">Detalles de la Consulta Médica</h3>
                 
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px; text-align: left; background: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
+                <div class="modal-detalles-contenedor-datos">
                     <div><strong>Fecha:</strong> <span id="det_fecha"></span></div>
                     <div><strong>Paciente:</strong> <span id="det_paciente"></span></div>
                     <div><strong>Médico Tratante:</strong> <span id="det_medico"></span></div>
@@ -438,11 +437,11 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                     <div><strong>Observaciones:</strong> <span id="det_observaciones"></span></div>
                     <div><strong>Medicamento Suministrado:</strong> <span id="det_medicamento"></span></div>
                     <div><strong>Síntomas:</strong> <span id="det_sintomas"></span></div>
-                    <div><strong>Diagnósticos (CIE-10):</strong> <div id="det_diagnosticos" style="margin-top: 5px; padding-left: 10px; border-left: 3px solid #b91c1c;"></div></div>
+                    <div><strong>Diagnósticos (CIE-10):</strong> <div id="det_diagnosticos" class="modal-detalles-diagnosticos-box"></div></div>
                 </div>
                 
-                <div style="text-align: right; margin-top: 20px;">
-                    <button type="button" class="action-card__button" onclick="const m = document.getElementById('modalVerDetallesConsulta'); m.style.opacity = 0; setTimeout(() => m.close(), 500);" style="width: auto;">Cerrar</button>
+                <div class="contenedor-btn-der class-margin-top-20">
+                    <button type="button" class="action-card__button btn-crear-rol" onclick="const m = document.getElementById('modalVerDetallesConsulta'); m.style.opacity = 0; setTimeout(() => m.close(), 500);">Cerrar</button>
                 </div>
             </div>
             <svg class="modal-crud__boton-cerrar" name="modalBotonCerrar" data-modal="modalVerDetallesConsulta" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve" style="cursor: pointer;">
@@ -454,7 +453,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
     <footer>
         <script src="assets/script/append.js" defer></script>
         <script src="assets/script/eliminar.js" defer></script>
-        <script src="assets/script/consultarTabla.js" defer></script>
+        <script src="assets/script/gestion.js" defer></script>
     </footer>
 </body>
 </html>

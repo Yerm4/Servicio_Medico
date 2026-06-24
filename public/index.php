@@ -150,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $form = isset($_POST["form"]) ? $_POST["form"] : '';
     switch($form) {
-        case "registro_paciente":
+        case "registrar_usuario":
             if (isset($_SESSION['cedula'])) {
                 if (!checkPerm("gestionar_usuarios", $userModel)) {
                     $_SESSION["registro_status"] = "error";
@@ -159,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     exit();
                 }
             }
-            $controllerPaciente->Registrar();    
+            $controller->Registrar();    
             break;
         case "registro_consulta":
             if (!$tieneRealizarConsulta) {
@@ -315,10 +315,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
             break;
     }
-
 }
-
-
 
 if ($paginaActual === "buscar_patologia") {
     if (!checkPerm("ver_consultas", $userModel)) {

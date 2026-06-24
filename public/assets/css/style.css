@@ -529,3 +529,369 @@ tr, th, td {
     outline: none !important;
     box-shadow: none !important;
 }
+
+.input-buscar-consulta {
+    width: 500px; 
+    max-width: 100%; 
+    margin-bottom: 15px;
+}
+
+.box-iniciar-consulta {
+    display: flex; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    width: 100%;
+}
+
+.btn-iniciar-consulta {
+    max-width: 250px;
+}
+
+.texto-configuracion-sistema {
+    font-weight: bold;
+}
+
+.link-cerrar-sesion {
+    color: blue; 
+    font-weight: bold; 
+    font-size: 1.25rem; 
+    text-decoration: underline;
+}
+
+.contenedor-tabla-consultas {
+    width: 100%; 
+    margin-top: 20px;
+}
+
+.titulo-tabla-consultas {
+    margin-bottom: 15px; 
+    text-align: center;
+}
+
+.tabla-consultas {
+    width: 100%; 
+    border-collapse: collapse; 
+    background: #fff; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.th-consultas {
+    padding: 10px; 
+    text-align: left; 
+    font-size: 0.9em;
+}
+
+.tr-head-consultas {
+    border-bottom: 2px solid #ddd; 
+    background: #fafafa;
+}
+
+.tr-body-consultas {
+    border-bottom: 1px solid #eee;
+}
+
+.td-consultas {
+    padding: 10px; 
+    font-size: 0.9em;
+}
+
+.td-consultas-nowrap {
+    padding: 10px; 
+    font-size: 0.9em; 
+    white-space: nowrap;
+}
+
+.td-paciente-sub {
+    font-size: 0.8em; 
+    color: #666;
+}
+
+.sintomas-ninguno {
+    color: #999;
+}
+
+.diagnostico-item-tabla {
+    margin-bottom: 2px;
+}
+
+.diagnostico-codigo {
+    color: #b91c1c;
+}
+
+.td-acciones-btn {
+    padding: 10px; 
+    font-size: 0.9em; 
+    display: flex; 
+    gap: 5px;
+}
+
+.btn-detalles-consulta {
+    background: #4a5568; 
+    color: #fff;
+}
+
+.td-tabla-vacia {
+    text-align: center; 
+    padding: 30px; 
+    color: #666;
+}
+
+.contenedor-btn-cargar {
+    text-align: center; 
+    margin-top: 15px;
+}
+
+.btn-cargar-mas {
+    display: none; 
+    width: auto; 
+    margin: 0 auto;
+}
+
+.contenedor-historial-vacio {
+    text-align: center; 
+    padding: 30px; 
+    background: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    margin-top: 20px; 
+    width: 100%;
+}
+
+.texto-historial-vacio {
+    color: #666; 
+    margin: 0; 
+    font-size: 1.1em;
+}
+
+.seccion-configuracion-box {
+    display: block; 
+    background: #fff; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    margin-top: 20px;
+}
+
+.menu-subtabs {
+    display: flex; 
+    gap: 15px; 
+    border-bottom: 2px solid #eee; 
+    margin-bottom: 25px; 
+    padding-bottom: 10px;
+}
+
+.subtab-link-comun {
+    font-weight: bold; 
+    text-decoration: none;
+}
+
+.subtab-link-general {
+    color: #333; 
+    border-bottom: 3px solid blue; 
+    padding-bottom: 10px;
+}
+
+.subtab-link-roles {
+    color: #777; 
+    padding-bottom: 10px;
+}
+
+.subcontent-general-box {
+    display: block;
+}
+
+.subcontent-roles-box {
+    display: none;
+}
+
+.configuracion-bloque-formulario {
+    background: #fdfdfd; 
+    border: 1px solid #eee; 
+    padding: 20px; 
+    border-radius: 8px;
+}
+
+.titulo-configuracion-interna {
+    margin-top: 0; 
+    margin-bottom: 15px;
+}
+
+.form-configuracion-flex {
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px;
+}
+
+.label-rol-defecto {
+    display: flex; 
+    flex-direction: column; 
+    gap: 5px; 
+    max-width: 350px;
+}
+
+.texto-label-negrita {
+    font-weight: bold; 
+    font-size: 0.9em;
+}
+
+.select-rol-defecto {
+    width: 100%;
+}
+
+.contenedor-btn-izq {
+    text-align: left; 
+    margin-top: 10px;
+}
+
+.btn-guardar-config {
+    width: auto;
+}
+
+.contenedor-form-nuevo-rol {
+    background: #fdfdfd; 
+    border: 1px solid #eee; 
+    padding: 20px; 
+    border-radius: 8px; 
+    margin-bottom: 30px;
+}
+
+.fila-inputs-rol {
+    display: flex; 
+    gap: 15px; 
+    flex-wrap: wrap;
+}
+
+.col-nombre-rol {
+    flex: 1; 
+    min-width: 200px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 5px;
+}
+
+.col-descripcion-rol {
+    flex: 2; 
+    min-width: 300px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 5px;
+}
+
+.input-ancho-total {
+    width: 100%;
+}
+
+.contenedor-btn-der {
+    text-align: right;
+}
+
+.btn-crear-rol {
+    width: auto;
+}
+
+.separador-configuracion {
+    border: 0; 
+    border-top: 1px solid #eee; 
+    margin-bottom: 30px;
+}
+
+.contenedor-roles-registrados {
+    margin-bottom: 30px;
+}
+
+.tabla-roles-cabecera-izq {
+    text-align: left; 
+    padding: 10px; 
+    font-size: 0.9em;
+}
+
+.tabla-roles-cabecera-centro {
+    text-align: center; 
+    padding: 10px; 
+    font-size: 0.9em;
+}
+
+.td-roles-comun {
+    padding: 10px;
+}
+
+.td-roles-acciones {
+    padding: 10px; 
+    text-align: center; 
+    display: flex; 
+    justify-content: center; 
+    gap: 10px;
+}
+
+.btn-editar-rol-lista {
+    padding: 5px 10px; 
+    font-size: 0.85em; 
+    width: auto; 
+    height: auto;
+}
+
+.form-eliminar-inline {
+    margin: 0; 
+    display: inline;
+}
+
+.btn-eliminar-rol-lista {
+    padding: 5px 10px; 
+    font-size: 0.85em; 
+    width: auto; 
+    height: auto;
+}
+
+.th-matriz-permiso-desc {
+    text-align: left; 
+    padding: 10px;
+}
+
+.th-matriz-rol {
+    padding: 10px; 
+    text-align: center;
+}
+
+.td-matriz-desc {
+    padding: 10px; 
+    text-align: left;
+}
+
+.texto-matriz-permiso-sub {
+    font-size: 0.85em; 
+    color: #666;
+}
+
+.td-matriz-checkbox {
+    text-align: center; 
+    padding: 10px;
+}
+
+.modal-detalles-ancho {
+    max-width: 600px;
+}
+
+.modal-detalles-contenedor-datos {
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    margin-top: 15px; 
+    text-align: left; 
+    background: #fafafa; 
+    padding: 20px; 
+    border-radius: 8px; 
+    border: 1px solid #eee;
+}
+
+.modal-detalles-diagnosticos-box {
+    margin-top: 5px; 
+    padding-left: 10px; 
+    border-left: 3px solid #b91c1c;
+}
+
+.input-margin-bottom {
+    margin-bottom: 15px;
+}
