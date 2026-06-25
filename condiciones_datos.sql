@@ -1,7 +1,7 @@
 -- Catálogo de Condiciones Crónicas / Permanentes
 
 
-INSERT IGNORE INTO `lista_condiciones` (`condicion`) VALUES
+INSERT IGNORE INTO `lista_condiciones` (`nombre_condicion`) VALUES
 ('Asma Bronquial'),
 ('Asma Alérgica'),
 ('Asma Ocupacional'),

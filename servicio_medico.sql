@@ -68,14 +68,15 @@ CREATE TABLE `patologias_usuarios` (
 
 CREATE TABLE `lista_condiciones` (
   `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `condicion` varchar(255) UNIQUE NOT NULL
+  `nombre_condicion` varchar(255) UNIQUE NOT NULL,
+  `descripcion_condicion` text
 ) ENGINE=InnoDB;
 
 CREATE TABLE `condiciones_usuarios` (
+  `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `cedula_usuario` integer NOT NULL,
   `id_condicion` integer NOT NULL,
-  `fecha_registro` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`cedula_usuario`, `id_condicion`)
+  `fecha_registro` timestamp DEFAULT current_timestamp()
 ) ENGINE=InnoDB;
 
 CREATE TABLE `pnfs_usuarios` (

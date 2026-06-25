@@ -50,8 +50,8 @@ class Consulta {
     }
     public function buscarCondicion($query) {
         try {
-            $sql = "SELECT id, condicion FROM lista_condiciones 
-                    WHERE condicion LIKE :query 
+            $sql = "SELECT id, nombre_condicion, nombre_condicion AS condicion FROM lista_condiciones 
+                    WHERE nombre_condicion LIKE :query 
                     LIMIT 10";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([':query' => '%' . $query . '%']);
@@ -63,7 +63,7 @@ class Consulta {
 
     public function obtenerCondicionesPaciente($cedula) {
         try {
-            $sql = "SELECT c.id, c.condicion 
+            $sql = "SELECT c.id, c.nombre_condicion, c.nombre_condicion AS condicion 
                     FROM condiciones_usuarios cu
                     INNER JOIN lista_condiciones c ON cu.id_condicion = c.id
                     WHERE cu.cedula_usuario = :cedula";
@@ -168,7 +168,7 @@ class Consulta {
             $stmt->execute([':cedula' => $cedula]);
             $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $sqlCondiciones = "SELECT c.condicion 
+            $sqlCondiciones = "SELECT c.nombre_condicion 
                                FROM condiciones_usuarios cu
                                INNER JOIN lista_condiciones c ON cu.id_condicion = c.id
                                WHERE cu.cedula_usuario = :cedula";
@@ -408,6 +408,31 @@ class Consulta {
             return $c;
         } catch (PDOException $e) {
             return null;
+        }
+    }
+
+    public function obtenerEstadisticasDashboard() {
+        try {
+            $sqlConsultas = "SELECT COUNT(*) FROM consulta_medica";
+            $totalConsultas = (int)$this->db->query($sqlConsultas)->fetchColumn();
+
+            $sqlUsuarios = "SELECT COUNT(*) FROM usuarios";
+            $totalUsuarios = (int)$this->db->query($sqlUsuarios)->fetchColumn();
+
+            $sqlCondiciones = "SELECT COUNT(*) FROM lista_condiciones";
+            $totalCondiciones = (int)$this->db->query($sqlCondiciones)->fetchColumn();
+
+            return [
+                'total_consultas' => $totalConsultas,
+                'total_usuarios' => $totalUsuarios,
+                'total_condiciones' => $totalCondiciones
+            ];
+        } catch (PDOException $e) {
+            return [
+                'total_consultas' => 0,
+                'total_usuarios' => 0,
+                'total_condiciones' => 0
+            ];
         }
     }
 }

@@ -23,6 +23,10 @@ if ($tieneGestionarRolesPermisos) {
         $rolePermMap[$rp['id_rol']][$rp['id_permiso']] = true;
     }
 }
+$condicionesRegistradas = [];
+if (($paginaActual === 'condiciones' || $paginaActual === 'configuracion') && $tieneGestionarCondiciones) {
+    $condicionesRegistradas = (new \app\model\Condicion($pdo))->consultarCondiciones();
+}
 $consultasRecientes = [];
 $misConsultas = [];
 $consultaModel = new \app\model\Consulta($pdo);
@@ -31,24 +35,29 @@ if ($paginaActual === 'consultas' && $tieneVerConsultas) {
     $consultasRecientes = $consultaModel->obtenerConsultasRecientes(20);
 }
 
-if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos) {
-    $misConsultas = $consultaModel->obtenerConsultasPorPaciente($_SESSION["cedula"]);
+$stats = [];
+$consultasRecientesDashboard = [];
+if ($paginaActual === 'perfil') {
+    if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos) {
+        $misConsultas = $consultaModel->obtenerConsultasPorPaciente($_SESSION["cedula"]);
+    } else {
+        $stats = $consultaModel->obtenerEstadisticasDashboard();
+        $consultasRecientesDashboard = $consultaModel->obtenerConsultasRecientes(5);
+    }
 }
 ?>
 <main class="perfil">    
         <aside class="side-menu">
         <h1>Menu</h1>
             <hr>
-            <?php if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
-            <a href="perfil" id="historial" class="<?= $paginaActual === 'perfil' ? 'focus' : '' ?>">Mi Historial</a>
-            <?php endif; ?>
+            <a href="perfil" id="inicio" class="<?= $paginaActual === 'perfil' ? 'focus' : '' ?>">Inicio</a>
             <?php if ($tieneGestionarUsuarios): ?>
             <a href="usuarios" id="usuario" class="<?= $paginaActual === 'usuarios' ? 'focus' : '' ?>">Usuarios</a>
             <?php endif; ?>
             <?php if ($tieneVerConsultas): ?>
             <a href="consultas" id="consulta" class="<?= $paginaActual === 'consultas' ? 'focus' : '' ?>">Consultas</a>
             <?php endif; ?>
-            <?php if ($tieneGestionarRolesPermisos): ?>
+            <?php if ($tieneGestionarRolesPermisos || $tieneGestionarCondiciones): ?>
             <a href="configuracion" id="configuracion" class="<?= $paginaActual === 'configuracion' ? 'focus' : '' ?>">Configuración</a>
             <?php endif; ?>
         </aside>
@@ -70,7 +79,7 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                         <div class="box-iniciar-consulta">
                             <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#">Iniciar consulta</a>
                         </div>
-                    <?php elseif ($paginaActual === 'configuracion' && $tieneGestionarRolesPermisos): ?>
+                    <?php elseif ($paginaActual === 'configuracion' && ($tieneGestionarRolesPermisos || $tieneGestionarCondiciones)): ?>
                         <span class="texto-configuracion-sistema">Configuración del Sistema</span>
                     <?php elseif ($paginaActual === 'sesion'): ?>
                         <a href="logout" class="link-cerrar-sesion">Cerrar sesión</a>
@@ -175,63 +184,119 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                 </div>
             <?php endif; ?>
 
-            <?php if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
-                <?php if (!empty($misConsultas)): ?>
-                    <div class="contenedor-tabla-consultas">
-                        <h3 class="titulo-tabla-consultas">Mi Historial Médico</h3>
-                        <table class="tabla-consultas">
-                            <thead>
-                                <tr class="tr-head-consultas">
-                                    <th class="th-consultas">Fecha</th>
-                                    <th class="th-consultas">Médico Tratante</th>
-                                    <th class="th-consultas">Motivo</th>
-                                    <th class="th-consultas">Síntomas</th>
-                                    <th class="th-consultas">Diagnóstico</th>
-                                    <th class="th-consultas">Tratamiento</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($misConsultas as $c): ?>
-                                    <tr class="tr-body-consultas">
-                                        <td class="td-consultas-nowrap"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
-                                        <td class="td-consultas"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
-                                        <td class="td-consultas"><?= e($c['motivo_de_visita']) ?></td>
-                                        <td class="td-consultas">
-                                            <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span class="sintomas-ninguno">Ninguno</span>' ?>
-                                        </td>
-                                        <td class="td-consultas">
-                                            <?php if (!empty($c['diagnosticos'])): ?>
-                                                <?php foreach ($c['diagnosticos'] as $diag): ?>
-                                                    <div class="diagnostico-item-tabla">
-                                                        <strong class="diagnostico-codigo"><?= e($diag['codigo_icd_diagnostico']) ?></strong> - <?= e($diag['patologia'] ?? 'Sin detalle') ?>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <span class="sintomas-ninguno">Sin diagnóstico</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="td-consultas"><?= e($c['medicamento_suministrado'] ?: 'Ninguno') ?></td>
+            <?php if ($paginaActual === 'perfil'): ?>
+                <?php if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
+                    <?php if (!empty($misConsultas)): ?>
+                        <div class="contenedor-tabla-consultas">
+                            <h3 class="titulo-tabla-consultas">Mi Historial Médico</h3>
+                            <table class="tabla-consultas">
+                                <thead>
+                                    <tr class="tr-head-consultas">
+                                        <th class="th-consultas">Fecha</th>
+                                        <th class="th-consultas">Médico Tratante</th>
+                                        <th class="th-consultas">Motivo</th>
+                                        <th class="th-consultas">Síntomas</th>
+                                        <th class="th-consultas">Diagnóstico</th>
+                                        <th class="th-consultas">Tratamiento</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($misConsultas as $c): ?>
+                                        <tr class="tr-body-consultas">
+                                            <td class="td-consultas-nowrap"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
+                                            <td class="td-consultas"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
+                                            <td class="td-consultas"><?= e($c['motivo_de_visita']) ?></td>
+                                            <td class="td-consultas">
+                                                <?= !empty($c['sintomas']) ? e(implode(', ', $c['sintomas'])) : '<span class="sintomas-ninguno">Ninguno</span>' ?>
+                                            </td>
+                                            <td class="td-consultas">
+                                                <?php if (!empty($c['diagnosticos'])): ?>
+                                                    <?php foreach ($c['diagnosticos'] as $diag): ?>
+                                                        <div class="diagnostico-item-tabla">
+                                                            <strong class="diagnostico-codigo"><?= e($diag['codigo_icd_diagnostico']) ?></strong> - <?= e($diag['patologia'] ?? 'Sin detalle') ?>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <span class="sintomas-ninguno">Sin diagnóstico</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="td-consultas"><?= e($c['medicamento_suministrado'] ?: 'Ninguno') ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="contenedor-historial-vacio">
+                            <p class="texto-historial-vacio">No hay consultas médicas asociadas a este usuario.</p>
+                        </div>
+                    <?php endif; ?>
                 <?php else: ?>
-                    <div class="contenedor-historial-vacio">
-                        <p class="texto-historial-vacio">No hay consultas médicas asociadas a este usuario.</p>
+                    <div class="dashboard-container">
+                        <h3 class="titulo-configuracion-interna">Panel de Inicio</h3>
+                        
+                        <div class="dashboard-stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-card__number"><?= $stats['total_consultas'] ?></div>
+                                <div class="stat-card__label">Consultas Realizadas</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card__number"><?= $stats['total_usuarios'] ?></div>
+                                <div class="stat-card__label">Usuarios Registrados</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card__number"><?= $stats['total_condiciones'] ?></div>
+                                <div class="stat-card__label">Condiciones Médicas</div>
+                            </div>
+                        </div>
+
+                        <div class="contenedor-tabla-consultas">
+                            <h3 class="titulo-tabla-consultas" style="text-align: left; margin-bottom: 15px;">Últimas Consultas Registradas</h3>
+                            <?php if (empty($consultasRecientesDashboard)): ?>
+                                <div class="contenedor-historial-vacio">
+                                    <p class="texto-historial-vacio">No hay consultas médicas registradas recientemente.</p>
+                                </div>
+                            <?php else: ?>
+                                <table class="tabla-consultas">
+                                    <thead>
+                                        <tr class="tr-head-consultas">
+                                            <th class="th-consultas">Fecha</th>
+                                            <th class="th-consultas">Paciente</th>
+                                            <th class="th-consultas">Médico Tratante</th>
+                                            <th class="th-consultas">Motivo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($consultasRecientesDashboard as $c): ?>
+                                            <tr class="tr-body-consultas">
+                                                <td class="td-consultas-nowrap"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
+                                                <td class="td-consultas"><strong><?= e(($c['paciente_nombre'] ?? '') . ' ' . ($c['paciente_apellido'] ?? '')) ?></strong></td>
+                                                <td class="td-consultas"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
+                                                <td class="td-consultas"><?= e($c['motivo_de_visita']) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
 
-            <?php if ($paginaActual === 'configuracion' && $tieneGestionarRolesPermisos): ?>
+            <?php if ($paginaActual === 'configuracion' && ($tieneGestionarRolesPermisos || $tieneGestionarCondiciones)): ?>
             <div id="seccion-configuracion" class="configuracion-container seccion-configuracion-box">
-                <div class="nested-tabs-menu" class="menu-subtabs">
+                <div class="nested-tabs-menu menu-subtabs">
+                    <?php if ($tieneGestionarRolesPermisos): ?>
                     <a href="#" id="sub-tab-general" class="sub-tab-link subtab-link-comun subtab-link-general">General</a>
                     <a href="#" id="sub-tab-roles" class="sub-tab-link subtab-link-comun subtab-link-roles">Roles y Permisos</a>
+                    <?php endif; ?>
+                    <?php if ($tieneGestionarCondiciones): ?>
+                    <a href="#" id="sub-tab-condiciones" class="sub-tab-link subtab-link-comun subtab-link-condiciones" style="<?= !$tieneGestionarRolesPermisos ? 'color:#333; border-bottom:3px solid blue;' : '' ?>">Condiciones</a>
+                    <?php endif; ?>
                 </div>
 
-                <div id="sub-content-general" class="sub-tab-content subcontent-general-box">
-                    <div class="configuracion-bloque-formulario">
+                <?php if ($tieneGestionarRolesPermisos): ?>
+                    <div id="sub-content-general" class="sub-tab-content subcontent-general-box configuracion-bloque-formulario">
                         <h3 class="titulo-configuracion-interna">Configuración General</h3>
                         <form action="index.php" method="POST" class="form-configuracion-flex">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
@@ -255,7 +320,6 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                             </div>
                         </form>
                     </div>
-                </div>
 
                 <div id="sub-content-roles" class="sub-tab-content subcontent-roles-box">
                     <div class="contenedor-form-nuevo-rol">
@@ -357,6 +421,53 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                         </div>
                     </form>
                 </div>
+                <?php endif; ?>
+
+                <?php if ($tieneGestionarCondiciones): ?>
+                <div id="sub-content-condiciones" class="sub-tab-content subcontent-condiciones-box" style="display: <?= $tieneGestionarRolesPermisos ? 'none' : 'block' ?>;">
+                    <div class="contenedor-roles-registrados">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                            <h3 class="titulo-configuracion-interna" style="margin:0;">Condiciones Registradas</h3>
+                            <button type="button" class="action-card__button" name="openModal" data-modal="modalRegistrarCondicion">Registrar Condición</button>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <input type="text" id="inputBuscarCondicion" placeholder="Buscar condición por nombre o descripción..." class="action-card__input input-ancho-total" autocomplete="off" style="width:100%; box-sizing:border-box;">
+                        </div>
+                        <table class="tabla-consultas" id="tablaCondiciones">
+                            <thead>
+                                <tr class="tr-head-consultas">
+                                    <th class="tabla-roles-cabecera-izq">ID</th>
+                                    <th class="tabla-roles-cabecera-izq">Nombre de la Condición</th>
+                                    <th class="tabla-roles-cabecera-izq">Descripción</th>
+                                    <th class="tabla-roles-cabecera-centro">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTablaCondiciones">
+                                <?php if (empty($condicionesRegistradas)): ?>
+                                    <tr><td colspan="4" class="td-tabla-vacia">No hay condiciones registradas.</td></tr>
+                                <?php else: ?>
+                                    <?php foreach ($condicionesRegistradas as $cond): ?>
+                                        <tr class="tr-body-consultas">
+                                            <td class="td-roles-comun"><?= e($cond['id']) ?></td>
+                                            <td class="td-roles-comun"><strong><?= e($cond['nombre_condicion']) ?></strong></td>
+                                            <td class="td-roles-comun"><?= e($cond['descripcion_condicion']) ?></td>
+                                            <td class="td-roles-acciones">
+                                                <button type="button" class="action-card__button editar-condicion btn-editar-rol-lista" data-id="<?= e($cond['id']) ?>" data-nombre="<?= e($cond['nombre_condicion']) ?>" data-descripcion="<?= e($cond['descripcion_condicion']) ?>">Editar</button>
+                                                <form action="index.php" method="POST" onsubmit="return confirm('¿Está seguro de eliminar esta condición? Se eliminará de todos los usuarios asociados.');" class="form-eliminar-inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                                    <input type="hidden" name="form" value="eliminar_condicion">
+                                                    <input type="hidden" name="id" value="<?= e($cond['id']) ?>">
+                                                    <button type="submit" class="action-card__button action-card__button--red btn-eliminar-rol-lista">Eliminar</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
                 
@@ -417,6 +528,62 @@ if ($paginaActual === 'perfil' && !$tieneGestionarUsuarios && !$tieneVerConsulta
                 </form>
             </div>
             <svg class="modal-crud__boton-cerrar" name="modalBotonCerrar" data-modal="modalEditarRol" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve" style="cursor: pointer;">
+                <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+            </svg>
+        </dialog>
+        <?php endif; ?>
+        <?php if ($tieneGestionarCondiciones): ?>
+        <dialog id="modalRegistrarCondicion" class="modal-crud">
+            <div class="action-card">
+                <h3 class="action-card__title">Registrar Condición</h3>
+                <form action="index.php" method="POST" class="form-configuracion-flex">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <input type="hidden" name="form" value="registrar_condicion">
+                    
+                    <label class="action-card__label col-nombre-rol">
+                        <span class="texto-label-negrita">Nombre de la Condición</span>
+                        <input type="text" name="nombre_condicion" required class="action-card__input">
+                    </label>
+                    
+                    <label class="action-card__label col-nombre-rol">
+                        <span class="texto-label-negrita">Descripción</span>
+                        <input type="text" name="descripcion_condicion" class="action-card__input">
+                    </label>
+                    
+                    <div class="action-card__button-grid class-margin-top-10">
+                        <button type="submit" class="action-card__button">Registrar Condición</button>
+                    </div>
+                </form>
+            </div>
+            <svg class="modal-crud__boton-cerrar" name="modalBotonCerrar" data-modal="modalRegistrarCondicion" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve" style="cursor: pointer;">
+                <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+            </svg>
+        </dialog>
+
+        <dialog id="modalEditarCondicion" class="modal-crud">
+            <div class="action-card">
+                <h3 class="action-card__title">Editar Condición</h3>
+                <form action="index.php" method="POST" class="form-configuracion-flex">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <input type="hidden" name="form" value="actualizar_condicion">
+                    <input type="hidden" name="id" id="edit_id_condicion">
+                    
+                    <label class="action-card__label col-nombre-rol">
+                        <span class="texto-label-negrita">Nombre de la Condición</span>
+                        <input type="text" name="nombre_condicion" id="edit_nombre_condicion" required class="action-card__input">
+                    </label>
+                    
+                    <label class="action-card__label col-nombre-rol">
+                        <span class="texto-label-negrita">Descripción</span>
+                        <input type="text" name="descripcion_condicion" id="edit_descripcion_condicion" class="action-card__input">
+                    </label>
+                    
+                    <div class="action-card__button-grid class-margin-top-10">
+                        <button type="submit" class="action-card__button">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+            <svg class="modal-crud__boton-cerrar" name="modalBotonCerrar" data-modal="modalEditarCondicion" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve" style="cursor: pointer;">
                 <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
             </svg>
         </dialog>

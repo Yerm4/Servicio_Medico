@@ -3,7 +3,9 @@ require_once __DIR__."/../vendor/autoload.php";
 use app\controller\Controller;
 use app\controller\PacienteController;
 use app\controller\ConsultaController;
+use app\controller\CondicionController;
 use app\model\Consulta;
+use app\model\Condicion;
 use app\config\Config;
 
 if (file_exists(__DIR__ . '/.env')) {
@@ -51,7 +53,8 @@ $userModel->sincronizarPermisos([
     "realizar_consulta" => "Permite registrar una nueva consulta médica",
     "modificar_consulta" => "Permite registrar y actualizar consultas médicas",
     "generar_reportes" => "Permite generar reportes de morbilidad médica",
-    "gestionar_roles_permisos" => "Permite administrar roles, permisos y configuración del sistema"
+    "gestionar_roles_permisos" => "Permite administrar roles, permisos y configuración del sistema",
+    "gestionar_condiciones" => "Permite añadir, modificar y borrar condiciones"
 ]);
 
 // Auto-associate default permissions and clean up Director role to remove ver/modify/add consultations
@@ -68,9 +71,9 @@ try {
     }
 
     $insertMap = [
-        2 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta'],
-        3 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'generar_reportes'],
-        4 => ['gestionar_usuarios', 'generar_reportes', 'gestionar_roles_permisos']
+        2 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'gestionar_condiciones'],
+        3 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'generar_reportes', 'gestionar_condiciones'],
+        4 => ['gestionar_usuarios', 'generar_reportes', 'gestionar_roles_permisos', 'gestionar_condiciones']
     ];
 
     foreach ($insertMap as $roleId => $permNames) {
@@ -105,6 +108,7 @@ $tieneRealizarConsulta = false;
 $tieneModificarConsulta = false;
 $tieneGenerarReportes = false;
 $tieneGestionarRolesPermisos = false;
+$tieneGestionarCondiciones = false;
 $rolUsuario = 0;
 if (isset($_SESSION['cedula'])) {
     $datosUsuarioLogueado = $userModel->loginUsuario($_SESSION['cedula']);
@@ -116,6 +120,7 @@ if (isset($_SESSION['cedula'])) {
     $tieneModificarConsulta = checkPerm("modificar_consulta", $userModel);
     $tieneGenerarReportes = checkPerm("generar_reportes", $userModel);
     $tieneGestionarRolesPermisos = checkPerm("gestionar_roles_permisos", $userModel);
+    $tieneGestionarCondiciones = checkPerm("gestionar_condiciones", $userModel);
 }
 
 $ruta = isset($_GET["ruta"]) ? trim($_GET["ruta"], "/") : "login";
@@ -123,7 +128,7 @@ $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
 
 if (!isset($_SESSION['cedula'])) {
-    if (in_array($paginaActual, ["perfil", "usuarios", "consultas", "configuracion", "sesion"])) {
+    if (in_array($paginaActual, ["perfil", "usuarios", "consultas", "configuracion", "sesion", "condiciones"])) {
         header("Location: login");
         exit();
     }
@@ -136,7 +141,7 @@ if (!isset($_SESSION['cedula'])) {
         header("Location: perfil");
         exit();
     }
-    if ($paginaActual === "configuracion" && !$tieneGestionarRolesPermisos) {
+    if ($paginaActual === "configuracion" && !$tieneGestionarRolesPermisos && !$tieneGestionarCondiciones) {
         header("Location: perfil");
         exit();
     }
@@ -313,6 +318,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             header("Location: configuracion");
             exit();
+            break;
+        case "registrar_condicion":
+            if (!$tieneGestionarCondiciones) {
+                http_response_code(403);
+                exit("No tiene permisos.");
+            }
+            $controllerCondicion = new CondicionController($pdo);
+            $controllerCondicion->registrar();
+            break;
+        case "actualizar_condicion":
+            if (!$tieneGestionarCondiciones) {
+                http_response_code(403);
+                exit("No tiene permisos.");
+            }
+            $controllerCondicion = new CondicionController($pdo);
+            $controllerCondicion->actualizar();
+            break;
+        case "eliminar_condicion":
+            if (!$tieneGestionarCondiciones) {
+                http_response_code(403);
+                exit("No tiene permisos.");
+            }
+            $controllerCondicion = new CondicionController($pdo);
+            $controllerCondicion->eliminar();
             break;
     }
 }

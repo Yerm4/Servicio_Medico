@@ -244,7 +244,7 @@ main {
     margin: auto;
     position: relative;
     opacity: 0;
-    transition: opacity .5s ease;
+    transition: opacity .15s ease-out;
 }
 
 .modal-crud .action-card {
@@ -261,7 +261,7 @@ main {
     height: 35px;
     border-radius: 20px;
     background-color: #fff;
-    transition: background-color .5s ease, transform .5s ease
+    transition: background-color .2s ease, transform .2s ease
 }
 
 .modal-crud__boton-cerrar:hover {
@@ -294,8 +294,8 @@ main.perfil {
     outline: 2px solid var(--color-blue);
     border-radius: 20px 10px 10px 10px;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: stretch;
     flex-direction: column;
     gap: 30px;
     opacity: 0;
@@ -686,17 +686,27 @@ tr, th, td {
 .subtab-link-comun {
     font-weight: bold; 
     text-decoration: none;
+    padding-bottom: 10px;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    color: #777;
+}
+
+.class-margin-top-20 {
+    margin-top: 30px !important;
+}
+
+.subtab-link-comun:hover {
+    color: #333;
 }
 
 .subtab-link-general {
     color: #333; 
     border-bottom: 3px solid blue; 
-    padding-bottom: 10px;
 }
 
 .subtab-link-roles {
     color: #777; 
-    padding-bottom: 10px;
 }
 
 .subcontent-general-box {
@@ -894,4 +904,66 @@ tr, th, td {
 
 .input-margin-bottom {
     margin-bottom: 15px;
+}
+
+.sub-tab-content {
+    animation: subTabFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes subTabFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    animation: subTabFadeIn 0.3s ease-out forwards;
+}
+
+.dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-top: var(--color-blue, #33f) 4px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s ease;
+    box-sizing: border-box;
+}
+
+.stat-card:hover {
+    transform: scale(1.015);
+}
+
+.stat-card__number {
+    font-size: 2em;
+    font-weight: 800;
+    color: var(--color-blue, #33f);
+    line-height: 1;
+    text-align: left;
+}
+
+.stat-card__label {
+    font-size: 0.9em;
+    color: #555;
+    font-weight: bold;
+    text-align: left;
 }

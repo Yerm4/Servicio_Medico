@@ -427,3 +427,72 @@ if (btnActualizarConsultaTop) {
         if (hiddenInput) hiddenInput.value = "";
     });
 }
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('editar-condicion')) {
+        event.preventDefault();
+        
+        const idCondicion = event.target.getAttribute('data-id');
+        const nombreCondicion = event.target.getAttribute('data-nombre');
+        const descripcionCondicion = event.target.getAttribute('data-descripcion');
+        
+        const modalEditar = document.getElementById('modalEditarCondicion');
+        if (modalEditar) {
+            document.getElementById('edit_id_condicion').value = idCondicion;
+            document.getElementById('edit_nombre_condicion').value = nombreCondicion;
+            document.getElementById('edit_descripcion_condicion').value = descripcionCondicion;
+            
+            modalEditar.showModal();
+            setTimeout(() => {
+                modalEditar.style.opacity = '1';
+            }, 50);
+        }
+    }
+});
+
+const inputBuscarCondicion = document.getElementById('inputBuscarCondicion');
+const cuerpoTablaCondiciones = document.getElementById('cuerpoTablaCondiciones');
+
+if (inputBuscarCondicion && cuerpoTablaCondiciones) {
+    const filas = Array.from(cuerpoTablaCondiciones.querySelectorAll('tr'));
+    const esVacia = filas.length === 1 && filas[0].querySelector('.td-tabla-vacia') && !filas[0].classList.contains('fila-vacia-sugerida');
+    
+    if (!esVacia) {
+        function filtrarCondiciones() {
+            const query = inputBuscarCondicion.value.toLowerCase().trim();
+            let mostrados = 0;
+            
+            filas.forEach(fila => {
+                if (fila.classList.contains('fila-vacia-sugerida')) return;
+                
+                const nombre = fila.children[1]?.textContent.toLowerCase() || "";
+                const descripcion = fila.children[2]?.textContent.toLowerCase() || "";
+                const coincide = nombre.includes(query) || descripcion.includes(query);
+                
+                if (coincide && mostrados < 10) {
+                    fila.style.display = "";
+                    mostrados++;
+                } else {
+                    fila.style.display = "none";
+                }
+            });
+            
+            let rowVacio = cuerpoTablaCondiciones.querySelector('.fila-vacia-sugerida');
+            if (mostrados === 0 && query !== "") {
+                if (!rowVacio) {
+                    rowVacio = document.createElement('tr');
+                    rowVacio.className = 'fila-vacia-sugerida';
+                    rowVacio.innerHTML = '<td colspan="4" class="td-tabla-vacia" style="text-align:center;">No se encontraron condiciones que coincidan.</td>';
+                    cuerpoTablaCondiciones.appendChild(rowVacio);
+                } else {
+                    rowVacio.style.display = "";
+                }
+            } else if (rowVacio) {
+                rowVacio.style.display = "none";
+            }
+        }
+        
+        inputBuscarCondicion.addEventListener('input', filtrarCondiciones);
+        filtrarCondiciones();
+    }
+}

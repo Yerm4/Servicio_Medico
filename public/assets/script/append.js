@@ -23,30 +23,39 @@ function ocultarTodo() {
 
 let subTabGeneral = document.getElementById("sub-tab-general");
 let subTabRoles = document.getElementById("sub-tab-roles");
+let subTabCondiciones = document.getElementById("sub-tab-condiciones");
 let subContentGeneral = document.getElementById("sub-content-general");
 let subContentRoles = document.getElementById("sub-content-roles");
+let subContentCondiciones = document.getElementById("sub-content-condiciones");
 
-if (subTabGeneral && subTabRoles && subContentGeneral && subContentRoles) {
+function activarTab(tabActivo, contentActivo) {
+    [subTabGeneral, subTabRoles, subTabCondiciones].forEach(tab => {
+        if(tab) {
+            tab.style.color = (tab === tabActivo) ? "#333" : "#777";
+            tab.style.borderBottom = (tab === tabActivo) ? "3px solid blue" : "3px solid transparent";
+        }
+    });
+    [subContentGeneral, subContentRoles, subContentCondiciones].forEach(content => {
+        if(content) content.style.display = (content === contentActivo) ? "block" : "none";
+    });
+}
+
+if (subTabGeneral) {
     subTabGeneral.addEventListener("click", (e) => {
         e.preventDefault();
-        subTabGeneral.style.color = "#333";
-        subTabGeneral.style.borderBottom = "3px solid blue";
-        subTabRoles.style.color = "#777";
-        subTabRoles.style.borderBottom = "none";
-        
-        subContentGeneral.style.display = "block";
-        subContentRoles.style.display = "none";
+        activarTab(subTabGeneral, subContentGeneral);
     });
-    
+}
+if (subTabRoles) {
     subTabRoles.addEventListener("click", (e) => {
         e.preventDefault();
-        subTabRoles.style.color = "#333";
-        subTabRoles.style.borderBottom = "3px solid blue";
-        subTabGeneral.style.color = "#777";
-        subTabGeneral.style.borderBottom = "none";
-        
-        subContentRoles.style.display = "block";
-        subContentGeneral.style.display = "none";
+        activarTab(subTabRoles, subContentRoles);
+    });
+}
+if (subTabCondiciones) {
+    subTabCondiciones.addEventListener("click", (e) => {
+        e.preventDefault();
+        activarTab(subTabCondiciones, subContentCondiciones);
     });
 }
 
@@ -64,7 +73,7 @@ if (loginCardCedula) {
     });    
 }
 
-section1Box.addEventListener("click", (event) => {
+document.addEventListener("click", (event) => {
     const boton = event.target.closest('[data-modal]');
     
     if (boton) {
@@ -99,7 +108,7 @@ modales.forEach(modal => {
             modal.style.opacity = 0
             setTimeout(() => {
             modal.close()
-            }, 500);
+            }, 150);
         }
     })
 })
@@ -112,7 +121,7 @@ modalBotonCerrar.forEach(cerrar => {
         modal.style.opacity = 0
         setTimeout(() => {
             modal.close()
-        }, 500);
+        }, 150);
         
     })
 })
@@ -123,7 +132,7 @@ modales.forEach(modal => {
         modal.style.opacity = 0
         setTimeout(() => {
             modal.close()
-        }, 500);
+        }, 150);
     })
 })
 
