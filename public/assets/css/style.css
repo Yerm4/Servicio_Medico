@@ -130,7 +130,7 @@ main {
 }
 
 .action-card:hover {
-    transform: scale(1.01);
+    transform: scale(1.0010);
 }
 
 .action-card__logo {

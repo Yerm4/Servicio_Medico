@@ -61,27 +61,50 @@ class Controller {
                     $rol = (int)$_POST['rol'];
                 }
             }
-
-            $modeloPaciente = new Usuario($this->pdo);
             
-            $resultado = $modeloPaciente->registrarPaciente(
+            if (!empty($cedula) && !empty($nombre) && !empty($apellido) && !empty($tipo) && !empty($fecha_nacimiento)
+            && !empty($tlfprincipal) && !empty($tlfemergencia) && !empty($nombre_contacto_emergencia) && !empty($sexo) 
+            && !empty($direccion)) {
+
+                if (!ctype_digit((string)$cedula)) {
+                    $_SESSION['inputs'] = $_POST; 
+                    $_SESSION["registro_msg"] = "Error. La cedula no puede contener letras";
+                    header("Location: usuarios");
+                    exit();
+                }
+                if (strlen($cedula) >= 9 || strlen($cedula) <= 5) {
+                    $_SESSION['inputs'] = $_POST; 
+                    $_SESSION["registro_msg"] = "Error. La cedula no puede tener más de 8 caracteres y menos de 6";
+                    header("Location: usuarios");
+                    exit();
+                }
+
+                $modeloPaciente = new Usuario($this->pdo);
+        
+                $resultado = $modeloPaciente->registrarPaciente(
                 $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
                 $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, 
                 $direccion, $rol
-            );
+                );
 
-            if ($resultado == true) {
-                unset($_SESSION['inputs']); 
-                $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "Usuario registrado de manera exitosa!";
-                header("Location: perfil");
+                if ($resultado == true) {
+                    unset($_SESSION['inputs']); 
+                    $_SESSION["registro_status"] = "success";
+                    $_SESSION["registro_msg"] = "Usuario registrado de manera exitosa!";
+                    header("Location: usuarios");
+                    exit();
+                } 
+            }
+            
+            else {
+                $_SESSION['inputs'] = $_POST; 
+                $_SESSION["registro_msg"] = "Error. Los datos ingresados no son validos";
+                header("Location: usuarios");
                 exit();
-            } 
-        } 
-        
+            }
+        }
         catch (PDOException $e) {
             $_SESSION['inputs'] = $_POST; 
-            $_SESSION["registro_status"] = "error";
             $_SESSION["registro_msg"] = $e->getMessage();
             
             $rawUri = $_SERVER['REQUEST_URI'];
@@ -92,11 +115,12 @@ class Controller {
                 exit();
             }
 
-            if ($currentPage === "perfil") {
-                header("Location: perfil"); 
+            if ($currentPage === "usuarios") {
+                header("Location: usuarios"); 
                 exit();
             }
         }
+    
     }
 
     public function eliminar() {
@@ -125,31 +149,26 @@ class Controller {
     public function buscar() {
         header('Content-Type: application/json');
 
-        // Capturamos lo que el usuario escribió en la barra
         $query = isset($_POST['query']) ? trim($_POST['query']) : '';
 
         $model = new Usuario($this->pdo);
 
-        // Si la barra está vacía, volvemos a traer los 5 por defecto
         if (empty($query)) {
-            $resultados = $model->consultarUsuarios(); // El método que ya tenías para los últimos 5
+            $resultados = $model->consultarUsuarios();
         } else {
-            // Si escribió algo, llamamos al nuevo método de búsqueda
             $resultados = $model->buscarUsuarios($query);
         }
 
-        // Le devolvemos la lista limpia a JavaScript
         echo json_encode($resultados);
         exit();
     }
-    // Al final de tu clase Controller en Controller.php
 
     public function obtenerUsuarioPorCedula() {
         header('Content-Type: application/json');
         $cedula = isset($_POST['id']) ? trim($_POST['id']) : '';
 
         $model = new Usuario($this->pdo);
-        $usuario = $model->loginUsuario($cedula); // Tu método que busca por cédula exacta
+        $usuario = $model->loginUsuario($cedula);
 
         if ($usuario) {
             echo json_encode($usuario);

@@ -471,16 +471,10 @@ if ($paginaActual === 'perfil') {
             </div>
             <?php endif; ?>
                 
-                <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
-                    <?php $titulo = $_SESSION["registro_status"] === 'success' ? '¡Operación Exitosa!' : '¡Atención!'; ?>
+                <?php if (!empty($_SESSION["registro_msg"])): ?>
                     <div class="notification-banner notification-banner--<?= $_SESSION["registro_status"] ?>">
-                        <h2><?= htmlspecialchars($titulo) ?></h2>
-                        <p><?= htmlspecialchars($_SESSION["registro_msg"]) ?></p>
+                        <p><strong><?php echo e($_SESSION["registro_msg"]); unset($_SESSION["registro_msg"]); ?></strong></p>
                     </div>
-                    <?php 
-                        unset($_SESSION["registro_status"]);
-                        unset($_SESSION["registro_msg"]);
-                    ?>
                 <?php endif; ?>
             </div>
         </section>

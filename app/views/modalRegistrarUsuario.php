@@ -1,7 +1,6 @@
 <div class="action-card">
     <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
     <h3 class="action-card__title">Registro</h3>
-    <p class="action-card__p">Control de Acceso</p>
     
     <form class="action-card__form--registrar-usuarios" action="index.php" method="POST">
     <div class="action-card__form--grid">
