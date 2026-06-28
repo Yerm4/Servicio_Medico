@@ -12,8 +12,8 @@ class Config {
         $password = isset($_ENV["DB_PASS"]) ? $_ENV["DB_PASS"] : "";
 
         try {
-            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $password);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $password); 
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
             return $pdo;
         }
 
