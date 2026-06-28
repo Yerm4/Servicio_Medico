@@ -64,13 +64,7 @@ class Usuario {
     $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
 
     if ($rol === null) {
-        $stmtConfig = $this->pdo->prepare("SELECT rol_defecto FROM configuracion LIMIT 1");
-        $stmtConfig->execute();
-        $rolDefecto = $stmtConfig->fetchColumn();
-        if ($rolDefecto === false) {
-            $rolDefecto = 1;
-        }
-        $rol = (int)$rolDefecto;
+        $rol = $this->obtenerRolDefecto();
     }
 
     $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
@@ -352,12 +346,12 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
             $stmt->execute();
             $rol = $stmt->fetchColumn();
             if ($rol === false) {
-                $this->pdo->exec("INSERT INTO configuracion (rol_defecto) VALUES (3)");
-                return 3;
+                $this->pdo->exec("INSERT INTO configuracion (rol_defecto) VALUES (1)");
+                return 1;
             }
             return (int)$rol;
         } catch (PDOException $e) {
-            return 3;
+            return 1;
         }
     }
 

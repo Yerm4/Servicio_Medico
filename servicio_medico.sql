@@ -1,3 +1,5 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+
 CREATE TABLE `usuarios` (
   `cedula` integer PRIMARY KEY NOT NULL,
   `nombre` text NOT NULL,
@@ -179,21 +181,25 @@ INSERT INTO `lista_permisos` (`id_permiso`, `nombre_permiso`, `descripcion_permi
 (3, 'realizar_consulta', 'Permite registrar una nueva consulta médica'),
 (4, 'modificar_consulta', 'Permite actualizar y modificar consultas médicas'),
 (5, 'generar_reportes', 'Permite generar reportes de morbilidad médica'),
-(6, 'gestionar_roles_permisos', 'Permite administrar roles, permisos y configuración del sistema');
+(6, 'gestionar_roles_permisos', 'Permite administrar roles, permisos y configuración del sistema'),
+(7, 'gestionar_condiciones', 'Permite añadir, modificar y borrar condiciones');
 
 INSERT INTO `roles_permisos` (`id_rol`, `id_permiso`) VALUES
-(2, 1), -- Enfermero: gestionar_usuarios
-(2, 2), -- Enfermero: ver_consultas
-(2, 3), -- Enfermero: realizar_consulta
-(2, 4), -- Enfermero: modificar_consulta
-(3, 1), -- Médico: gestionar_usuarios
-(3, 2), -- Médico: ver_consultas
-(3, 3), -- Médico: realizar_consulta
-(3, 4), -- Médico: modificar_consulta
-(3, 5), -- Médico: generar_reportes
-(4, 1), -- Director: gestionar_usuarios
-(4, 5), -- Director: generar_reportes
-(4, 6); -- Director: gestionar_roles_permisos
+(2, 1),
+(2, 2),
+(2, 3),
+(2, 4),
+(2, 7),
+(3, 1),
+(3, 2),
+(3, 3),
+(3, 4),
+(3, 5),
+(3, 7),
+(4, 1),
+(4, 5),
+(4, 6),
+(4, 7);
 
 INSERT INTO `configuracion` (`rol_defecto`) VALUES (1);
 
