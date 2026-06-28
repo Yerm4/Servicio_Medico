@@ -12,25 +12,6 @@ class Usuario {
         $this->pdo = $conexion;
     }
 
-    public function registrarUsuario($cedula, $password) {
-        
-        try {
-            $sql = "INSERT INTO usuarios (contrasena, cedula) VALUES (:password, :cedula)";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-            "password" => $password,
-            "cedula" => $cedula
-            ]);
-            return true;
-        }
-
-        catch (PDOException $e) {
-            echo $e;
-            return false;
-        }
-
-    }
-
     public function loginUsuario($cedula) {
         try {
             $sql = "SELECT * FROM usuarios WHERE cedula = :cedula";
@@ -496,6 +477,19 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
+        }
+    }
+
+    public function buscarPnfs() {
+        try {
+            $sql = "select * from lista_pnfs";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        catch (PDOException $e) {
+            return false;
         }
     }
 }

@@ -343,6 +343,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $controllerCondicion = new CondicionController($pdo);
             $controllerCondicion->eliminar();
             break;
+        case "buscar_pnfs":
+            $controller = new Controller($pdo);
+            $controller->buscarPnfs();
     }
 }
 

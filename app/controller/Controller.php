@@ -180,52 +180,71 @@ class Controller {
 
 public function actualizar() {
 
-if (isset($_POST['form']) && $_POST['form'] === 'actualizar_usuario') {
-    header('Content-Type: application/json');
+    if (isset($_POST['form']) && $_POST['form'] === 'actualizar_usuario') {
+        header('Content-Type: application/json');
 
-    $cedula                     = isset($_POST['cedula']) ? trim($_POST['cedula']) : '';
-    $nombre                     = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
-    $apellido                   = isset($_POST['apellido']) ? trim($_POST['apellido']) : '';
-    $tipo                       = isset($_POST['tipo']) ? (int)$_POST['tipo'] : 0;
-    $fecha_nacimiento           = isset($_POST['fecha_nacimiento']) ? trim($_POST['fecha_nacimiento']) : null;
-    $tlfprincipal               = isset($_POST['tlfprincipal']) ? trim($_POST['tlfprincipal']) : '';
-    $nombre_contacto_emergencia = isset($_POST['nombre_contacto_emergencia']) ? trim($_POST['nombre_contacto_emergencia']) : '';
-    $tlfemergencia              = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
-    $direccion                  = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
-    $sexo                       = isset($_POST['sexo']) ? (int)$_POST['sexo'] : 1;
+        $cedula                     = isset($_POST['cedula']) ? trim($_POST['cedula']) : '';
+        $nombre                     = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+        $apellido                   = isset($_POST['apellido']) ? trim($_POST['apellido']) : '';
+        $tipo                       = isset($_POST['tipo']) ? (int)$_POST['tipo'] : 0;
+        $fecha_nacimiento           = isset($_POST['fecha_nacimiento']) ? trim($_POST['fecha_nacimiento']) : null;
+        $tlfprincipal               = isset($_POST['tlfprincipal']) ? trim($_POST['tlfprincipal']) : '';
+        $nombre_contacto_emergencia = isset($_POST['nombre_contacto_emergencia']) ? trim($_POST['nombre_contacto_emergencia']) : '';
+        $tlfemergencia              = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
+        $direccion                  = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
+        $sexo                       = isset($_POST['sexo']) ? (int)$_POST['sexo'] : 1;
 
-    $rol = null;
-    if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
-        $model = new Usuario($this->pdo);
-        if ($model->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
-            $rol = (int)$_POST['rol'];
-        }
-    }
-
-    if (strlen($nombre) > 10) {
-        echo json_encode(['status' => 'error', 'message' => 'El nombre es muy largo.']);
-        exit;
-    }
-
-    if (!empty($cedula)) {
-        if (!isset($model)) {
+        $rol = null;
+        if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
             $model = new Usuario($this->pdo);
+            if ($model->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
+                $rol = (int)$_POST['rol'];
+            }
         }
-        
-        $guardado = $model->actualizarUsuarioCompleto(
-            $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
-            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion, $rol
-        );
 
-        if ($guardado) {
-            echo json_encode(['status' => 'success']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'No se realizaron cambios o hubo un fallo en la base de datos.']);
+        if (strlen($nombre) > 10) {
+            echo json_encode(['status' => 'error', 'message' => 'El nombre es muy largo.']);
+            exit;
         }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Cédula inválida.']);
+
+        if (!empty($cedula)) {
+            if (!isset($model)) {
+                $model = new Usuario($this->pdo);
+            }
+            
+            $guardado = $model->actualizarUsuarioCompleto(
+                $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
+                $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion, $rol
+            );
+
+            if ($guardado) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'No se realizaron cambios o hubo un fallo en la base de datos.']);
+            }
+        } 
+        else {
+            echo json_encode(['status' => 'error', 'message' => 'Cédula inválida.']);
+        }
+        exit();
+        }
     }
-    exit();
-}
-}
+
+    public function buscarPnfs() {
+        if (isset($_POST['form']) && $_POST['form'] === 'buscar_pnfs') {
+            header('Content-Type: application/json');
+            $model = new Usuario($this->pdo);
+            $pnfs = $model->buscarPnfs();
+
+            if ($pnfs === false) {
+                echo json_encode([]);
+            }
+
+            else {
+                echo json_encode($pnfs, JSON_UNESCAPED_UNICODE);
+            }
+            
+            exit();
+        }
+    }
 }

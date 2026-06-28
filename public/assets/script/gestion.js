@@ -496,3 +496,36 @@ if (inputBuscarCondicion && cuerpoTablaCondiciones) {
         filtrarCondiciones();
     }
 }
+
+function buscarPnfs() {
+    const tokenCSRF = document.querySelector('#modalRegistrarUsuario input[name="csrf_token"]').value;
+
+    fetch('index.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `csrf_token=${tokenCSRF}&form=buscar_pnfs`
+    })
+    .then(response => {
+        console.log("Estatus HTTP del servidor:", response.status); // Debería ser 200
+        return response.text(); // 👈 Forzamos a leerlo como TEXTO, no como JSON
+    })
+    .then(textoCrudo => {
+        console.log("--- INICIO DE RESPUESTA DEL SERVIDOR ---");
+        console.log(textoCrudo); // 👈 AQUÍ VERÁS EL ERROR REAL DE PHP
+        console.log("--- FIN DE RESPUESTA DEL SERVIDOR ---");
+        
+        if (textoCrudo.trim() === "") {
+            console.error("Alerta: El PHP se ejecutó pero devolvió un string vacío de 0 caracteres.");
+        } else {
+            // Intentamos procesarlo manualmente para ver si era un JSON válido
+            const datos = JSON.parse(textoCrudo);
+            console.log("JSON Procesado:", datos);
+        }
+    })
+    .catch(error => console.error("Error crítico en la petición:", error));
+}
+
+// Asegúrate de llamarla al final
+buscarPnfs();
+
+buscarPnfs()
