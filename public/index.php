@@ -109,11 +109,11 @@ $tieneRealizarConsulta = false;
 $tieneModificarConsulta = false;
 $tieneGenerarReportes = false;
 $tieneGestionarRolesPermisos = false;
-$tieneGestionarCondiciones = false;
+$tieneGestionarConditions = false;
 $tieneGestionarOferta = false; 
 
 $defaultRol = $userModel->obtenerRolDefecto();
-$rolUsuario = 0;
+$rolUsuario = $defaultRol;
 
 if (isset($_SESSION['cedula'])) {
     $datosUsuarioLogueado = $userModel->loginUsuario($_SESSION['cedula']);
@@ -330,7 +330,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
             break;
         case "registrar_condicion":
-            if (!checkPerm("gestionar_condiciones", $userModel)) {
+            if (!$tieneGestionarCondiciones) {
                 http_response_code(403);
                 exit("No tiene permisos.");
             }
@@ -356,8 +356,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case "buscar_pnfs":
             $controller = new Controller($pdo);
             $controller->buscarPnfs();
-            break; // Agregado break faltante
-
+            break;
         case "registrar_nucleo":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
             $controllerOferta = new NucleoPNFController($pdo);
