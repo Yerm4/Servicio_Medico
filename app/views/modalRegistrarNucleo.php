@@ -1,0 +1,37 @@
+<div class="action-card">
+    <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="Logo UPTAEB">
+    <h3 class="action-card__title">Registrar Nuevo Núcleo</h3>
+    <p class="action-card__p">Agregar Sede / Núcleo Universitario</p>
+
+    <form id="formRegistrarNucleo" class="action-card__form--registrar-usuarios">
+        <div class="action-card__form--grid">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
+            
+            <input type="hidden" name="form" value="registrar_nucleo">
+            
+            <label for="nombre_nucleo" class="action-card__label">Nombre del Núcleo
+                <input 
+                    type="text" 
+                    class="action-card__input" 
+                    id="nombre_nucleo" 
+                    name="nombre_nucleo" 
+                    required 
+                    minlength="4" 
+                    maxlength="100" 
+                    pattern="^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$" 
+                    title="Solo se permiten letras y espacios. Mínimo 4 caracteres."
+                    placeholder="Ej. Núcleo Crespo"
+                >
+            </label>
+        </div> 
+        
+        <div class="action-card__button-grid" style="margin-top: 15px;">
+            <button type="button" class="action-card__button action-card__button--red" onclick="document.getElementById('modalRegistrarNucleo').close()">Cancelar</button>
+            <button type="submit" class="action-card__button">Registrar Núcleo</button>
+        </div>
+    </form>
+</div>
+
+<svg class="modal-crud__boton-cerrar" name="modalBotonCerrar" data-modal="modalRegistrarNucleo" onclick="document.getElementById('modalRegistrarNucleo').close()" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460.775 460.775" xml:space="preserve">
+    <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0;8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0;8.081-1.639,10.992,4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+</svg>

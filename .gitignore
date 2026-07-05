@@ -1,0 +1,3 @@
+.env
+vendor/
+run_dev.bat
