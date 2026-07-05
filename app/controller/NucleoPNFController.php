@@ -88,7 +88,7 @@ class NucleoPnfController {
         $nombre = isset($_POST['nombre_nucleo']) ? trim($_POST['nombre_nucleo']) : '';
 
         if ($id <= 0 || empty($nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'Datos insuficientes para actualizar el núcleo.']);
+            echo json_encode(['status' => 'error', 'message' => 'El campo no puede estar vacio.']);
             exit();
         }
 
@@ -105,7 +105,7 @@ class NucleoPnfController {
         $resultado = $this->model->actualizarNucleo($id, $nombre);
 
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre ya está asignado a otro núcleo activo.']);
+            echo json_encode(['status' => 'error', 'message' => 'El nucleo ya se encuentra registrado.']);
         } elseif ($resultado) {
             echo json_encode(['status' => 'success', 'message' => '¡Núcleo actualizado con éxito!']);
         } else {
@@ -134,7 +134,7 @@ class NucleoPnfController {
         $nombre = isset($_POST['nombre_pnf']) ? trim($_POST['nombre_pnf']) : '';
 
         if (empty($nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del PNF es obligatorio.']);
+            echo json_encode(['status' => 'error', 'message' => 'El campo no puede estar vacio.']);
             exit();
         }
            
@@ -152,7 +152,7 @@ class NucleoPnfController {
         $resultado = $this->model->registrarPNF($nombre);
 
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El PNF ya se encuentra registrado y activo.']);
+            echo json_encode(['status' => 'error', 'message' => 'El PNF ya se encuentra registrado.']);
         } elseif ($resultado) {
             echo json_encode(['status' => 'success', 'message' => '¡PNF registrado con éxito!']);
         } else {
