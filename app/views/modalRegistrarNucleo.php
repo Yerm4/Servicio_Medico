@@ -1,7 +1,7 @@
 <div class="action-card">
     <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="Logo UPTAEB">
     <h3 class="action-card__title">Registrar Nuevo Núcleo</h3>
-    <p class="action-card__p">Agregar Sede / Núcleo Universitario</p>
+    <p class="action-card__p">Agregar Núcleo</p>
 
     <form id="formRegistrarNucleo" class="action-card__form--registrar-usuarios">
         <div class="action-card__form--grid">

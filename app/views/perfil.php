@@ -229,7 +229,7 @@ if ($paginaActual === 'sedes-carreras') {
                                         <input type="hidden" name="form" value="eliminar_oferta">
                                         <input type="hidden" name="id_nucleo" value="<?= e($o['id_nucleo']) ?>">
                                         <input type="hidden" name="id_pnf" value="<?= e($o['id_pnf']) ?>">
-                                        <button type="submit" class="action-card__button" style="background-color: #d9534f; cursor: pointer;">Desvincular</button>
+                                        <button type="submit" class="action-card__button" style="background-color: #d9534f; cursor: pointer;">Eliminar</button>
                                     </form>
                                 </td>
                             </tr>

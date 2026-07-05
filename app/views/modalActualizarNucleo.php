@@ -1,7 +1,7 @@
 <div class="action-card">
     <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="Logo UPTAEB">
     <h3 class="action-card__title">Actualizar Datos</h3>
-    <p class="action-card__p">Modificación de Sede / Núcleo</p>
+    <p class="action-card__p">Modificación del Núcleo</p>
     
     <form id="formActualizarNucleo" class="action-card__form--registrar-usuarios">
         <div class="action-card__form--grid">
