@@ -59,7 +59,21 @@ if (subTabCondiciones) {
     });
 }
 
-const loginCardCedula = document.getElementsByName("cedula")
+const loginCardCedula = document.querySelectorAll("input[name=cedula]")
+
+if (loginCardCedula) {
+    loginCardCedula.forEach(input => {
+    input.addEventListener('input', function() {
+        
+        this.value = this.value.replace(/\D/g, '');
+        
+        if (this.value.length > 8) {
+            this.value = this.value.slice(0, 8);
+        }
+    });
+});
+}
+
 if (loginCardCedula) {
     loginCardCedula.forEach(inputCedula => {
         inputCedula.addEventListener("input", (event) => {
