@@ -822,7 +822,7 @@
             },
             {
                 "name": "estado",
-                "type": "INT",
+                "type": "integer",
                 "primary_key": false,
                 "nullable": true,
                 "auto_increment": false,
@@ -856,7 +856,7 @@
             },
             {
                 "name": "estado",
-                "type": "INT",
+                "type": "integer",
                 "primary_key": false,
                 "nullable": true,
                 "auto_increment": false,
@@ -1403,7 +1403,7 @@
             },
             {
                 "name": "estado",
-                "type": "INT",
+                "type": "integer",
                 "primary_key": false,
                 "nullable": true,
                 "auto_increment": false,
@@ -1705,12 +1705,12 @@
     "lista_pnfs" {
         integer id_pnf "PK"
         text nombre_pnf ""
-        INT estado ""
+        integer estado ""
     }
     "lista_nucleos" {
         integer id_nucleo "PK"
         text nombre_nucleo ""
-        INT estado ""
+        integer estado ""
     }
     "usuarios" {
         integer cedula "PK"
@@ -1788,7 +1788,7 @@
     "nucleo_pnf" {
         integer id_nucleo "PK FK"
         integer id_pnf "PK FK"
-        INT estado ""
+        integer estado ""
     }
     "lista_nucleos" ||--o{ "nucleo_pnf" : "id_nucleo"
     "lista_pnfs" ||--o{ "nucleo_pnf" : "id_pnf"`;
