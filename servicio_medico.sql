@@ -1,5 +1,52 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
+CREATE TABLE `lista_roles` (
+  `id_rol` tinyint PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_rol` text NOT NULL,
+  `descripcion_rol` text
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_permisos` (
+  `id_permiso` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_permiso` varchar(100) UNIQUE NOT NULL,
+  `descripcion_permiso` text
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_tipos` (
+  `id_tipo` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_tipo` text NOT NULL,
+  `descripcion_tipo` text
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_patologias` (
+  `codigo_icd` varchar(10) PRIMARY KEY NOT NULL,
+  `patologia` text NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_condiciones` (
+  `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_condicion` varchar(255) UNIQUE NOT NULL,
+  `descripcion_condicion` text
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_sintomas` (
+  `id_sintoma` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_sintoma` text NOT NULL,
+  `descripcion_sintoma` text
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_pnfs` (
+  `id_pnf` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_pnf` text NOT NULL,
+  `estado` INT DEFAULT 1
+) ENGINE=InnoDB;
+
+CREATE TABLE `lista_nucleos` (
+  `id_nucleo` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nombre_nucleo` text NOT NULL,
+  `estado` INT DEFAULT 1
+) ENGINE=InnoDB;
+
 CREATE TABLE `usuarios` (
   `cedula` integer PRIMARY KEY NOT NULL,
   `nombre` text NOT NULL,
@@ -14,25 +61,22 @@ CREATE TABLE `usuarios` (
   `activo` tinyint NOT NULL DEFAULT 1,
   `rol` tinyint NOT NULL DEFAULT 0,
   `sexo` tinyint NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_roles` (
-  `id_rol` tinyint PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_rol` text NOT NULL,
-  `descripcion_rol` text
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_permisos` (
-  `id_permiso` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_permiso` varchar(100) UNIQUE NOT NULL,
-  `descripcion_permiso` text
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
+  FOREIGN KEY (`tipo`) REFERENCES `lista_tipos` (`id_tipo`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (`rol`) REFERENCES `lista_roles` (`id_rol`) ON DELETE SET DEFAULT ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `roles_permisos` (
   `id_rol` tinyint NOT NULL,
   `id_permiso` integer NOT NULL,
-  PRIMARY KEY (`id_rol`, `id_permiso`)
+  PRIMARY KEY (`id_rol`, `id_permiso`),
+  FOREIGN KEY (`id_rol`) REFERENCES `lista_roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_permiso`) REFERENCES `lista_permisos` (`id_permiso`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE `configuracion` (
+  `rol_defecto` tinyint NOT NULL,
+  FOREIGN KEY (`rol_defecto`) REFERENCES `lista_roles` (`id_rol`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `consulta_medica` (
@@ -42,105 +86,61 @@ CREATE TABLE `consulta_medica` (
   `motivo_de_visita` text NOT NULL,
   `observaciones` text NOT NULL,
   `medicamento_suministrado` text,
-  `fecha_consulta` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_patologias` (
-  `codigo_icd` varchar(10) PRIMARY KEY NOT NULL,
-  `patologia` text NOT NULL
+  `fecha_consulta` timestamp NOT NULL DEFAULT current_timestamp(),
+  FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_medico`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `diagnosticos_consulta` (
   `id_consulta` integer NOT NULL,
   `codigo_icd_diagnostico` varchar(10) NOT NULL,
-  PRIMARY KEY (`id_consulta`, `codigo_icd_diagnostico`)
+  PRIMARY KEY (`id_consulta`, `codigo_icd_diagnostico`),
+  FOREIGN KEY (`id_consulta`) REFERENCES `consulta_medica` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`codigo_icd_diagnostico`) REFERENCES `lista_patologias` (`codigo_icd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `sintomas_consulta` (
   `id_consulta` integer NOT NULL,
   `id_sintoma` integer NOT NULL,
-  PRIMARY KEY (`id_consulta`, `id_sintoma`)
+  PRIMARY KEY (`id_consulta`, `id_sintoma`),
+  FOREIGN KEY (`id_consulta`) REFERENCES `consulta_medica` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_sintoma`) REFERENCES `lista_sintomas` (`id_sintoma`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `patologias_usuarios` (
   `cedula_usuario` integer NOT NULL,
   `codigo_icd` varchar(10) NOT NULL,
-  PRIMARY KEY (`cedula_usuario`, `codigo_icd`)
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_condiciones` (
-  `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_condicion` varchar(255) UNIQUE NOT NULL,
-  `descripcion_condicion` text
+  PRIMARY KEY (`cedula_usuario`, `codigo_icd`),
+  FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`codigo_icd`) REFERENCES `lista_patologias` (`codigo_icd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `condiciones_usuarios` (
   `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `cedula_usuario` integer NOT NULL,
   `id_condicion` integer NOT NULL,
-  `fecha_registro` timestamp DEFAULT current_timestamp()
+  `fecha_registro` timestamp DEFAULT current_timestamp(),
+  FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_condicion`) REFERENCES `lista_condiciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `pnfs_usuarios` (
   `cedula_usuario` integer PRIMARY KEY NOT NULL,
   `nucleo_id` integer NOT NULL,
-  `pnf_id` integer NOT NULL
+  `pnf_id` integer NOT NULL,
+  FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`nucleo_id`) REFERENCES `lista_nucleos` (`id_nucleo`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`pnf_id`) REFERENCES `lista_pnfs` (`id_pnf`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `nucleo_pnf` (
   `id_nucleo` integer NOT NULL,
   `id_pnf` integer NOT NULL,
-  PRIMARY KEY (`id_nucleo`, `id_pnf`)
+  `estado` INT DEFAULT 1,
+  PRIMARY KEY (`id_nucleo`, `id_pnf`),
+  FOREIGN KEY (`id_nucleo`) REFERENCES `lista_nucleos` (`id_nucleo`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_pnf`) REFERENCES `lista_pnfs` (`id_pnf`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
-
-CREATE TABLE `lista_pnfs` (
-  `id_pnf` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_pnf` text NOT NULL,
-  `descripcion_pnf` text
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_sintomas` (
-  `id_sintoma` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_sintoma` text NOT NULL,
-  `descripcion_sintoma` text
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_nucleos` (
-  `id_nucleo` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_nucleo` text NOT NULL,
-  `descripcion_nucleo` text
-) ENGINE=InnoDB;
-
-CREATE TABLE `lista_tipos` (
-  `id_tipo` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `nombre_tipo` text NOT NULL,
-  `descripcion_tipo` text
-) ENGINE=InnoDB;
-
-CREATE TABLE `configuracion` (
-  `rol_defecto` tinyint NOT NULL
-) ENGINE=InnoDB;
-
-ALTER TABLE `usuarios` ADD FOREIGN KEY (`tipo`) REFERENCES `lista_tipos` (`id_tipo`) ON DELETE RESTRICT ON UPDATE CASCADE;
-ALTER TABLE `usuarios` ADD FOREIGN KEY (`rol`) REFERENCES `lista_roles` (`id_rol`) ON DELETE SET DEFAULT ON UPDATE CASCADE;
-ALTER TABLE `roles_permisos` ADD FOREIGN KEY (`id_rol`) REFERENCES `lista_roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `roles_permisos` ADD FOREIGN KEY (`id_permiso`) REFERENCES `lista_permisos` (`id_permiso`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `consulta_medica` ADD FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `consulta_medica` ADD FOREIGN KEY (`id_medico`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `diagnosticos_consulta` ADD FOREIGN KEY (`id_consulta`) REFERENCES `consulta_medica` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `diagnosticos_consulta` ADD FOREIGN KEY (`codigo_icd_diagnostico`) REFERENCES `lista_patologias` (`codigo_icd`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `sintomas_consulta` ADD FOREIGN KEY (`id_consulta`) REFERENCES `consulta_medica` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `sintomas_consulta` ADD FOREIGN KEY (`id_sintoma`) REFERENCES `lista_sintomas` (`id_sintoma`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `patologias_usuarios` ADD FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `patologias_usuarios` ADD FOREIGN KEY (`codigo_icd`) REFERENCES `lista_patologias` (`codigo_icd`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `condiciones_usuarios` ADD FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `condiciones_usuarios` ADD FOREIGN KEY (`id_condicion`) REFERENCES `lista_condiciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `pnfs_usuarios` ADD FOREIGN KEY (`cedula_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `pnfs_usuarios` ADD FOREIGN KEY (`nucleo_id`) REFERENCES `lista_nucleos` (`id_nucleo`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `pnfs_usuarios` ADD FOREIGN KEY (`pnf_id`) REFERENCES `lista_pnfs` (`id_pnf`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `nucleo_pnf` ADD FOREIGN KEY (`id_nucleo`) REFERENCES `lista_nucleos` (`id_nucleo`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `nucleo_pnf` ADD FOREIGN KEY (`id_pnf`) REFERENCES `lista_pnfs` (`id_pnf`) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE `configuracion` ADD FOREIGN KEY (`rol_defecto`) REFERENCES `lista_roles` (`id_rol`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 INSERT INTO `lista_nucleos` (`id_nucleo`, `nombre_nucleo`) VALUES
 (1, 'Sede Central (Barquisimeto)'),
@@ -209,4 +209,3 @@ INSERT INTO `lista_tipos` (`id_tipo`, `nombre_tipo`, `descripcion_tipo`) VALUES
 (3, 'Administrativo', ''),
 (4, 'Obrero', ''),
 (6, 'Personal Médico', '');
-
