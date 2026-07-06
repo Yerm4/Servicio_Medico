@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diccionario de Datos - Servicio Médico</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mermaid.js -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <!-- svg-pan-zoom -->
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                background: '#1e293b',
+                primaryColor: '#6366f1',
+                primaryTextColor: '#fff',
+                lineColor: '#cbd5e1',
+                secondaryColor: '#3b82f6',
+                tertiaryColor: '#0f172a'
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #0f172a;
+            --accent-primary: #6366f1;
+            --accent-secondary: #06b6d4;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary), #1e1b4b);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(to right, #a5b4fc, #818cf8, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container {
+            padding: 16px 24px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px 12px 40px;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 36px;
+            top: 29px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .table-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 24px 16px;
+        }
+
+        .table-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .table-item {
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .table-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .table-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .table-item-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .table-item-name i {
+            color: var(--text-muted);
+        }
+
+        .table-item.active .table-item-name i {
+            color: var(--accent-primary);
+        }
+
+        .col-count {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: var(--text-muted);
+        }
+
+        .table-item.active .col-count {
+            background: var(--accent-primary);
+            color: #fff;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .top-navbar {
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 9;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .content-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        /* Grid Overview */
+        .grid-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .table-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 20px -8px rgba(99, 102, 241, 0.3);
+        }
+
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .table-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-card-title i {
+            color: var(--accent-primary);
+        }
+
+        .col-list-preview {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .col-preview-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .col-preview-name {
+            color: #e2e8f0;
+        }
+
+        /* Detail View */
+        .detail-view {
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .detail-header {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .detail-title i {
+            color: var(--accent-primary);
+        }
+
+        .relations-badge {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .data-table-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 30px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 16px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .col-name-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .badge-pk {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-fk {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .type-cell {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-secondary);
+            font-size: 14px;
+        }
+
+        .nullable-cell i {
+            font-size: 16px;
+        }
+
+        .nullable-yes {
+            color: var(--accent-green);
+        }
+
+        .nullable-no {
+            color: rgba(239, 68, 68, 0.5);
+        }
+
+        .default-cell {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Relations section */
+        .relations-section {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .relations-section h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .relations-section h3 i {
+            color: var(--accent-secondary);
+        }
+
+        .relation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .relation-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .relation-icon {
+            color: var(--accent-secondary);
+            font-size: 16px;
+        }
+
+        .relation-arrow {
+            color: var(--text-muted);
+        }
+
+        .relation-code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        /* Diagram View */
+        .diagram-view {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--glass-shadow);
+            overflow: auto;
+            text-align: center;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .diagram-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            align-self: flex-start;
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--accent-primary);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h2 {
+            color: #fff;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">
+                <i class="fa-solid fa-database"></i>
+                Servicio Médico
+            </h1>
+        </div>
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search" class="search-input" placeholder="Buscar tablas o columnas...">
+        </div>
+        <div class="table-list" id="tableList">
+            <!-- Table list items dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab('all')">
+                    <i class="fa-solid fa-table-cells"></i>
+                    Vista General
+                </button>
+                <button class="tab-btn" onclick="switchTab('diagram')">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    Diagrama Entidad-Relación
+                </button>
+            </div>
+            <div class="project-info" style="font-size: 13px; color: var(--text-muted);">
+                <i class="fa-solid fa-circle-info"></i> Generado desde servicio_medico.sql
+            </div>
+        </div>
+
+        <div class="content-body" id="contentBody">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+
+    <!-- Data Injection -->
+    <script>
+        const database = [
+    {
+        "name": "lista_roles",
+        "description": "Roles disponibles en el sistema para gestionar la autorizaci\u00f3n de accesos.",
+        "columns": [
+            {
+                "name": "id_rol",
+                "type": "tinyint",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria que identifica al rol."
+            },
+            {
+                "name": "nombre_rol",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre del rol (ej. M\u00e9dico, Enfermero, Usuario, Visitante)."
+            },
+            {
+                "name": "descripcion_rol",
+                "type": "text",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": null,
+                "description": "Explicaci\u00f3n de las responsabilidades asociadas al rol."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_permisos",
+        "description": "Permisos granulares que pueden ser asignados a los distintos roles.",
+        "columns": [
+            {
+                "name": "id_permiso",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria que identifica al permiso."
+            },
+            {
+                "name": "nombre_permiso",
+                "type": "varchar(100)",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "C\u00f3digo \u00fanico del permiso (ej. realizar_consulta, gestionar_usuarios)."
+            },
+            {
+                "name": "descripcion_permiso",
+                "type": "text",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": null,
+                "description": "Acci\u00f3n espec\u00edfica autorizada por el permiso."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_tipos",
+        "description": "Tipos de personal o clasificaci\u00f3n de la comunidad universitaria.",
+        "columns": [
+            {
+                "name": "id_tipo",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria del tipo de usuario."
+            },
+            {
+                "name": "nombre_tipo",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre del sector universitario (Estudiante, Docente, Administrativo, Obrero, etc.)."
+            },
+            {
+                "name": "descripcion_tipo",
+                "type": "text",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": null,
+                "description": "Detalles o notas sobre el sector universitario."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_patologias",
+        "description": "Cat\u00e1logo de patolog\u00edas clasificadas seg\u00fan los c\u00f3digos internacionales (ICD).",
+        "columns": [
+            {
+                "name": "codigo_icd",
+                "type": "varchar(10)",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "C\u00f3digo est\u00e1ndar ICD-10/ICD-11, clave primaria."
+            },
+            {
+                "name": "patologia",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre de la patolog\u00eda o enfermedad."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_condiciones",
+        "description": "Cat\u00e1logo de condiciones temporales o de salud especiales (embarazo, alergias, etc.).",
+        "columns": [
+            {
+                "name": "id",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria autoincremental de la condici\u00f3n."
+            },
+            {
+                "name": "nombre_condicion",
+                "type": "varchar(255)",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre de la condici\u00f3n de salud."
+            },
+            {
+                "name": "descripcion_condicion",
+                "type": "text",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": null,
+                "description": "Detalles adicionales sobre la condici\u00f3n."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_sintomas",
+        "description": "Cat\u00e1logo est\u00e1ndar de s\u00edntomas m\u00e9dicos comunes para facilitar el diagn\u00f3stico r\u00e1pido.",
+        "columns": [
+            {
+                "name": "id_sintoma",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria del s\u00edntoma."
+            },
+            {
+                "name": "nombre_sintoma",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre com\u00fan del s\u00edntoma (ej. Fiebre, Dolor de cabeza)."
+            },
+            {
+                "name": "descripcion_sintoma",
+                "type": "text",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": null,
+                "description": "Detalle explicativo de la manifestaci\u00f3n del s\u00edntoma."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_pnfs",
+        "description": "Cat\u00e1logo de Programas Nacionales de Formaci\u00f3n (PNF) dictados en la universidad.",
+        "columns": [
+            {
+                "name": "id_pnf",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria del PNF."
+            },
+            {
+                "name": "nombre_pnf",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre de la carrera/carrera t\u00e9cnica (ej. Inform\u00e1tica)."
+            },
+            {
+                "name": "estado",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": "1",
+                "description": "Define si el PNF est\u00e1 activo (1) o inactivo (0)."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "lista_nucleos",
+        "description": "Diferentes sedes o n\u00facleos universitarios geogr\u00e1ficos de la instituci\u00f3n.",
+        "columns": [
+            {
+                "name": "id_nucleo",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria del n\u00facleo."
+            },
+            {
+                "name": "nombre_nucleo",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre geogr\u00e1fico del n\u00facleo (ej. Sede Central, N\u00facleo Carora)."
+            },
+            {
+                "name": "estado",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": "1",
+                "description": "Define si el n\u00facleo est\u00e1 activo (1) o inactivo (0)."
+            }
+        ],
+        "foreign_keys": []
+    },
+    {
+        "name": "usuarios",
+        "description": "Almacena los datos personales e informaci\u00f3n de cuenta de todos los usuarios registrados (pacientes y personal de salud).",
+        "columns": [
+            {
+                "name": "cedula",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "C\u00e9dula de identidad del usuario, funciona como clave primaria."
+            },
+            {
+                "name": "nombre",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre(s) del usuario."
+            },
+            {
+                "name": "apellido",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Apellido(s) del usuario."
+            },
+            {
+                "name": "contrasena",
+                "type": "varchar(255)",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Hash de la contrase\u00f1a para autenticaci\u00f3n en el sistema."
+            },
+            {
+                "name": "tipo",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Relaci\u00f3n con el tipo de usuario (estudiante, docente, etc.). Referencia a lista_tipos."
+            },
+            {
+                "name": "fecha_nacimiento",
+                "type": "date",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Fecha de nacimiento del usuario."
+            },
+            {
+                "name": "tlfprincipal",
+                "type": "varchar(20)",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "N\u00famero telef\u00f3nico principal del usuario."
+            },
+            {
+                "name": "tlfemergencia",
+                "type": "varchar(20)",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "N\u00famero telef\u00f3nico de contacto en caso de emergencias."
+            },
+            {
+                "name": "nombre_contacto_emergencia",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Nombre del contacto designado para emergencias."
+            },
+            {
+                "name": "direccion",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Direcci\u00f3n f\u00edsica de vivienda del usuario."
+            },
+            {
+                "name": "activo",
+                "type": "tinyint",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": "1",
+                "description": "Indica si el usuario est\u00e1 activo (1) o inactivo (0)."
+            },
+            {
+                "name": "rol",
+                "type": "tinyint",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": "0",
+                "description": "Rol asignado para permisos y accesos. Referencia a lista_roles."
+            },
+            {
+                "name": "sexo",
+                "type": "tinyint",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Sexo del usuario (1 para Femenino, 2 para Masculino)."
+            },
+            {
+                "name": "fecha_creacion",
+                "type": "timestamp",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": "current_timestamp()",
+                "description": "Fecha y hora del registro del usuario."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "tipo",
+                "ref_table": "lista_tipos",
+                "ref_column": "id_tipo",
+                "options": "ON DELETE RESTRICT ON UPDATE CASCADE"
+            },
+            {
+                "column": "rol",
+                "ref_table": "lista_roles",
+                "ref_column": "id_rol",
+                "options": "ON DELETE SET DEFAULT ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "roles_permisos",
+        "description": "Tabla asociativa intermedia de muchos-a-muchos entre roles y permisos.",
+        "columns": [
+            {
+                "name": "id_rol",
+                "type": "tinyint",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al rol asignado."
+            },
+            {
+                "name": "id_permiso",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al permiso asignado al rol."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "id_rol",
+                "ref_table": "lista_roles",
+                "ref_column": "id_rol",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "id_permiso",
+                "ref_table": "lista_permisos",
+                "ref_column": "id_permiso",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "configuracion",
+        "description": "Tabla de configuraci\u00f3n general del sistema.",
+        "columns": [
+            {
+                "name": "rol_defecto",
+                "type": "tinyint",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "ID del rol que se le asigna por defecto a los nuevos registros de usuario."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "rol_defecto",
+                "ref_table": "lista_roles",
+                "ref_column": "id_rol",
+                "options": "ON DELETE RESTRICT ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "consulta_medica",
+        "description": "Registra el historial de visitas m\u00e9dicas y atenciones prestadas en el servicio m\u00e9dico.",
+        "columns": [
+            {
+                "name": "id",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria autoincremental de la consulta."
+            },
+            {
+                "name": "id_usuario",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "C\u00e9dula del paciente atendido. Referencia a usuarios."
+            },
+            {
+                "name": "id_medico",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "C\u00e9dula del personal m\u00e9dico que prest\u00f3 la atenci\u00f3n. Referencia a usuarios."
+            },
+            {
+                "name": "motivo_de_visita",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Raz\u00f3n por la cual el paciente acudi\u00f3 al servicio m\u00e9dico."
+            },
+            {
+                "name": "observaciones",
+                "type": "text",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Notas m\u00e9dicas, hallazgos cl\u00ednicos o tratamiento recomendado."
+            },
+            {
+                "name": "medicamento_suministrado",
+                "type": "text",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": null,
+                "description": "Medicamentos administrados o entregados al paciente durante la consulta."
+            },
+            {
+                "name": "fecha_consulta",
+                "type": "timestamp",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": "current_timestamp()",
+                "description": "Fecha y hora de realizaci\u00f3n de la consulta."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "id_usuario",
+                "ref_table": "usuarios",
+                "ref_column": "cedula",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "id_medico",
+                "ref_table": "usuarios",
+                "ref_column": "cedula",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "diagnosticos_consulta",
+        "description": "Relaci\u00f3n entre las consultas y las patolog\u00edas diagnosticadas en cada una.",
+        "columns": [
+            {
+                "name": "id_consulta",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia a la consulta m\u00e9dica realizada."
+            },
+            {
+                "name": "codigo_icd_diagnostico",
+                "type": "varchar(10)",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia a la patolog\u00eda diagnosticada."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "id_consulta",
+                "ref_table": "consulta_medica",
+                "ref_column": "id",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "codigo_icd_diagnostico",
+                "ref_table": "lista_patologias",
+                "ref_column": "codigo_icd",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "sintomas_consulta",
+        "description": "Relaci\u00f3n entre las consultas y los s\u00edntomas manifestados por los pacientes.",
+        "columns": [
+            {
+                "name": "id_consulta",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia a la consulta m\u00e9dica realizada."
+            },
+            {
+                "name": "id_sintoma",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al s\u00edntoma registrado."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "id_consulta",
+                "ref_table": "consulta_medica",
+                "ref_column": "id",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "id_sintoma",
+                "ref_table": "lista_sintomas",
+                "ref_column": "id_sintoma",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "patologias_usuarios",
+        "description": "Asociaci\u00f3n de antecedentes m\u00e9dicos cr\u00f3nicos o patolog\u00edas recurrentes a los usuarios.",
+        "columns": [
+            {
+                "name": "cedula_usuario",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al usuario/paciente."
+            },
+            {
+                "name": "codigo_icd",
+                "type": "varchar(10)",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia a la patolog\u00eda que padece el usuario."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "cedula_usuario",
+                "ref_table": "usuarios",
+                "ref_column": "cedula",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "codigo_icd",
+                "ref_table": "lista_patologias",
+                "ref_column": "codigo_icd",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "condiciones_usuarios",
+        "description": "Historial de condiciones m\u00e9dicas o de salud vigentes asociadas a cada usuario.",
+        "columns": [
+            {
+                "name": "id",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": true,
+                "default": null,
+                "description": "Clave primaria autoincremental del registro de relaci\u00f3n."
+            },
+            {
+                "name": "cedula_usuario",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al usuario/paciente."
+            },
+            {
+                "name": "id_condicion",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia a la condici\u00f3n asignada."
+            },
+            {
+                "name": "fecha_registro",
+                "type": "timestamp",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": "current_timestamp()",
+                "description": "Fecha de registro de la condici\u00f3n al usuario."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "cedula_usuario",
+                "ref_table": "usuarios",
+                "ref_column": "cedula",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "id_condicion",
+                "ref_table": "lista_condiciones",
+                "ref_column": "id",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "pnfs_usuarios",
+        "description": "Informaci\u00f3n acad\u00e9mica que vincula a un estudiante con su n\u00facleo y carrera (PNF).",
+        "columns": [
+            {
+                "name": "cedula_usuario",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "C\u00e9dula del usuario estudiante (clave primaria). Referencia a usuarios."
+            },
+            {
+                "name": "nucleo_id",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al n\u00facleo donde estudia. Referencia a lista_nucleos."
+            },
+            {
+                "name": "pnf_id",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al PNF que cursa. Referencia a lista_pnfs."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "cedula_usuario",
+                "ref_table": "usuarios",
+                "ref_column": "cedula",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "nucleo_id",
+                "ref_table": "lista_nucleos",
+                "ref_column": "id_nucleo",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "pnf_id",
+                "ref_table": "lista_pnfs",
+                "ref_column": "id_pnf",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    },
+    {
+        "name": "nucleo_pnf",
+        "description": "Carreras (PNF) que son ofrecidas/vinculadas activamente en cada n\u00facleo universitario.",
+        "columns": [
+            {
+                "name": "id_nucleo",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al n\u00facleo universitario."
+            },
+            {
+                "name": "id_pnf",
+                "type": "integer",
+                "primary_key": true,
+                "nullable": false,
+                "auto_increment": false,
+                "default": null,
+                "description": "Referencia al PNF dictado en el n\u00facleo."
+            },
+            {
+                "name": "estado",
+                "type": "integer",
+                "primary_key": false,
+                "nullable": true,
+                "auto_increment": false,
+                "default": "1",
+                "description": "Define si la oferta acad\u00e9mica est\u00e1 activa (1) o inactiva (0)."
+            }
+        ],
+        "foreign_keys": [
+            {
+                "column": "id_nucleo",
+                "ref_table": "lista_nucleos",
+                "ref_column": "id_nucleo",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            },
+            {
+                "column": "id_pnf",
+                "ref_table": "lista_pnfs",
+                "ref_column": "id_pnf",
+                "options": "ON DELETE CASCADE ON UPDATE CASCADE"
+            }
+        ]
+    }
+];
+
+        let currentTab = 'all'; // 'all', 'detail', 'diagram'
+        let selectedTableName = null;
+
+        function init() {
+            renderSidebar();
+            renderContent();
+            
+            document.getElementById('search').addEventListener('input', () => {
+                renderSidebar();
+            });
+        }
+
+        function renderSidebar() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const listEl = document.getElementById('tableList');
+            listEl.innerHTML = '';
+            
+            database.forEach(table => {
+                const colMatch = table.columns.some(col => col.name.toLowerCase().includes(query));
+                const nameMatch = table.name.toLowerCase().includes(query);
+                
+                if (query === '' || nameMatch || colMatch) {
+                    const isActive = selectedTableName === table.name && currentTab === 'detail';
+                    
+                    const item = document.createElement('div');
+                    item.className = `table-item ${isActive ? 'active' : ''}`;
+                    item.onclick = () => showTableDetail(table.name);
+                    
+                    item.innerHTML = `
+                        <div class="table-item-name">
+                            <i class="fa-solid fa-table"></i>
+                            ${table.name}
+                        </div>
+                        <span class="col-count">${table.columns.length}</span>
+                    `;
+                    listEl.appendChild(item);
+                }
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            if (tab !== 'detail') {
+                selectedTableName = null;
+            }
+            
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons[0].classList.toggle('active', tab === 'all');
+            buttons[1].classList.toggle('active', tab === 'diagram');
+            
+            renderSidebar();
+            renderContent();
+        }
+
+        function showTableDetail(tableName) {
+            selectedTableName = tableName;
+            currentTab = 'detail';
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            renderSidebar();
+            renderContent();
+        }
+
+        function renderContent() {
+            const body = document.getElementById('contentBody');
+            body.innerHTML = '';
+            
+            if (currentTab === 'all') {
+                renderGridView(body);
+            } else if (currentTab === 'detail') {
+                renderDetailView(body);
+            } else if (currentTab === 'diagram') {
+                renderDiagramView(body);
+            }
+        }
+
+        function renderGridView(container) {
+            const grid = document.createElement('div');
+            grid.className = 'grid-overview';
+            
+            database.forEach(table => {
+                const card = document.createElement('div');
+                card.className = 'table-card';
+                card.onclick = () => showTableDetail(table.name);
+                
+                let otherHtml = '';
+                
+                table.columns.forEach((col, idx) => {
+                    const pkBadge = col.primary_key ? '<span class="badge badge-pk" style="font-size: 8px;">PK</span>' : '';
+                    const isFk = table.foreign_keys.some(fk => fk.column === col.name);
+                    const fkBadge = isFk ? '<span class="badge badge-fk" style="font-size: 8px;">FK</span>' : '';
+                    
+                    const line = `
+                        <div class="col-preview-item">
+                            <span class="col-preview-name">${col.name} ${pkBadge}${fkBadge}</span>
+                            <span>${col.type}</span>
+                        </div>
+                    `;
+                    
+                    if (idx < 6) {
+                        otherHtml += line;
+                    }
+                });
+                
+                if (table.columns.length > 6) {
+                    otherHtml += `<div style="text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 6px;">+ \${table.columns.length - 6} más...</div>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="table-card-header">
+                        <div class="table-card-title">
+                            <i class="fa-solid fa-table"></i>
+                            ${table.name}
+                        </div>
+                        <span class="col-count">${table.columns.length} cols</span>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; flex-grow: 1;">
+                        ${table.description || 'Sin descripción.'}
+                    </div>
+                    <div class="col-list-preview">
+                        ${otherHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            container.appendChild(grid);
+        }
+
+        function renderDetailView(container) {
+            const table = database.find(t => t.name === selectedTableName);
+            if (!table) return;
+            
+            const detail = document.createElement('div');
+            detail.className = 'detail-view';
+            
+            let rowsHtml = '';
+            table.columns.forEach(col => {
+                const pkBadge = col.primary_key ? '<span class="badge badge-pk">PK</span>' : '';
+                const fkInfo = table.foreign_keys.find(fk => fk.column === col.name);
+                const fkBadge = fkInfo ? `<span class="badge badge-fk" title="Ref: \${fkInfo.ref_table}(\${fkInfo.ref_column})">FK</span>` : '';
+                
+                const nullableIcon = col.nullable 
+                    ? '<i class="fa-solid fa-check nullable-yes"></i>' 
+                    : '<i class="fa-solid fa-xmark nullable-no"></i>';
+                    
+                rowsHtml += `
+                    <tr>
+                        <td class="col-name-cell">
+                            ${col.name}
+                            ${pkBadge}
+                            ${fkBadge}
+                        </td>
+                        <td class="type-cell">${col.type}</td>
+                        <td class="nullable-cell" style="text-align: center;">${nullableIcon}</td>
+                        <td class="default-cell">${col.default !== null ? col.default : '<span style="color: rgba(255,255,255,0.15)">NULL</span>'}</td>
+                        <td style="font-size: 14px; color: var(--text-muted); line-height: 1.4;">${col.description || 'Sin descripción.'}</td>
+                    </tr>
+                `;
+            });
+            
+            let relationsHtml = '';
+            if (table.foreign_keys.length > 0) {
+                let itemsHtml = '';
+                table.foreign_keys.forEach(fk => {
+                    itemsHtml += `
+                        <div class="relation-item">
+                            <i class="fa-solid fa-link relation-icon"></i>
+                            Columna <span class="relation-code">${fk.column}</span>
+                            <span class="relation-arrow">&rarr;</span>
+                            Referencia a <span class="relation-code">${fk.ref_table}(\&nbsp;${fk.ref_column}\&nbsp;)</span>
+                        </div>
+                    `;
+                });
+                relationsHtml = `
+                    <div class="relations-section">
+                        <h3><i class="fa-solid fa-network-wired"></i> Relaciones / Llaves Foráneas</h3>
+                        ${itemsHtml}
+                    </div>
+                `;
+            }
+            
+            detail.innerHTML = `
+                <div class="detail-header">
+                    <div>
+                        <div class="detail-title">
+                            <i class="fa-solid fa-table"></i>
+                            ${table.name}
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">
+                            ${table.description || 'Sin descripción.'}
+                        </div>
+                    </div>
+                    ${table.foreign_keys.length > 0 ? `
+                        <div class="relations-badge">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            ${table.foreign_keys.length} Relaciones
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Columna</th>
+                                <th>Tipo de Dato</th>
+                                <th style="text-align: center;">Permite Nulos</th>
+                                <th>Valor por Defecto</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+                
+                ${relationsHtml}
+            `;
+            
+            container.appendChild(detail);
+        }
+
+        async function renderDiagramView(container) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'diagram-view';
+            
+            wrapper.innerHTML = `
+                <div class="diagram-title">Diagrama Entidad-Relación Interactivo</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; display: flex; gap: 15px; justify-content: center; width: 100%; align-items: center;">
+                    <span><i class="fa-solid fa-mouse"></i> Rueda del mouse para hacer zoom</span>
+                    <span><i class="fa-solid fa-arrows-up-down-left-right"></i> Haz clic y arrastra para mover</span>
+                    <button onclick="resetZoom()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #fff; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 11px; display: flex; align-items: center; gap: 5px; transition: background 0.2s;"><i class="fa-solid fa-arrows-rotate"></i> Restaurar Zoom</button>
+                </div>
+                <div id="diagramContainer" style="width: 100%; height: 650px; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(15,23,42,0.3); overflow: hidden; position: relative;">
+                </div>
+            `;
+            
+            container.appendChild(wrapper);
+            
+            try {
+                const diagramContainer = document.getElementById('diagramContainer');
+                const mermaidText = `erDiagram
+    "lista_roles" {
+        tinyint id_rol "PK"
+        text nombre_rol ""
+        text descripcion_rol ""
+    }
+    "lista_permisos" {
+        integer id_permiso "PK"
+        varchar nombre_permiso ""
+        text descripcion_permiso ""
+    }
+    "lista_tipos" {
+        integer id_tipo "PK"
+        text nombre_tipo ""
+        text descripcion_tipo ""
+    }
+    "lista_patologias" {
+        varchar codigo_icd "PK"
+        text patologia ""
+    }
+    "lista_condiciones" {
+        integer id "PK"
+        varchar nombre_condicion ""
+        text descripcion_condicion ""
+    }
+    "lista_sintomas" {
+        integer id_sintoma "PK"
+        text nombre_sintoma ""
+        text descripcion_sintoma ""
+    }
+    "lista_pnfs" {
+        integer id_pnf "PK"
+        text nombre_pnf ""
+        integer estado ""
+    }
+    "lista_nucleos" {
+        integer id_nucleo "PK"
+        text nombre_nucleo ""
+        integer estado ""
+    }
+    "usuarios" {
+        integer cedula "PK"
+        text nombre ""
+        text apellido ""
+        varchar contrasena ""
+        integer tipo "FK"
+        date fecha_nacimiento ""
+        varchar tlfprincipal ""
+        varchar tlfemergencia ""
+        text nombre_contacto_emergencia ""
+        text direccion ""
+        tinyint activo ""
+        tinyint rol "FK"
+        tinyint sexo ""
+        timestamp fecha_creacion ""
+    }
+    "lista_tipos" ||--o{ "usuarios" : "tipo"
+    "lista_roles" ||--o{ "usuarios" : "rol"
+    "roles_permisos" {
+        tinyint id_rol "PK FK"
+        integer id_permiso "PK FK"
+    }
+    "lista_roles" ||--o{ "roles_permisos" : "id_rol"
+    "lista_permisos" ||--o{ "roles_permisos" : "id_permiso"
+    "configuracion" {
+        tinyint rol_defecto "FK"
+    }
+    "lista_roles" ||--o{ "configuracion" : "rol_defecto"
+    "consulta_medica" {
+        integer id "PK"
+        integer id_usuario "FK"
+        integer id_medico "FK"
+        text motivo_de_visita ""
+        text observaciones ""
+        text medicamento_suministrado ""
+        timestamp fecha_consulta ""
+    }
+    "usuarios" ||--o{ "consulta_medica" : "id_usuario"
+    "usuarios" ||--o{ "consulta_medica" : "id_medico"
+    "diagnosticos_consulta" {
+        integer id_consulta "PK FK"
+        varchar codigo_icd_diagnostico "PK FK"
+    }
+    "consulta_medica" ||--o{ "diagnosticos_consulta" : "id_consulta"
+    "lista_patologias" ||--o{ "diagnosticos_consulta" : "codigo_icd_diagnostico"
+    "sintomas_consulta" {
+        integer id_consulta "PK FK"
+        integer id_sintoma "PK FK"
+    }
+    "consulta_medica" ||--o{ "sintomas_consulta" : "id_consulta"
+    "lista_sintomas" ||--o{ "sintomas_consulta" : "id_sintoma"
+    "patologias_usuarios" {
+        integer cedula_usuario "PK FK"
+        varchar codigo_icd "PK FK"
+    }
+    "usuarios" ||--o{ "patologias_usuarios" : "cedula_usuario"
+    "lista_patologias" ||--o{ "patologias_usuarios" : "codigo_icd"
+    "condiciones_usuarios" {
+        integer id "PK"
+        integer cedula_usuario "FK"
+        integer id_condicion "FK"
+        timestamp fecha_registro ""
+    }
+    "usuarios" ||--o{ "condiciones_usuarios" : "cedula_usuario"
+    "lista_condiciones" ||--o{ "condiciones_usuarios" : "id_condicion"
+    "pnfs_usuarios" {
+        integer cedula_usuario "PK FK"
+        integer nucleo_id "FK"
+        integer pnf_id "FK"
+    }
+    "usuarios" ||--o{ "pnfs_usuarios" : "cedula_usuario"
+    "lista_nucleos" ||--o{ "pnfs_usuarios" : "nucleo_id"
+    "lista_pnfs" ||--o{ "pnfs_usuarios" : "pnf_id"
+    "nucleo_pnf" {
+        integer id_nucleo "PK FK"
+        integer id_pnf "PK FK"
+        integer estado ""
+    }
+    "lista_nucleos" ||--o{ "nucleo_pnf" : "id_nucleo"
+    "lista_pnfs" ||--o{ "nucleo_pnf" : "id_pnf"`;
+                const { svg } = await mermaid.render('erdSvg', mermaidText);
+                diagramContainer.innerHTML = svg;
+                
+                const svgEl = document.getElementById('erdSvg');
+                svgEl.style.width = '100%';
+                svgEl.style.height = '100%';
+                svgEl.style.maxWidth = '100%';
+                
+                // Initialize svg-pan-zoom
+                window.panZoomInstance = svgPanZoom(svgEl, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: true,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.1,
+                    maxZoom: 10,
+                    zoomScaleSensitivity: 0.15
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('diagramContainer').innerHTML = `<div style="padding: 40px; color: #ef4444;">Error al renderizar el diagrama: \${err.message}</div>`;
+            }
+        }
+
+        window.resetZoom = function() {
+            if (window.panZoomInstance) {
+                window.panZoomInstance.resetZoom();
+                window.panZoomInstance.center();
+                window.panZoomInstance.fit();
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -38,13 +38,13 @@ CREATE TABLE `lista_sintomas` (
 CREATE TABLE `lista_pnfs` (
   `id_pnf` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `nombre_pnf` text NOT NULL,
-  `estado` INT DEFAULT 1
+  `estado` integer DEFAULT 1
 ) ENGINE=InnoDB;
 
 CREATE TABLE `lista_nucleos` (
   `id_nucleo` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `nombre_nucleo` text NOT NULL,
-  `estado` INT DEFAULT 1
+  `estado` integer DEFAULT 1
 ) ENGINE=InnoDB;
 
 CREATE TABLE `usuarios` (
@@ -136,7 +136,7 @@ CREATE TABLE `pnfs_usuarios` (
 CREATE TABLE `nucleo_pnf` (
   `id_nucleo` integer NOT NULL,
   `id_pnf` integer NOT NULL,
-  `estado` INT DEFAULT 1,
+  `estado` integer DEFAULT 1,
   PRIMARY KEY (`id_nucleo`, `id_pnf`),
   FOREIGN KEY (`id_nucleo`) REFERENCES `lista_nucleos` (`id_nucleo`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_pnf`) REFERENCES `lista_pnfs` (`id_pnf`) ON DELETE CASCADE ON UPDATE CASCADE
