@@ -56,7 +56,7 @@ class Controller {
             $rol = null;
             
             if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
-                $userModel = new \app\model\Usuario($this->db);
+                $userModel = new \app\model\Usuario($this->pdo);
                 if ($userModel->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
                     $rol = (int)$_POST['rol'];
                 }

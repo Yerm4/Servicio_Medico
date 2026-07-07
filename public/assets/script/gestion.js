@@ -1,6 +1,7 @@
 const inputBuscar = document.getElementById('inputBuscarUsuario');
 const cuerpoTabla = document.getElementById('cuerpoTablaUsuarios');
-const elModalActualizar = document.getElementById('modalActualizarUsuario');
+const modalActualizar = document.getElementById('modalActualizarUsuario');
+const modalDetallesUsuario = document.getElementById('modalDetallesUsuario');
 
 function calcularEdadJS(fechaNacimiento) {
     if (!fechaNacimiento || fechaNacimiento.trim() === "") return "No registrado";
@@ -68,7 +69,7 @@ if (inputBuscar && cuerpoTabla) {
     });
 }
 
-if (cuerpoTabla && elModalActualizar) {
+if (cuerpoTabla && modalActualizar) {
     cuerpoTabla.addEventListener('click', function(event) {
         if (event.target.classList.contains('editar-usuario')) {
             event.preventDefault();
@@ -109,10 +110,79 @@ if (cuerpoTabla && elModalActualizar) {
                     document.getElementById('edit_sexo_f').checked = true;
                 }
 
-                elModalActualizar.showModal();
+                modalActualizar.showModal();
 
                 setTimeout(() => {
-                    elModalActualizar.style.opacity = "1"
+                    modalActualizar.style.opacity = "1"
+                }, 500);
+            })
+            .catch(error => console.error("Error al cargar datos del usuario:", error));
+        }
+    });
+}
+
+if (cuerpoTabla && modalActualizar) {
+    cuerpoTabla.addEventListener('click', function(event) {
+        if (event.target.classList.contains('consultar-usuario')) {
+            event.preventDefault();
+            
+            const cedula = event.target.getAttribute('data-id');
+            const tokenCSRF = document.querySelector('#modalRegistrarUsuario input[name="csrf_token"]').value;
+
+            fetch('index.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `csrf_token=${tokenCSRF}&form=obtener_usuario&id=${cedula}`
+            })
+            .then(response => response.json())
+            .then(usuario => {
+                if (usuario.error) {
+                    alert(usuario.error);
+                    return;
+                }
+                const detalles = document.getElementById('detallesUsuario')
+                detalles.innerHTML = ""
+
+                function crearElementoDato(titulo, valor) {
+                    const p = document.createElement("p");
+                    
+                    p.textContent = `${titulo}${valor}`;
+                    
+                    return p;
+                }
+                const contenido = document.createDocumentFragment()
+        
+                contenido.append(
+                    crearElementoDato("Cédula: ", usuario.cedula),
+                    crearElementoDato("Nombre: ", usuario.nombre),
+                    crearElementoDato("Apellido: ", usuario.apellido),
+                    crearElementoDato("Tipo: ", usuario.tipo),
+                    crearElementoDato("Fecha de Nacimiento: ", usuario.fecha_nacimiento),
+                    crearElementoDato("Edad: ", calcularEdadJS(usuario.fecha_nacimiento)),
+                    crearElementoDato("Teléfono Principal: ", usuario.tlfprincipal),
+                    crearElementoDato("Teléfono Emergencia: ", usuario.tlfemergencia),
+                    crearElementoDato("Contacto de Emergencia: ", usuario.nombre_contacto_emergencia),
+                    crearElementoDato("Dirección: ", usuario.direccion),
+                    crearElementoDato("Sexo: ", usuario.sexo == 1 ? "Masculino" : "Femenino"),
+                );
+
+                detalles.append(contenido)
+
+                const editRolField = document.getElementById('edit_rol');
+                if (editRolField && usuario.rol !== undefined) {
+                    editRolField.value = usuario.rol;
+                }
+
+                if (usuario.sexo == 1) {
+                    document.getElementById('edit_sexo_m').checked = true;
+                } else if (usuario.sexo == 2) {
+                    document.getElementById('edit_sexo_f').checked = true;
+                }
+
+                modalDetallesUsuario.showModal();
+
+                setTimeout(() => {
+                    modalDetallesUsuario.style.opacity = "1"
                 }, 500);
             })
             .catch(error => console.error("Error al cargar datos del usuario:", error));
@@ -136,7 +206,7 @@ if (formActualizar) {
         .then(data => {
             if (data.status === 'success') {
                 alert("¡Datos del usuario actualizados correctamente!");
-                elModalActualizar.close();
+                modalActualizar.close();
                 
                 if (inputBuscar) {
                     inputBuscar.dispatchEvent(new Event('input'));
@@ -153,7 +223,7 @@ if (formActualizar) {
 
 const inputBuscarC = document.getElementById('inputBuscarConsulta');
 const cuerpoTablaConsultas = document.getElementById('cuerpoTablaConsultas');
-const elModalActualizarConsulta = document.getElementById('modalActualizarConsulta');
+const modalActualizarConsulta = document.getElementById('modalActualizarConsulta');
 const btnCargarMas = document.getElementById('btnCargarMasConsultas');
 
 function checkCargarMasVisibility() {
@@ -305,7 +375,7 @@ if (btnCargarMas && cuerpoTablaConsultas) {
     });
 }
 
-if (cuerpoTablaConsultas && elModalActualizarConsulta) {
+if (cuerpoTablaConsultas && modalActualizarConsulta) {
     cuerpoTablaConsultas.addEventListener('click', function(event) {
         if (event.target.classList.contains('ver-detalles-consulta')) {
             event.preventDefault();
@@ -398,9 +468,9 @@ if (cuerpoTablaConsultas && elModalActualizarConsulta) {
                     loadConsultaIntoEditForm(consulta);
                 }
 
-                elModalActualizarConsulta.showModal();
+                modalActualizarConsulta.showModal();
                 setTimeout(() => {
-                    elModalActualizarConsulta.style.opacity = "1";
+                    modalActualizarConsulta.style.opacity = "1";
                 }, 500);
             })
             .catch(error => console.error("Error al cargar datos de la consulta:", error));

@@ -82,7 +82,7 @@ if ($paginaActual === 'sedes-carreras') {
     <?php endif; ?>
         </aside>
         <section class="section-1 section-1--perfil">
-       <?php if ($paginaActual === 'sedes-carreras'): ?>
+    <?php if ($paginaActual === 'sedes-carreras'): ?>
     <div  id="sedes-carreras" class="contenedor-sedes-carreras" style="margin-top: 1.5rem; width: 100%; display: flex; flex-direction: column;">
         
         <div class="gestion-grid-superior" style="display: flex; flex-direction: column; width: 100%; gap: 2.5rem; margin-bottom: 2rem;">
@@ -298,7 +298,6 @@ if ($paginaActual === 'sedes-carreras') {
                     <th class="tabla-usuarios__title">Apellido</th>
                     <th class="tabla-usuarios__title">Tipo</th>
                     <th class="tabla-usuarios__title">Edad</th>
-                    <th class="tabla-usuarios__title">Sexo</th>
                     <th class="tabla-usuarios__title">Telefono</th>
                     <th class="tabla-usuarios__title"></th>
                     <th class="tabla-usuarios__title"></th>
@@ -312,10 +311,10 @@ if ($paginaActual === 'sedes-carreras') {
                     <td class="tabla-usuarios__desc"><?=e($registro["apellido"])?></td>
                     <td class="tabla-usuarios__desc"><?= e($registro["nombre_tipo"] ?? ($registro["tipo"] === 0 ? "Estudiante" : "Docente")) ?></td>
                     <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
-                    <td class="tabla-usuarios__desc"><?= $registro["sexo"] == 1 ? "Masculino" : "Femenino" ?></td>
                     <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
                     <td class="tabla-usuarios__desc"> <button class="editar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
                     <td class="tabla-usuarios__desc"> <button class="eliminar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="consultar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Detalles</button></td>
                 </tr>
                 <?php endforeach?>
                 </tbody>
@@ -684,6 +683,9 @@ if ($paginaActual === 'sedes-carreras') {
         </dialog>
         <dialog id="modalActualizarUsuario" class="modal-crud">
             <?php include_once __DIR__."/modalActualizarUsuario.php" ?>
+        </dialog>
+        <dialog id="modalDetallesUsuario" class="modal-crud">
+            <?php include_once __DIR__."/modalDetallesUsuario.php" ?>
         </dialog>
         <?php endif; ?>
         <?php if ($tieneVerConsultas): ?>
