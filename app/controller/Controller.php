@@ -202,7 +202,7 @@ public function actualizar() {
             }
         }
 
-        if (strlen($nombre) > 10) {
+        if (strlen($nombre) > 25) {
             echo json_encode(['status' => 'error', 'message' => 'El nombre es muy largo.']);
             exit;
         }

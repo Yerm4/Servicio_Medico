@@ -313,8 +313,8 @@ if ($paginaActual === 'sedes-carreras') {
                     <td class="tabla-usuarios__desc"><?= calcularEdad($registro["fecha_nacimiento"])?></td>
                     <td class="tabla-usuarios__desc"> <?=e($registro["tlfprincipal"])?></td>
                     <td class="tabla-usuarios__desc"> <button class="editar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Actualizar</button></td>
-                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
                     <td class="tabla-usuarios__desc"> <button class="consultar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Detalles</button></td>
+                    <td class="tabla-usuarios__desc"> <button class="eliminar-usuario action-card__button" data-id="<?= e($registro["cedula"]) ?>">Eliminar</button></td>
                 </tr>
                 <?php endforeach?>
                 </tbody>

@@ -42,26 +42,55 @@ if (inputBuscar && cuerpoTabla) {
 
             usuarios.forEach(usuario => {
                 const fila = document.createElement('tr');
-                
-                const tipoUsuario = usuario.nombre_tipo || (usuario.tipo == 0 ? 'Estudiante' : 'Docente');
-                const sexoUsuario = usuario.sexo == 1 ? 'Masculino' : 'Femenino';
-                const edadCalculada = calcularEdadJS(usuario.fecha_nacimiento);
 
-                fila.innerHTML = `
-                    <td class="tabla-usuarios__desc">${usuario.cedula}</td>
-                    <td class="tabla-usuarios__desc">${usuario.nombre || ''}</td>
-                    <td class="tabla-usuarios__desc">${usuario.apellido || ''}</td>
-                    <td class="tabla-usuarios__desc">${tipoUsuario}</td>
-                    <td class="tabla-usuarios__desc">${edadCalculada}</td>
-                    <td class="tabla-usuarios__desc">${sexoUsuario}</td>
-                    <td class="tabla-usuarios__desc">${usuario.tlfprincipal || ''}</td>
-                    <td class="tabla-usuarios__desc">
-                        <button class="editar-usuario action-card__button" data-id="${usuario.cedula}">Actualizar</button>
-                    </td>
-                    <td class="tabla-usuarios__desc">
-                        <button class="eliminar-usuario action-card__button" data-id="${usuario.cedula}">Eliminar</button>
-                    </td>
-                `;
+                const tdActualizar = document.createElement("td");
+                tdActualizar.className = "tabla-usuarios__desc";
+
+                const btnActualizar = document.createElement("button");
+                btnActualizar.className = "editar-usuario action-card__button";
+                btnActualizar.textContent = "Actualizar";
+                btnActualizar.dataset.id = usuario.cedula; 
+
+                tdActualizar.appendChild(btnActualizar);
+
+                const tdDetalles = document.createElement("td");
+                tdDetalles.className = "tabla-usuarios__desc";
+
+                const btnDetalles = document.createElement("button");
+                btnDetalles.className = "consultar-usuario action-card__button";
+                btnDetalles.textContent = "Detalles";
+                btnDetalles.dataset.id = usuario.cedula;
+
+                tdDetalles.appendChild(btnDetalles);
+
+                const tdEliminar = document.createElement("td");
+                tdEliminar.className = "tabla-usuarios__desc";
+
+                const btnEliminar = document.createElement("button");
+                btnEliminar.className = "eliminar-usuario action-card__button";
+                btnEliminar.textContent = "Eliminar";
+                btnEliminar.dataset.id = usuario.cedula;
+
+                tdEliminar.appendChild(btnEliminar);
+            
+                function crearTd(valor) {
+                    const td = document.createElement("td");
+                    td.classList.add("tabla-usuarios__desc")
+                    td.textContent = valor
+                    return td;
+                }
+                
+                fila.append(
+                    crearTd(usuario.cedula),
+                    crearTd(usuario.nombre),
+                    crearTd(usuario.apellido),
+                    crearTd(usuario.tipo),
+                    crearTd(calcularEdadJS(usuario.fecha_nacimiento)),
+                    crearTd(usuario.tlfprincipal),
+                    tdActualizar,
+                    tdDetalles, 
+                    tdEliminar
+                );
                 cuerpoTabla.appendChild(fila);
             });
         })
@@ -143,27 +172,25 @@ if (cuerpoTabla && modalActualizar) {
                 const detalles = document.getElementById('detallesUsuario')
                 detalles.innerHTML = ""
 
-                function crearElementoDato(titulo, valor) {
+                function crearP(titulo, valor) {
                     const p = document.createElement("p");
-                    
                     p.textContent = `${titulo}${valor}`;
-                    
                     return p;
                 }
                 const contenido = document.createDocumentFragment()
         
                 contenido.append(
-                    crearElementoDato("Cédula: ", usuario.cedula),
-                    crearElementoDato("Nombre: ", usuario.nombre),
-                    crearElementoDato("Apellido: ", usuario.apellido),
-                    crearElementoDato("Tipo: ", usuario.tipo),
-                    crearElementoDato("Fecha de Nacimiento: ", usuario.fecha_nacimiento),
-                    crearElementoDato("Edad: ", calcularEdadJS(usuario.fecha_nacimiento)),
-                    crearElementoDato("Teléfono Principal: ", usuario.tlfprincipal),
-                    crearElementoDato("Teléfono Emergencia: ", usuario.tlfemergencia),
-                    crearElementoDato("Contacto de Emergencia: ", usuario.nombre_contacto_emergencia),
-                    crearElementoDato("Dirección: ", usuario.direccion),
-                    crearElementoDato("Sexo: ", usuario.sexo == 1 ? "Masculino" : "Femenino"),
+                    crearP("Cédula: ", usuario.cedula),
+                    crearP("Nombre: ", usuario.nombre),
+                    crearP("Apellido: ", usuario.apellido),
+                    crearP("Tipo: ", usuario.tipo),
+                    crearP("Fecha de Nacimiento: ", usuario.fecha_nacimiento),
+                    crearP("Edad: ", calcularEdadJS(usuario.fecha_nacimiento)),
+                    crearP("Teléfono Principal: ", usuario.tlfprincipal),
+                    crearP("Teléfono Emergencia: ", usuario.tlfemergencia),
+                    crearP("Contacto de Emergencia: ", usuario.nombre_contacto_emergencia),
+                    crearP("Dirección: ", usuario.direccion),
+                    crearP("Sexo: ", usuario.sexo == 1 ? "Masculino" : "Femenino"),
                 );
 
                 detalles.append(contenido)
