@@ -274,9 +274,14 @@ if ($paginaActual === 'sedes-carreras') {
                 <div class="section-1__box transition" id="section-1-box">
                     <?php if ($paginaActual === 'usuarios' && $tieneGestionarUsuarios): ?>
                         <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="">Registrar usuario</a>
-                    <?php elseif ($paginaActual === 'consultas' && $tieneVerConsultas && $tieneRealizarConsulta): ?>
-                        <div class="box-iniciar-consulta">
-                            <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#">Iniciar consulta</a>
+                    <?php elseif ($paginaActual === 'consultas' && $tieneVerConsultas): ?>
+                        <div class="box-iniciar-consulta" style="display: flex; gap: 10px;">
+                            <?php if ($tieneRealizarConsulta): ?>
+                                <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#">Iniciar consulta</a>
+                            <?php endif; ?>
+                            <?php if ($tieneGenerarReportes): ?>
+                                <a name="openModal" data-modal="modalReporteMorbilidad" class="action-card__button btn-generar-reporte" href="#" style="background-color: #0284c7; width: fit-content; text-align: center;">Generar Reporte</a>
+                            <?php endif; ?>
                         </div>
                     <?php elseif ($paginaActual === 'configuracion' && ($tieneGestionarRolesPermisos || $tieneGestionarCondiciones)): ?>
                         <span class="texto-configuracion-sistema">Configuración del Sistema</span>
@@ -432,7 +437,12 @@ if ($paginaActual === 'sedes-carreras') {
                     <?php endif; ?>
                 <?php else: ?>
                     <div class="dashboard-container">
-                        <h3 class="titulo-configuracion-interna">Panel de Inicio</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 class="titulo-configuracion-interna" style="margin: 0;">Panel de Inicio</h3>
+                            <?php if ($tieneGenerarReportes): ?>
+                                <a name="openModal" data-modal="modalReporteMorbilidad" class="action-card__button btn-generar-reporte" href="#" style="background-color: #0284c7; width: fit-content; text-align: center;">Generar Reporte de Morbilidad</a>
+                            <?php endif; ?>
+                        </div>
                         
                         <div class="dashboard-stats-grid">
                             <div class="stat-card">
@@ -697,6 +707,11 @@ if ($paginaActual === 'sedes-carreras') {
         </dialog>
         <dialog id="modalBuscarConsulta" class="modal-crud">
             <?php include_once __DIR__."/modalBuscarConsulta.php" ?>
+        </dialog>
+        <?php endif; ?>
+        <?php if ($tieneGenerarReportes): ?>
+        <dialog id="modalReporteMorbilidad" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+            <?php include_once __DIR__."/modalReporteMorbilidad.php" ?>
         </dialog>
         <?php endif; ?>
         <?php if ($tieneGestionarRolesPermisos): ?>

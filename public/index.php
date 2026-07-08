@@ -58,9 +58,7 @@ $userModel->sincronizarPermisos([
     "gestionar_oferta_academica" => "Permite administrar los núcleos, PNFs y la oferta académica global"
 ]);
 
-// Auto-associate default permissions and clean up Director role to remove ver/modify/add consultations
 try {
-    // Enforce Director (4) shouldn't have ver_consultas, realizar_consulta, modificar_consulta
     $pIdsToRemove = [];
     $stmtP = $pdo->prepare("SELECT id_permiso FROM lista_permisos WHERE nombre_permiso IN ('ver_consultas', 'realizar_consulta', 'modificar_consulta')");
     $stmtP->execute();
@@ -93,7 +91,6 @@ try {
         }
     }
 } catch (Exception $e) {
-    // Ignore database errors during bootstrap
 }
 
 function checkPerm(string $permiso, \app\model\Usuario $userModel): bool {
@@ -189,6 +186,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 exit("No tiene permisos para actualizar consultas.");
             }
             $controllerConsulta->actualizar();
+            break;
+        case "generar_reporte_morbilidad":
+            if (!$tieneGenerarReportes) {
+                http_response_code(403);
+                exit("No tiene permisos para generar reportes.");
+            }
+            $controllerConsulta->generarReporteMorbilidad();
             break;
         case "eliminar_usuario":
             if (!checkPerm("gestionar_usuarios", $userModel)) {

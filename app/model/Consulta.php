@@ -79,7 +79,6 @@ class Consulta {
         try {
             $this->db->beginTransaction();
 
-            // 1. Insert into consulta_medica
             $sqlConsulta = "INSERT INTO consulta_medica (id_usuario, id_medico, motivo_de_visita, observaciones, medicamento_suministrado) 
                             VALUES (:id_usuario, :id_medico, :motivo, :observaciones, :medicamento_suministrado)";
             $stmtConsulta = $this->db->prepare($sqlConsulta);
@@ -114,7 +113,6 @@ class Consulta {
                 }
             }
 
-            // 3. Insert diagnoses into diagnosticos_consulta
             if (!empty($diagnosticos) && is_array($diagnosticos)) {
                 $sqlDiagnostico = "INSERT INTO diagnosticos_consulta (id_consulta, codigo_icd_diagnostico) 
                                    VALUES (:id_consulta, :codigo_icd)";
@@ -184,7 +182,6 @@ class Consulta {
                 $stmtS->execute([':id_consulta' => $c['id']]);
                 $c['sintomas'] = $stmtS->fetchAll(PDO::FETCH_COLUMN);
 
-                // Fetch diagnoses
                 $sqlDiagnosticos = "SELECT d.codigo_icd_diagnostico, p.patologia 
                                     FROM diagnosticos_consulta d
                                     LEFT JOIN lista_patologias p ON d.codigo_icd_diagnostico = p.codigo_icd
@@ -204,7 +201,6 @@ class Consulta {
         try {
             $this->db->beginTransaction();
 
-            // Update main record
             $sql = "UPDATE consulta_medica SET motivo_de_visita = :motivo, observaciones = :observaciones, medicamento_suministrado = :medicamento_suministrado 
                     WHERE id = :id";
             $stmt = $this->db->prepare($sql);
@@ -240,12 +236,10 @@ class Consulta {
                 }
             }
 
-            // Delete old diagnoses
             $sqlDelDiagnosticos = "DELETE FROM diagnosticos_consulta WHERE id_consulta = :id_consulta";
             $stmtDelD = $this->db->prepare($sqlDelDiagnosticos);
             $stmtDelD->execute([':id_consulta' => $idConsulta]);
 
-            // Insert new diagnoses
             if (!empty($diagnosticos) && is_array($diagnosticos)) {
                 $sqlInsDiagnostico = "INSERT INTO diagnosticos_consulta (id_consulta, codigo_icd_diagnostico) 
                                       VALUES (:id_consulta, :codigo_icd)";
@@ -432,6 +426,133 @@ class Consulta {
                 'total_consultas' => 0,
                 'total_usuarios' => 0,
                 'total_condiciones' => 0
+            ];
+        }
+    }
+
+    public function obtenerDatosReporteMorbilidad($fechaInicio, $fechaFin) {
+        try {
+            $fInicio = $fechaInicio . ' 00:00:00';
+            $fFin = $fechaFin . ' 23:59:59';
+
+            $sqlTotal = "SELECT COUNT(*) FROM consulta_medica WHERE fecha_consulta BETWEEN :inicio AND :fin";
+            $stmtTotal = $this->db->prepare($sqlTotal);
+            $stmtTotal->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $totalConsultas = (int)$stmtTotal->fetchColumn();
+
+            $sqlRegistros = "SELECT c.id, c.fecha_consulta, c.motivo_de_visita, c.medicamento_suministrado,
+                                   p.cedula AS paciente_cedula, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                                   t.nombre_tipo AS paciente_tipo,
+                                   m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                                   (SELECT GROUP_CONCAT(CONCAT(dc.codigo_icd_diagnostico, ':', lp.patologia) SEPARATOR '||')
+                                    FROM diagnosticos_consulta dc
+                                    JOIN lista_patologias lp ON dc.codigo_icd_diagnostico = lp.codigo_icd
+                                    WHERE dc.id_consulta = c.id) AS diagnosticos_str,
+                                   (SELECT GROUP_CONCAT(ls.nombre_sintoma SEPARATOR ', ')
+                                    FROM sintomas_consulta sc
+                                    JOIN lista_sintomas ls ON sc.id_sintoma = ls.id_sintoma
+                                    WHERE sc.id_consulta = c.id) AS sintomas_str
+                            FROM consulta_medica c
+                            LEFT JOIN usuarios p ON c.id_usuario = p.cedula
+                            LEFT JOIN lista_tipos t ON p.tipo = t.id_tipo
+                            LEFT JOIN usuarios m ON c.id_medico = m.cedula
+                            WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                            ORDER BY c.fecha_consulta DESC";
+            $stmtReg = $this->db->prepare($sqlRegistros);
+            $stmtReg->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $registros = [];
+            while ($row = $stmtReg->fetch(PDO::FETCH_ASSOC)) {
+                $diagnosticos = [];
+                if (!empty($row['diagnosticos_str'])) {
+                    foreach (explode('||', $row['diagnosticos_str']) as $diagItem) {
+                        $parts = explode(':', $diagItem, 2);
+                        if (count($parts) === 2) {
+                            $diagnosticos[] = [
+                                'codigo' => $parts[0],
+                                'patologia' => $parts[1]
+                            ];
+                        }
+                    }
+                }
+                $row['diagnosticos'] = $diagnosticos;
+                $registros[] = $row;
+            }
+
+            $sqlTipos = "SELECT t.nombre_tipo, COUNT(c.id) as total
+                         FROM consulta_medica c
+                         JOIN usuarios p ON c.id_usuario = p.cedula
+                         JOIN lista_tipos t ON p.tipo = t.id_tipo
+                         WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                         GROUP BY t.id_tipo, t.nombre_tipo
+                         ORDER BY total DESC";
+            $stmtTipos = $this->db->prepare($sqlTipos);
+            $stmtTipos->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $tiposBeneficiario = $stmtTipos->fetchAll(PDO::FETCH_ASSOC);
+
+            $sqlPnfs = "SELECT pnf.nombre_pnf, COUNT(c.id) as total
+                        FROM consulta_medica c
+                        JOIN usuarios p ON c.id_usuario = p.cedula
+                        JOIN pnfs_usuarios pu ON p.cedula = pu.cedula_usuario
+                        JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
+                        WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                        GROUP BY pnf.id_pnf, pnf.nombre_pnf
+                        ORDER BY total DESC";
+            $stmtPnfs = $this->db->prepare($sqlPnfs);
+            $stmtPnfs->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $pnfs = $stmtPnfs->fetchAll(PDO::FETCH_ASSOC);
+
+            $sqlNucleos = "SELECT n.nombre_nucleo, COUNT(c.id) as total
+                           FROM consulta_medica c
+                           JOIN usuarios p ON c.id_usuario = p.cedula
+                           JOIN pnfs_usuarios pu ON p.cedula = pu.cedula_usuario
+                           JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+                           WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                           GROUP BY n.id_nucleo, n.nombre_nucleo
+                           ORDER BY total DESC";
+            $stmtNucleos = $this->db->prepare($sqlNucleos);
+            $stmtNucleos->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $nucleos = $stmtNucleos->fetchAll(PDO::FETCH_ASSOC);
+
+            $sqlPatologias = "SELECT pat.codigo_icd, pat.patologia, COUNT(dc.id_consulta) as total
+                              FROM diagnosticos_consulta dc
+                              JOIN consulta_medica c ON dc.id_consulta = c.id
+                              JOIN lista_patologias pat ON dc.codigo_icd_diagnostico = pat.codigo_icd
+                              WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                              GROUP BY pat.codigo_icd, pat.patologia
+                              ORDER BY total DESC";
+            $stmtPat = $this->db->prepare($sqlPatologias);
+            $stmtPat->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $patologias = $stmtPat->fetchAll(PDO::FETCH_ASSOC);
+
+            $sqlCondiciones = "SELECT lc.nombre_condicion, COUNT(DISTINCT c.id) as total
+                               FROM consulta_medica c
+                               JOIN condiciones_usuarios cu ON c.id_usuario = cu.cedula_usuario
+                               JOIN lista_condiciones lc ON cu.id_condicion = lc.id
+                               WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                               GROUP BY lc.id, lc.nombre_condicion
+                               ORDER BY total DESC";
+            $stmtCond = $this->db->prepare($sqlCondiciones);
+            $stmtCond->execute([':inicio' => $fInicio, ':fin' => $fFin]);
+            $condicionesCronicas = $stmtCond->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'total_consultas' => $totalConsultas,
+                'registros' => $registros,
+                'tipos_beneficiario' => $tiposBeneficiario,
+                'pnfs' => $pnfs,
+                'nucleos' => $nucleos,
+                'patologias' => $patologias,
+                'condiciones_cronicas' => $condicionesCronicas
+            ];
+        } catch (PDOException $e) {
+            return [
+                'total_consultas' => 0,
+                'registros' => [],
+                'tipos_beneficiario' => [],
+                'pnfs' => [],
+                'nucleos' => [],
+                'patologias' => [],
+                'condiciones_cronicas' => []
             ];
         }
     }
