@@ -16,7 +16,7 @@ class NucleoPNF {
     // VALIDACIONES DE EXISTENCIA / DUPLICADOS
     // =========================================================================
 
-    public function existeNucleo($nombre) {
+    private function existeNucleo($nombre) {
         $sql = "SELECT id_nucleo, estado FROM lista_nucleos
                 WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '')";
         $stmt = $this->pdo->prepare($sql);
@@ -24,7 +24,7 @@ class NucleoPNF {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function existePNF($nombre) {
+    private function existePNF($nombre) {
         $sql = "SELECT id_pnf, estado FROM lista_pnfs 
                 WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '')";
         $stmt = $this->pdo->prepare($sql);
