@@ -44,7 +44,6 @@ if (empty($_SESSION['csrf_token'])) {
 
 $pdo = Config::conexion(); 
 $controller = new Controller($pdo);
-$controllerPaciente = new PacienteController($pdo);
 $controllerConsulta = new ConsultaController($pdo);
 
 // Instanciamos el controlador aquí de forma global una sola vez
