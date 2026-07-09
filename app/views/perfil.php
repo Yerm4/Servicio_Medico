@@ -213,7 +213,7 @@ if ($paginaActual === 'sedes-carreras') {
                 <thead>
                     <tr class="tr-head-consultas">
                         <th class="th-consultas">Núcleo</th>
-                        <th class="th-consultas">Programa de Formación Nacional(PNF)</th>
+                        <th class="th-consultas">Programa de Formación Nacional (PNF)</th>
                         <th class="th-consultas">Acciones</th>
                     </tr>
                 </thead>

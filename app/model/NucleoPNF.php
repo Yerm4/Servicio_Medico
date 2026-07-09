@@ -12,13 +12,17 @@ class NucleoPNF {
         $this->pdo = $conexion;
     }
 
-    public function existeNucleo($nombre) {
-        $sql = "SELECT id_nucleo, estado FROM lista_nucleos
+public function existeNucleo($nombre){
+    $sql = "SELECT id_nucleo, estado FROM lista_nucleos
                 WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '')";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':nombre' => trim($nombre)]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([':nombre' => trim($nombre)]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
+
+
 public function registrarNucleo($nombre) {
         $existe = $this->existeNucleo($nombre);
 
@@ -104,10 +108,7 @@ public function obtenerNucleos() {
                 WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
                 AND id_pnf <> :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ':nombre' => trim($nombre), 
-            ':id'      => $id_actual
-        ]);
+        $stmt->execute([':nombre' => trim($nombre), ':id'      => $id_actual]);
         return $stmt->fetchColumn() > 0;
     }
   public function actualizarPNF($id, $nombre) {
@@ -142,7 +143,6 @@ public function obtenerNucleos() {
                     INNER JOIN lista_pnfs p ON o.id_pnf = p.id_pnf
                     WHERE o.estado = 1 AND n.estado = 1 AND p.estado = 1
                     ORDER BY n.nombre_nucleo ASC, p.nombre_pnf ASC";
-            
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
