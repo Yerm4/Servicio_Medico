@@ -18,9 +18,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nuevaTabla && contenedorActual) {
                     // Reemplazamos la vieja tabla por la nueva con su ID real de Base de Datos
                     contenedorActual.innerHTML = nuevaTabla.innerHTML;
+
+                    // REDIRECCIÓN VISUAL: Enfocar y mover la pantalla suavemente a la tabla de PNFs
+                    const tablaObjetivo = document.getElementById('contenedor-tabla-dinamica');
+                    if (tablaObjetivo) {
+                        tablaObjetivo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 }
             })
             .catch(err => console.error("Error al refrescar la tabla:", err));
+    }
+
+    // FUNCIÓN AUXILIAR INTERNA: Coloca el error dentro del formulario sin cerrar el modal
+    function mostrarErrorEnFormulario(formulario, mensaje) {
+        let contenedorModal = formulario.querySelector('.alert-container-modal');
+        if (!contenedorModal) {
+            contenedorModal = document.createElement('div');
+            contenedorModal.className = 'alert-container-modal';
+            formulario.insertBefore(contenedorModal, formulario.firstChild);
+        }
+        contenedorModal.innerHTML = `
+            <div class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+                <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <span>${mensaje}</span>
+                    <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
+                </p>
+            </div>
+        `;
     }
 
     // =========================================================================
@@ -79,27 +103,28 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // 1. Limpiamos el formulario y cerramos la ventana
+                    // Limpiamos el formulario y cerramos la ventana
                     formRegistrarPNF.reset();
+                    const contenedorModal = formRegistrarPNF.querySelector('.alert-container-modal');
+                    if (contenedorModal) contenedorModal.innerHTML = '';
                     if (modalReg) modalReg.close();
 
-                    // 2. Refrescamos la tabla directo desde el servidor para traer el ID real
+                    // Refrescamos la tabla directo desde el servidor para traer el ID real y hacer Scroll
                     actualizarTablaCompleta();
                     
-                    // 3. Pintamos la alerta de éxito en su contenedor
+                    // Pintamos la alerta de éxito en su contenedor
                     setTimeout(() => {
-                        mostrarAlertaSeccion("¡PNF registrado con éxito!", "success");
+                        mostrarAlertaSeccion(data.message || "¡PNF registrado con éxito!", "success");
                     }, 300);
 
                 } else {
-                    if (modalReg) modalReg.close();
-                    mostrarAlertaSeccion(data.message || "Ocurrió un error.", "error");
+                    // SI HAY ERROR: NO cerramos la modal, inyectamos el error adentro del formulario
+                    mostrarErrorEnFormulario(this, data.message || "Ocurrió un error.");
                 }
             })
             .catch(error => {
                 console.error("Error en el registro:", error);
-                if (modalReg) modalReg.close();
-                mostrarAlertaSeccion("Ocurrió un error al procesar el registro.", "error");
+                mostrarErrorEnFormulario(this, "Ocurrió un error al procesar el registro.");
             });
         });
     }
@@ -123,24 +148,25 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
+                    const contenedorModal = formActualizarPNF.querySelector('.alert-container-modal');
+                    if (contenedorModal) contenedorModal.innerHTML = '';
                     if (modalEditar) modalEditar.close();
                     
                     // Refrescamos la tabla completa para actualizar nombres y atributos data
                     actualizarTablaCompleta();
 
                     setTimeout(() => {
-                        mostrarAlertaSeccion("¡PNF actualizado con éxito!", "success");
+                        mostrarAlertaSeccion(data.message || "¡PNF actualizado con éxito!", "success");
                     }, 300);
 
                 } else {
-                    if (modalEditar) modalEditar.close();
-                    mostrarAlertaSeccion(data.message || "Ocurrió un error.", "error");
+                    // SI HAY ERROR: NO cerramos la modal, inyectamos el error adentro del formulario
+                    mostrarErrorEnFormulario(this, data.message || "Ocurrió un error.");
                 }
             })
             .catch(error => {
                 console.error("Error en la actualización:", error);
-                if (modalEditar) modalEditar.close();
-                mostrarAlertaSeccion("Ocurrió un error al procesar la actualización.", "error");
+                mostrarErrorEnFormulario(this, "Ocurrió un error al procesar la actualización.");
             });
         });
     }
@@ -151,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('dialog').forEach(modal => {
         modal.addEventListener('close', () => {
             modal.style.opacity = '0';
+            const contenedorModal = modal.querySelector('.alert-container-modal');
+            if (contenedorModal) contenedorModal.innerHTML = '';
         });
     });
 
@@ -176,15 +204,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 5000);
     }
+
     // INTERCEPTAR EL FORMULARIO DE ELIMINACIÓN CON FETCH
     // =========================================================================
     document.addEventListener('submit', function(e) {
         const formEliminar = e.target.closest('.form-eliminar-pnf');
         
         if (formEliminar) {
-            e.preventDefault(); // Evitamos redirigir a la pantalla negra del JSON
+            e.preventDefault(); 
 
-            // Confirmación antes de proceder
             if (!confirm('¿Seguro que deseas eliminar este PNF?')) {
                 return;
             }
@@ -231,6 +259,12 @@ function actualizarTablaNucleos() {
             
             if (nuevaTabla && contenedorActual) {
                 contenedorActual.innerHTML = nuevaTabla.innerHTML;
+
+                // REDIRECCIÓN VISUAL: Enfocar y mover la pantalla suavemente a la tabla de Núcleos
+                const tablaObjetivo = document.getElementById('cuerpoTablaNucleos').closest('table') || contenedorActual;
+                if (tablaObjetivo) {
+                    tablaObjetivo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         })
         .catch(err => console.error("Error al refrescar la tabla de núcleos:", err));
@@ -288,20 +322,47 @@ const configurarEnvioFormularioNucleo = (idForm, idModal, msgExitoDefault) => {
         .then(data => {
             if (data.status === 'success') {
                 form.reset();
+                const contenedorModal = form.querySelector('.alert-container-modal');
+                if (contenedorModal) contenedorModal.innerHTML = '';
                 if (modal) modal.close();
-                actualizarTablaNucleos(); // Refrescamos
+                actualizarTablaNucleos(); // Refrescamos y hacemos scroll automático
                 setTimeout(() => {
                     mostrarAlertaNucleo(data.message || msgExitoDefault, "success");
                 }, 300);
             } else {
-                if (modal) modal.close();
-                mostrarAlertaNucleo(data.message || "Ocurrió un error.", "error");
+                // SI HAY ERROR: NO cerramos la modal, inyectamos el error adentro del formulario
+                let contenedorModal = form.querySelector('.alert-container-modal');
+                if (!contenedorModal) {
+                    contenedorModal = document.createElement('div');
+                    contenedorModal.className = 'alert-container-modal';
+                    form.insertBefore(contenedorModal, form.firstChild);
+                }
+                contenedorModal.innerHTML = `
+                    <div class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+                        <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <span>${data.message || "Ocurrió un error."}</span>
+                            <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
+                        </p>
+                    </div>
+                `;
             }
         })
         .catch(error => {
             console.error(`Error en formulario ${idForm}:`, error);
-            if (modal) modal.close();
-            mostrarAlertaNucleo("Ocurrió un error al procesar la solicitud.", "error");
+            let contenedorModal = form.querySelector('.alert-container-modal');
+            if (!contenedorModal) {
+                contenedorModal = document.createElement('div');
+                contenedorModal.className = 'alert-container-modal';
+                form.insertBefore(contenedorModal, form.firstChild);
+            }
+            contenedorModal.innerHTML = `
+                <div class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+                    <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>Ocurrió un error al procesar la solicitud.</span>
+                        <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
+                    </p>
+                </div>
+            `;
         });
     });
 };

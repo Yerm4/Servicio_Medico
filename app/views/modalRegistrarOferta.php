@@ -40,7 +40,7 @@
             
             <div class="action-card__button-grid">
                 <button type="button" class="action-card__button action-card__button--red" onclick="document.getElementById('modalRegistrarOferta').close()">Cancelar</button>
-                <button type="submit" class="action-card__button">Vincular Oferta</button>
+                <button type="submit" class="action-card__button">Guardar Oferta Academica</button>
             </div>
         </form>
     </div>

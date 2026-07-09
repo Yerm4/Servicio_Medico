@@ -27,7 +27,7 @@
         
         <div class="action-card__button-grid" style="margin-top: 15px;">
             <button type="button" class="action-card__button action-card__button--red" onclick="document.getElementById('modalRegistrarPNF').close()">Cancelar</button>
-            <button type="submit" class="action-card__button">Registrar PNF</button>
+            <button type="submit" class="action-card__button">Guardar PNF</button>
         </div>
     </form>
 </div>

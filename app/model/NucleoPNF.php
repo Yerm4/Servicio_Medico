@@ -12,10 +12,6 @@ class NucleoPNF {
         $this->pdo = $conexion;
     }
 
-    // =========================================================================
-    // VALIDACIONES DE EXISTENCIA / DUPLICADOS
-    // =========================================================================
-
     public function existeNucleo($nombre) {
         $sql = "SELECT id_nucleo, estado FROM lista_nucleos
                 WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '')";
@@ -31,12 +27,7 @@ class NucleoPNF {
         $stmt->execute([':nombre' => trim($nombre)]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
-    /**
-     * Verifica si un nombre de núcleo ya lo tiene OTRO registro diferente (para actualización)
-     */
     private function existeNucleoParaActualizar($nombre, $id_actual) {
-        // Corregido: Agregada la limpieza de espacios REPLACE y la cláusula id_nucleo <> :id
         $sql = "SELECT COUNT(*) FROM lista_nucleos
                 WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
                 AND id_nucleo <> :id";
@@ -48,11 +39,7 @@ class NucleoPNF {
         return $stmt->fetchColumn() > 0;
     }
 
-    /**
-     * Verifica si un nombre de PNF ya lo tiene OTRO registro diferente (para actualización)
-     */
     private function existePnfParaActualizar($nombre, $id_actual) {
-        // Corregido: Agregada la limpieza de espacios REPLACE y la cláusula id_pnf <> :id
         $sql = "SELECT COUNT(*) FROM lista_pnfs 
                 WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
                 AND id_pnf <> :id";
@@ -64,9 +51,6 @@ class NucleoPNF {
         return $stmt->fetchColumn() > 0;
     }
 
-    // =========================================================================
-    // MÉTODOS PARA GESTIÓN DE NÚCLEOS
-    // =========================================================================
 
     public function obtenerNucleos() {
         try {
@@ -98,7 +82,6 @@ class NucleoPNF {
     }
 
     public function actualizarNucleo($id, $nombre) {
-        // Validar con el nuevo método blindado que no interfiera con otros núcleos existentes
         if ($this->existeNucleoParaActualizar($nombre, $id)) {
             return "duplicado";
         }
@@ -113,10 +96,6 @@ class NucleoPNF {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
-
-    // =========================================================================
-    // MÉTODOS PARA GESTIÓN DE PNFS
-    // =========================================================================
 
     public function obtenerPNFS() {
         try {
@@ -148,11 +127,9 @@ class NucleoPNF {
     }
 
     public function actualizarPNF($id, $nombre) {
-        // Validar con el nuevo método blindado que no interfiera con otros PNFs existentes
         if ($this->existePnfParaActualizar($nombre, $id)) {
             return "duplicado";
         }
-
         $sql = "UPDATE lista_pnfs SET nombre_pnf = :nombre WHERE id_pnf = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
@@ -163,11 +140,6 @@ class NucleoPNF {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
-
-    // =========================================================================
-    // MÉTODOS PARA VINCULACIÓN (OFERTAS ACADÉMICAS)
-    // =========================================================================
-
     public function obtenerOfertasActivas() {
         try {
             $sql = "SELECT o.id_nucleo, o.id_pnf, n.nombre_nucleo, p.nombre_pnf 

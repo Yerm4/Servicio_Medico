@@ -10,8 +10,6 @@ class NucleoPnfController {
     public function __construct($conexion) {
         $this->model = new NucleoPNF($conexion);
     }
-
-    
     public function procesarPeticion() {
         $form = isset($_POST["form"]) ? $_POST["form"] : '';
 
@@ -74,7 +72,7 @@ class NucleoPnfController {
         $resultado = $this->model->registrarNucleo($nombre);
 
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El núcleo ya se encuentra registrado y activo.']);
+            echo json_encode(['status' => 'error', 'message' => 'El núcleo ya se encuentra registrado.']);
         } elseif ($resultado) {
             echo json_encode(['status' => 'success', 'message' => '¡Núcleo registrado con éxito!']);
         } else {
@@ -184,7 +182,7 @@ class NucleoPnfController {
         $resultado = $this->model->actualizarPNF($id, $nombre);
 
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre ya está asignado a otro PNF activo.']);
+            echo json_encode(['status' => 'error', 'message' => 'El PNF ya se encuentra registrado.']);
         } elseif ($resultado) {
             echo json_encode(['status' => 'success', 'message' => '¡PNF actualizado con éxito!']);
         } else {
@@ -225,7 +223,7 @@ class NucleoPnfController {
         $resultado = $this->model->registrarOferta($id_nucleo, $id_pnf);
 
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'Esta oferta académica ya se encuentra vinculada y activa.']);
+            echo json_encode(['status' => 'error', 'message' => 'Esta oferta académica ya se encuentra registrada.']);
         } elseif ($resultado) {
             echo json_encode(['status' => 'success', 'message' => '¡Oferta académica registrada con éxito!']);
         } else {
