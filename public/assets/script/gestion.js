@@ -606,7 +606,6 @@ if (inputBuscarCondicion && cuerpoTablaCondiciones) {
 function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
     if (!selectPnfElement) return;
 
-    // Reset options
     selectPnfElement.innerHTML = '<option value="">No aplica / Seleccione...</option>';
     selectPnfElement.disabled = true;
 
@@ -639,7 +638,6 @@ function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null)
     .catch(error => console.error("Error al cargar PNFs:", error));
 }
 
-// Event listeners for Nucleo changes
 const selectNucleoReg = document.getElementById('nucleo_id');
 const selectPnfReg = document.getElementById('pnf_id');
 if (selectNucleoReg && selectPnfReg) {
