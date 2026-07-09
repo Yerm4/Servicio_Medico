@@ -54,6 +54,8 @@ class Controller {
             $sexo              = isset($_POST['sexo']) ? $_POST['sexo'] : '';
             $direccion         = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
             $rol = null;
+            $nucleo_id         = isset($_POST['nucleo_id']) && $_POST['nucleo_id'] !== '' ? (int)$_POST['nucleo_id'] : null;
+            $pnf_id            = isset($_POST['pnf_id']) && $_POST['pnf_id'] !== '' ? (int)$_POST['pnf_id'] : null;
             
             if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
                 $userModel = new \app\model\Usuario($this->pdo);
@@ -84,7 +86,7 @@ class Controller {
                 $resultado = $modeloPaciente->registrarPaciente(
                 $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
                 $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, 
-                $direccion, $rol
+                $direccion, $rol, $nucleo_id, $pnf_id
                 );
 
                 if ($resultado == true) {
@@ -193,6 +195,8 @@ public function actualizar() {
         $tlfemergencia              = isset($_POST['tlfemergencia']) ? trim($_POST['tlfemergencia']) : '';
         $direccion                  = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
         $sexo                       = isset($_POST['sexo']) ? (int)$_POST['sexo'] : 1;
+        $nucleo_id                  = isset($_POST['nucleo_id']) && $_POST['nucleo_id'] !== '' ? (int)$_POST['nucleo_id'] : null;
+        $pnf_id                     = isset($_POST['pnf_id']) && $_POST['pnf_id'] !== '' ? (int)$_POST['pnf_id'] : null;
 
         $rol = null;
         if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
@@ -214,7 +218,7 @@ public function actualizar() {
             
             $guardado = $model->actualizarUsuarioCompleto(
                 $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
-                $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion, $rol
+                $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion, $rol, $nucleo_id, $pnf_id
             );
 
             if ($guardado) {

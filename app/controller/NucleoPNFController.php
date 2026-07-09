@@ -211,4 +211,17 @@ class NucleoPnfController {
         }
         exit();
     }
+    public function obtenerPnfsPorNucleo() {
+        header('Content-Type: application/json');
+        $id_nucleo = isset($_POST['id_nucleo']) ? (int)$_POST['id_nucleo'] : 0;
+
+        if ($id_nucleo <= 0) {
+            echo json_encode([]);
+            exit();
+        }
+
+        $pnfs = $this->model->obtenerPnfsPorNucleo($id_nucleo);
+        echo json_encode($pnfs, JSON_UNESCAPED_UNICODE);
+        exit();
+    }
 }

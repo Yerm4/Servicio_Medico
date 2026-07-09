@@ -89,3 +89,48 @@ modales.forEach(modal => {
         }, 500);
     })
 })
+
+function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
+    if (!selectPnfElement) return;
+
+    // Reset options
+    selectPnfElement.innerHTML = '<option value="">No aplica / Seleccione...</option>';
+    selectPnfElement.disabled = true;
+
+    if (!idNucleo || idNucleo === "") {
+        return;
+    }
+
+    const tokenCSRF = document.querySelector('input[name="csrf_token"]').value;
+
+    fetch('index.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `csrf_token=${tokenCSRF}&form=obtener_pnfs_por_nucleo&id_nucleo=${idNucleo}`
+    })
+    .then(response => response.json())
+    .then(pnfs => {
+        if (Array.isArray(pnfs) && pnfs.length > 0) {
+            selectPnfElement.disabled = false;
+            pnfs.forEach(pnf => {
+                const opt = document.createElement('option');
+                opt.value = pnf.id_pnf;
+                opt.textContent = pnf.nombre_pnf;
+                if (pnfSeleccionado && String(pnf.id_pnf) === String(pnfSeleccionado)) {
+                    opt.selected = true;
+                }
+                selectPnfElement.appendChild(opt);
+            });
+        }
+    })
+    .catch(error => console.error("Error al cargar PNFs:", error));
+}
+
+// Event listeners for Nucleo changes
+const selectNucleoReg = document.getElementById('nucleo_id');
+const selectPnfReg = document.getElementById('pnf_id');
+if (selectNucleoReg && selectPnfReg) {
+    selectNucleoReg.addEventListener('change', function() {
+        cargarPnfsPorNucleo(this.value, selectPnfReg);
+    });
+}

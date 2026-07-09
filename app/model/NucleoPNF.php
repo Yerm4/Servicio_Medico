@@ -211,5 +211,20 @@ class NucleoPNF {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
     }
+    public function obtenerPnfsPorNucleo($id_nucleo) {
+        try {
+            $sql = "SELECT p.id_pnf, p.nombre_pnf 
+                    FROM nucleo_pnf o
+                    INNER JOIN lista_pnfs p ON o.id_pnf = p.id_pnf
+                    WHERE o.id_nucleo = :id_nucleo AND o.estado = 1 AND p.estado = 1
+                    ORDER BY p.nombre_pnf ASC";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':id_nucleo' => $id_nucleo]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPnfsPorNucleo: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 ?>

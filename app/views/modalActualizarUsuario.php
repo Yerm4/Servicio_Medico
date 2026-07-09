@@ -65,6 +65,23 @@
             </label>
             <?php endif; ?>
 
+            <label for="edit_nucleo" class="action-card__label">Núcleo
+                <select class="action-card__select" id="edit_nucleo" name="nucleo_id">
+                    <option value="">No aplica / Seleccione...</option>
+                    <?php if (!empty($nucleos)): ?>
+                        <?php foreach ($nucleos as $n): ?>
+                            <option value="<?= $n['id_nucleo'] ?>"><?= e($n['nombre_nucleo']) ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </label>
+
+            <label for="edit_pnf" class="action-card__label">PNF (Carrera)
+                <select class="action-card__select" id="edit_pnf" name="pnf_id" disabled>
+                    <option value="">No aplica / Seleccione...</option>
+                </select>
+            </label>
+
             <label class="action-card__label">Sexo
                 <label for="edit_sexo_m">Masculino
                     <input type="radio" name="sexo" id="edit_sexo_m" value="1" required>

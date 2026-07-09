@@ -14,7 +14,14 @@ class Usuario {
 
     public function loginUsuario($cedula) {
         try {
-            $sql = "SELECT * FROM usuarios WHERE cedula = :cedula";
+            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
+                    FROM usuarios u
+                    LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
+                    LEFT JOIN lista_roles r ON u.rol = r.id_rol
+                    LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
+                    LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+                    LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
+                    WHERE u.cedula = :cedula";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 "cedula" => $cedula
@@ -31,10 +38,13 @@ class Usuario {
 
     public function consultarUsuarios() {
         try {
-            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol 
+            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
                     FROM usuarios u
                     LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
                     LEFT JOIN lista_roles r ON u.rol = r.id_rol
+                    LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
+                    LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+                    LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
                     WHERE u.activo = 1 
                     ORDER BY u.fecha_creacion DESC 
                     LIMIT 19";
@@ -46,7 +56,7 @@ class Usuario {
         }
     }
 
-    public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null) {
+    public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
         
         try {
 
@@ -66,6 +76,8 @@ class Usuario {
     if ($rol === null) {
         $rol = $this->obtenerRolDefecto();
     }
+
+    $this->pdo->beginTransaction();
 
     $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
             VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion, :rol)";
@@ -87,9 +99,23 @@ class Usuario {
         ':rol'              => (int)$rol
     ]);
 
+    if ($nucleo_id !== null && $pnf_id !== null) {
+        $sqlPU = "INSERT INTO pnfs_usuarios (cedula_usuario, nucleo_id, pnf_id) VALUES (:cedula, :nucleo_id, :pnf_id)";
+        $stmtPU = $this->pdo->prepare($sqlPU);
+        $stmtPU->execute([
+            ':cedula' => (int)$cedula,
+            ':nucleo_id' => (int)$nucleo_id,
+            ':pnf_id' => (int)$pnf_id
+        ]);
+    }
+
+    $this->pdo->commit();
     return true;
 
     } catch (PDOException $error) {
+        if ($this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
+        }
         return "Error al registrar paciente: " . $error->getMessage();
     }
 }
@@ -116,10 +142,13 @@ class Usuario {
     public function buscarUsuarios($query) {
         try {
         
-            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol 
+            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
                     FROM usuarios u
                     LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
                     LEFT JOIN lista_roles r ON u.rol = r.id_rol
+                    LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
+                    LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+                    LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
                     WHERE (u.cedula LIKE :query 
                     OR u.nombre LIKE :query 
                     OR u.apellido LIKE :query)
@@ -139,8 +168,10 @@ class Usuario {
         }
     }
 
-public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion = '', $rol = null) {
+public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
     try {
+        $this->pdo->beginTransaction();
+
         if ($rol !== null) {
             $sql = "UPDATE usuarios 
                     SET nombre = :nombre, 
@@ -194,10 +225,32 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
                 'cedula'                      => (int)$cedula
             ];
         }
-        $resultado = $stmt->execute($params);
-        return $resultado;
+        $stmt->execute($params);
+
+        // Update PNF and Nucleo relationship
+        if ($nucleo_id !== null && $pnf_id !== null) {
+            $sqlPU = "INSERT INTO pnfs_usuarios (cedula_usuario, nucleo_id, pnf_id) 
+                      VALUES (:cedula, :nucleo_id, :pnf_id) 
+                      ON DUPLICATE KEY UPDATE nucleo_id = :nucleo_id, pnf_id = :pnf_id";
+            $stmtPU = $this->pdo->prepare($sqlPU);
+            $stmtPU->execute([
+                ':cedula' => (int)$cedula,
+                ':nucleo_id' => (int)$nucleo_id,
+                ':pnf_id' => (int)$pnf_id
+            ]);
+        } else {
+            $sqlDelPU = "DELETE FROM pnfs_usuarios WHERE cedula_usuario = :cedula";
+            $stmtDelPU = $this->pdo->prepare($sqlDelPU);
+            $stmtDelPU->execute([':cedula' => (int)$cedula]);
+        }
+
+        $this->pdo->commit();
+        return true;
         
     } catch (PDOException $e) {
+        if ($this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
+        }
         return false;
     }
 

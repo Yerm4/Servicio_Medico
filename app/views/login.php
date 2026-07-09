@@ -3,6 +3,9 @@ if (isset($_SESSION["cedula"])) {
     header("Location: perfil");
     exit();
 }
+$modeloOfertas = new \app\model\NucleoPNF($pdo);
+$nucleos = $modeloOfertas->obtenerNucleos();
+$pnfs = $modeloOfertas->obtenerPNFS();
 ?>
 
 <main class="login">

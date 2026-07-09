@@ -63,6 +63,23 @@
         </label>
         <?php endif; ?>
 
+        <label for="nucleo_id" class="action-card__label">Núcleo
+            <select class="action-card__select" id="nucleo_id" name="nucleo_id">
+                <option value="" selected>No aplica / Seleccione...</option>
+                <?php if (!empty($nucleos)): ?>
+                    <?php foreach ($nucleos as $n): ?>
+                        <option value="<?= $n['id_nucleo'] ?>"><?= e($n['nombre_nucleo']) ?></option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </select>
+        </label>
+
+        <label for="pnf_id" class="action-card__label">PNF (Carrera)
+            <select class="action-card__select" id="pnf_id" name="pnf_id" disabled>
+                <option value="" selected>No aplica / Seleccione...</option>
+            </select>
+        </label>
+
     </div>
         
         <label class="action-card__label">Sexo

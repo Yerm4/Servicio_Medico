@@ -50,16 +50,13 @@ if ($paginaActual === 'perfil') {
 $nucleos = [];
 $pnfs = [];
 $ofertas = [];
-if ($paginaActual === 'oferta') {
-    $modeloOfertas = new \app\model\NucleoPNF($pdo);
-    $ofertas = $modeloOfertas->obtenerOfertasActivas();
-    $nucleos = $modeloOfertas->obtenerNucleos();
-    $pnfs = $modeloOfertas->obtenerPNFS();
-}
-if ($paginaActual === 'sedes-carreras') {
+if ($paginaActual === 'oferta' || $paginaActual === 'sedes-carreras' || $paginaActual === 'usuarios') {
     $modeloOfertas = new \app\model\NucleoPNF($pdo);
     $nucleos = $modeloOfertas->obtenerNucleos();
     $pnfs = $modeloOfertas->obtenerPNFS();
+    if ($paginaActual === 'oferta') {
+        $ofertas = $modeloOfertas->obtenerOfertasActivas();
+    }
 }
 ?>
 <main class="perfil">    

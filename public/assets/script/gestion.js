@@ -84,7 +84,7 @@ if (inputBuscar && cuerpoTabla) {
                     crearTd(usuario.cedula),
                     crearTd(usuario.nombre),
                     crearTd(usuario.apellido),
-                    crearTd(usuario.tipo),
+                    crearTd(usuario.nombre_tipo || usuario.tipo),
                     crearTd(calcularEdadJS(usuario.fecha_nacimiento)),
                     crearTd(usuario.tlfprincipal),
                     tdActualizar,
@@ -131,6 +131,13 @@ if (cuerpoTabla && modalActualizar) {
                 const editRolField = document.getElementById('edit_rol');
                 if (editRolField && usuario.rol !== undefined) {
                     editRolField.value = usuario.rol;
+                }
+
+                const editNucleoField = document.getElementById('edit_nucleo');
+                const editPnfField = document.getElementById('edit_pnf');
+                if (editNucleoField && editPnfField) {
+                    editNucleoField.value = usuario.nucleo_id || '';
+                    cargarPnfsPorNucleo(usuario.nucleo_id, editPnfField, usuario.pnf_id);
                 }
 
                 if (usuario.sexo == 1) {
@@ -183,7 +190,7 @@ if (cuerpoTabla && modalActualizar) {
                     crearP("Cédula: ", usuario.cedula),
                     crearP("Nombre: ", usuario.nombre),
                     crearP("Apellido: ", usuario.apellido),
-                    crearP("Tipo: ", usuario.tipo),
+                    crearP("Tipo: ", usuario.nombre_tipo || usuario.tipo),
                     crearP("Fecha de Nacimiento: ", usuario.fecha_nacimiento),
                     crearP("Edad: ", calcularEdadJS(usuario.fecha_nacimiento)),
                     crearP("Teléfono Principal: ", usuario.tlfprincipal),
@@ -191,6 +198,8 @@ if (cuerpoTabla && modalActualizar) {
                     crearP("Contacto de Emergencia: ", usuario.nombre_contacto_emergencia),
                     crearP("Dirección: ", usuario.direccion),
                     crearP("Sexo: ", usuario.sexo == 1 ? "Masculino" : "Femenino"),
+                    crearP("Núcleo: ", usuario.nombre_nucleo || "No asignado"),
+                    crearP("PNF: ", usuario.nombre_pnf || "No asignado"),
                 );
 
                 detalles.append(contenido)
@@ -594,28 +603,55 @@ if (inputBuscarCondicion && cuerpoTablaCondiciones) {
     }
 }
 
-function buscarPnfs() {
-    const tokenCSRF = document.querySelector('#modalRegistrarUsuario input[name="csrf_token"]').value;
+function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
+    if (!selectPnfElement) return;
+
+    // Reset options
+    selectPnfElement.innerHTML = '<option value="">No aplica / Seleccione...</option>';
+    selectPnfElement.disabled = true;
+
+    if (!idNucleo || idNucleo === "") {
+        return;
+    }
+
+    const tokenCSRF = document.querySelector('input[name="csrf_token"]').value;
 
     fetch('index.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `csrf_token=${tokenCSRF}&form=buscar_pnfs`
+        body: `csrf_token=${tokenCSRF}&form=obtener_pnfs_por_nucleo&id_nucleo=${idNucleo}`
     })
     .then(response => response.json())
     .then(pnfs => {
-    
-    console.log("PNFs recibidos:", pnfs)
-
-    if (Array.isArray(pnfs)) {
-        pnfs.forEach(pnf => {
-            console.log(pnf)
-        })
-    }
-
-        
+        if (Array.isArray(pnfs) && pnfs.length > 0) {
+            selectPnfElement.disabled = false;
+            pnfs.forEach(pnf => {
+                const opt = document.createElement('option');
+                opt.value = pnf.id_pnf;
+                opt.textContent = pnf.nombre_pnf;
+                if (pnfSeleccionado && String(pnf.id_pnf) === String(pnfSeleccionado)) {
+                    opt.selected = true;
+                }
+                selectPnfElement.appendChild(opt);
+            });
+        }
     })
-    .catch(error => console.error("Error al buscar:", error));
+    .catch(error => console.error("Error al cargar PNFs:", error));
 }
 
-buscarPnfs()
+// Event listeners for Nucleo changes
+const selectNucleoReg = document.getElementById('nucleo_id');
+const selectPnfReg = document.getElementById('pnf_id');
+if (selectNucleoReg && selectPnfReg) {
+    selectNucleoReg.addEventListener('change', function() {
+        cargarPnfsPorNucleo(this.value, selectPnfReg);
+    });
+}
+
+const selectNucleoEdit = document.getElementById('edit_nucleo');
+const selectPnfEdit = document.getElementById('edit_pnf');
+if (selectNucleoEdit && selectPnfEdit) {
+    selectNucleoEdit.addEventListener('change', function() {
+        cargarPnfsPorNucleo(this.value, selectPnfEdit);
+    });
+}

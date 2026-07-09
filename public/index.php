@@ -399,6 +399,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
             $controllerOferta->eliminarOferta();
             break;
+        case "obtener_pnfs_por_nucleo":
+            $controllerOferta->obtenerPnfsPorNucleo();
+            break;
     }
 }
 
