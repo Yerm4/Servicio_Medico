@@ -46,6 +46,10 @@ $pdo = Config::conexion();
 $controller = new Controller($pdo);
 $controllerPaciente = new PacienteController($pdo);
 $controllerConsulta = new ConsultaController($pdo);
+
+// Instanciamos el controlador aquí de forma global una sola vez
+$controllerOferta = new NucleoPNFController($pdo); 
+
 $userModel = new \app\model\Usuario($pdo);
 $userModel->sincronizarPermisos([
     "gestionar_usuarios" => "Permite registrar, actualizar y eliminar usuarios",
@@ -83,6 +87,7 @@ try {
             if ($idPerm) {
                 $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM roles_permisos WHERE id_rol = :role_id AND id_permiso = :id_perm");
                 $stmtCheck->execute([':role_id' => $roleId, ':id_perm' => $idPerm]);
+                $stmtCheck->fetchColumn();
                 if ($stmtCheck->fetchColumn() == 0) {
                     $stmtIns = $pdo->prepare("INSERT INTO roles_permisos (id_rol, id_permiso) VALUES (:role_id, :id_perm)");
                     $stmtIns->execute([':role_id' => $roleId, ':id_perm' => $idPerm]);
@@ -106,7 +111,7 @@ $tieneRealizarConsulta = false;
 $tieneModificarConsulta = false;
 $tieneGenerarReportes = false;
 $tieneGestionarRolesPermisos = false;
-$tieneGestionarConditions = false;
+$tieneGestionarCondiciones = false;
 $tieneGestionarOferta = false; 
 
 $defaultRol = $userModel->obtenerRolDefecto();
@@ -361,44 +366,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $controller = new Controller($pdo);
             $controller->buscarPnfs();
             break;
+        
+        // ─── TUS CASOS DE NÚCLEOS Y PNFS BIEN UBICADOS CON SEGURIDAD ───
         case "registrar_nucleo":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->registrarNucleo();
             break;
         case "actualizar_nucleo":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->actualizarNucleo();
             break;
         case "eliminar_nucleo":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->eliminarNucleo();
             break;
         case "registrar_pnf":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->registrarPnf();
             break;
         case "actualizar_pnf":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->actualizarPnf();
             break;
         case "eliminar_pnf":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->eliminarPnf();
             break;
         case "registrar_oferta":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->registrarOferta();
             break;
         case "eliminar_oferta":
             if (!$tieneGestionarOferta) { http_response_code(403); exit("No tiene permisos."); }
-            $controllerOferta = new NucleoPNFController($pdo);
             $controllerOferta->eliminarOferta();
             break;
     }

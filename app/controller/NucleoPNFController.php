@@ -10,44 +10,6 @@ class NucleoPnfController {
     public function __construct($conexion) {
         $this->model = new NucleoPNF($conexion);
     }
-    public function procesarPeticion() {
-        $form = isset($_POST["form"]) ? $_POST["form"] : '';
-
-        switch ($form) {
-            case 'registrar_nucleo':
-                $this->registrarNucleo();
-                break;
-            case 'actualizar_nucleo':
-                $this->actualizarNucleo();
-                break;
-            case 'eliminar_nucleo':
-                $this->eliminarNucleo();
-                break;
-
-            case 'registrar_pnf':
-                $this->registrarPnf();
-                break;
-            case 'actualizar_pnf':
-                $this->actualizarPnf();
-                break;
-            case 'eliminar_pnf':
-                $this->eliminarPnf();
-                break;
-
-            case 'registrar_oferta':
-                $this->registrarOferta();
-                break;
-            case 'eliminar_oferta':
-                $this->eliminarOferta();
-                break;
-            
-            default:
-                header('Content-Type: application/json');
-                echo json_encode(['status' => 'error', 'message' => 'Acción no válida.']);
-                exit();
-        }
-    }
-
     // NÚCLEOS
 
    public function registrarNucleo() {
@@ -59,13 +21,13 @@ class NucleoPnfController {
             exit();
         }
 
-        if (strlen($nombre) < 4 || strlen($nombre) > 100) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo debe tener entre 4 y 100 caracteres.']);
+        if (strlen($nombre) < 4 || strlen($nombre) > 50) {
+            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo debe tener entre 4 y 50 caracteres.']);
             exit();
         }
 
         if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$/u', $nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo solo puede contener letras, espacios y paréntesis.']);
+            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo solo puede contener letras y espacios.']);
             exit();
         }
 

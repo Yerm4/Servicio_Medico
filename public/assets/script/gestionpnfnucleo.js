@@ -4,22 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // FUNCIÓN PARA REFRESCAR LA TABLA DESDE EL SERVIDOR (TRAE LOS IDS REALES)
     // =========================================================================
     function actualizarTablaCompleta() {
-        // Buscamos la URL actual (sedes-carreras) para leer la tabla actualizada
         fetch(window.location.href)
             .then(response => response.text())
             .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 
-                // Extraemos la tabla nueva renderizada por PHP
                 const nuevaTabla = doc.getElementById('contenedor-tabla-dinamica');
                 const contenedorActual = document.getElementById('contenedor-tabla-dinamica');
                 
                 if (nuevaTabla && contenedorActual) {
-                    // Reemplazamos la vieja tabla por la nueva con su ID real de Base de Datos
                     contenedorActual.innerHTML = nuevaTabla.innerHTML;
 
-                    // REDIRECCIÓN VISUAL: Enfocar y mover la pantalla suavemente a la tabla de PNFs
                     const tablaObjetivo = document.getElementById('contenedor-tabla-dinamica');
                     if (tablaObjetivo) {
                         tablaObjetivo.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -29,7 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(err => console.error("Error al refrescar la tabla:", err));
     }
 
-    // FUNCIÓN AUXILIAR INTERNA: Coloca el error dentro del formulario sin cerrar el modal
+    // =========================================================================
+    // FUNCIÓN AUXILIAR INTERNA: COLOCA EL ERROR DENTRO DEL FORMULARIO (MODALES)
+    // =========================================================================
     function mostrarErrorEnFormulario(formulario, mensaje) {
         let contenedorModal = formulario.querySelector('.alert-container-modal');
         if (!contenedorModal) {
@@ -37,14 +35,22 @@ document.addEventListener('DOMContentLoaded', function() {
             contenedorModal.className = 'alert-container-modal';
             formulario.insertBefore(contenedorModal, formulario.firstChild);
         }
+
+        const idAlertaError = 'err_modal_' + Date.now();
+
         contenedorModal.innerHTML = `
-            <div class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+            <div id="${idAlertaError}" class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
                 <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <span>${mensaje}</span>
                     <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
                 </p>
             </div>
         `;
+
+        setTimeout(() => {
+            const errActivo = document.getElementById(idAlertaError);
+            if (errActivo) errActivo.remove();
+        }, 4000);
     }
 
     // =========================================================================
@@ -57,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const modalReg = document.getElementById('modalRegistrarPNF');
             if (modalReg) {
                 modalReg.showModal(); 
-                setTimeout(() => { modalReg.style.opacity = '1'; }, 50);
+                modalReg.style.opacity = '1';
             }
         }
     });
@@ -79,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalEditar.setAttribute('data-fila-id', idPnf);
                 
                 modalEditar.showModal();
-                setTimeout(() => { modalEditar.style.opacity = '1'; }, 50);
+                modalEditar.style.opacity = '1';
             }
         }
     });
@@ -103,22 +109,23 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Limpiamos el formulario y cerramos la ventana
                     formRegistrarPNF.reset();
                     const contenedorModal = formRegistrarPNF.querySelector('.alert-container-modal');
                     if (contenedorModal) contenedorModal.innerHTML = '';
-                    if (modalReg) modalReg.close();
+                    
+                    if (modalReg) {
+                        modalReg.style.opacity = '0';
+                        modalReg.close();
+                    }
 
-                    // Refrescamos la tabla directo desde el servidor para traer el ID real y hacer Scroll
                     actualizarTablaCompleta();
                     
-                    // Pintamos la alerta de éxito en su contenedor
+                    // Pequeña tregua de 50ms para evitar bloqueos con el cierre de la modal
                     setTimeout(() => {
                         mostrarAlertaSeccion(data.message || "¡PNF registrado con éxito!", "success");
-                    }, 300);
+                    }, 50);
 
                 } else {
-                    // SI HAY ERROR: NO cerramos la modal, inyectamos el error adentro del formulario
                     mostrarErrorEnFormulario(this, data.message || "Ocurrió un error.");
                 }
             })
@@ -130,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =========================================================================
-    // 4. ENVIAR EL FORMULARIO DE ACTUALIZACIÓN
+    // 4. ENVIAR EL FORMULARIO DE ACTUALIZACIÓN (PNF)
     // =========================================================================
     const formActualizarPNF = document.getElementById('formActualizarPNF');
 
@@ -150,17 +157,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.status === 'success') {
                     const contenedorModal = formActualizarPNF.querySelector('.alert-container-modal');
                     if (contenedorModal) contenedorModal.innerHTML = '';
-                    if (modalEditar) modalEditar.close();
                     
-                    // Refrescamos la tabla completa para actualizar nombres y atributos data
+                    if (modalEditar) {
+                        modalEditar.style.opacity = '0';
+                        modalEditar.close();
+                    }
+                    
                     actualizarTablaCompleta();
-
+                    
                     setTimeout(() => {
                         mostrarAlertaSeccion(data.message || "¡PNF actualizado con éxito!", "success");
-                    }, 300);
+                    }, 50);
 
                 } else {
-                    // SI HAY ERROR: NO cerramos la modal, inyectamos el error adentro del formulario
                     mostrarErrorEnFormulario(this, data.message || "Ocurrió un error.");
                 }
             })
@@ -172,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =========================================================================
-    // 5. LIMPIAR OPACIDAD AL CERRAR MODALES
+    // 5. LIMPIAR ATRIBUTOS Y ALERTAS INTERNAS AL CERRAR MODALES
     // =========================================================================
     document.querySelectorAll('dialog').forEach(modal => {
         modal.addEventListener('close', () => {
@@ -183,29 +192,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // =========================================================================
-    // FUNCIÓN PARA PINTAR LAS NOTIFICACIONES
+    // FUNCIÓN PARA PINTAR LAS NOTIFICACIONES DE PNF (AUTO-BORRADO SEGURO)
     // =========================================================================
     function mostrarAlertaSeccion(mensaje, tipo) {
         const contenedor = document.getElementById('alert-container-pnf');
         if (!contenedor) return;
         
+        const idAlertaPnf = 'alert_pnf_' + Date.now();
+
         contenedor.innerHTML = `
-            <div class="action-card" style="padding: 1rem; border-left: 5px solid ${tipo === 'success' ? '#2ecc71' : '#e74c3c'}; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+            <div id="${idAlertaPnf}" class="action-card" style="padding: 1rem; border-left: 5px solid ${tipo === 'success' ? '#2ecc71' : '#e74c3c'}; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
                 <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <span>${mensaje}</span>
-                    <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.parentElement.parentElement.parentElement.innerHTML = ''">×</span>
+                    <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
                 </p>
             </div>
         `;
 
+        // Se remueve de manera segura únicamente este mensaje tras 4 segundos
         setTimeout(() => {
-            if (contenedor.firstChild) {
-                contenedor.innerHTML = '';
-            }
-        }, 5000);
+            const alertaActiva = document.getElementById(idAlertaPnf);
+            if (alertaActiva) alertaActiva.remove();
+        }, 4000);
     }
 
-    // INTERCEPTAR EL FORMULARIO DE ELIMINACIÓN CON FETCH
+    // =========================================================================
+    // INTERCEPTAR EL FORMULARIO DE ELIMINACIÓN CON FETCH (PNF)
     // =========================================================================
     document.addEventListener('submit', function(e) {
         const formEliminar = e.target.closest('.form-eliminar-pnf');
@@ -227,10 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.status === 'success') {
                     actualizarTablaCompleta();
-
-                    setTimeout(() => {
-                        mostrarAlertaSeccion(data.message || "¡PNF eliminado con éxito!", "success");
-                    }, 300);
+                    mostrarAlertaSeccion(data.message || "¡PNF eliminado con éxito!", "success");
                 } else {
                     mostrarAlertaSeccion(data.message || "Ocurrió un error al intentar eliminar.", "error");
                 }
@@ -253,14 +262,12 @@ function actualizarTablaNucleos() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
-            // Reemplaza el cuerpo interno de la tabla de núcleos
             const nuevaTabla = doc.getElementById('cuerpoTablaNucleos');
             const contenedorActual = document.getElementById('cuerpoTablaNucleos');
             
             if (nuevaTabla && contenedorActual) {
                 contenedorActual.innerHTML = nuevaTabla.innerHTML;
 
-                // REDIRECCIÓN VISUAL: Enfocar y mover la pantalla suavemente a la tabla de Núcleos
                 const tablaObjetivo = document.getElementById('cuerpoTablaNucleos').closest('table') || contenedorActual;
                 if (tablaObjetivo) {
                     tablaObjetivo.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -280,7 +287,7 @@ document.addEventListener('click', function(e) {
         const modal = document.getElementById('modalRegistrarNucleo');
         if (modal) { 
             modal.showModal(); 
-            setTimeout(() => { modal.style.opacity = '1'; }, 50); 
+            modal.style.opacity = '1'; 
         }
     }
 });
@@ -300,7 +307,7 @@ document.addEventListener('click', function(event) {
             document.getElementById('edit_id_nucleo').value = idNucleo;
             document.getElementById('edit_nombre_nucleo').value = nombreNucleo || '';
             modalEditarNucleo.showModal();
-            setTimeout(() => { modalEditarNucleo.style.opacity = '1'; }, 50);
+            modalEditarNucleo.style.opacity = '1';
         }
     }
 });
@@ -324,27 +331,39 @@ const configurarEnvioFormularioNucleo = (idForm, idModal, msgExitoDefault) => {
                 form.reset();
                 const contenedorModal = form.querySelector('.alert-container-modal');
                 if (contenedorModal) contenedorModal.innerHTML = '';
-                if (modal) modal.close();
-                actualizarTablaNucleos(); // Refrescamos y hacemos scroll automático
+                
+                if (modal) {
+                    modal.style.opacity = '0';
+                    modal.close();
+                }
+                
+                actualizarTablaNucleos(); 
+                
                 setTimeout(() => {
                     mostrarAlertaNucleo(data.message || msgExitoDefault, "success");
-                }, 300);
+                }, 50);
             } else {
-                // SI HAY ERROR: NO cerramos la modal, inyectamos el error adentro del formulario
                 let contenedorModal = form.querySelector('.alert-container-modal');
                 if (!contenedorModal) {
                     contenedorModal = document.createElement('div');
                     contenedorModal.className = 'alert-container-modal';
                     form.insertBefore(contenedorModal, form.firstChild);
                 }
+                
+                const idErrNuc = 'err_nuc_' + Date.now();
                 contenedorModal.innerHTML = `
-                    <div class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+                    <div id="${idErrNuc}" class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
                         <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                             <span>${data.message || "Ocurrió un error."}</span>
                             <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
                         </p>
                     </div>
                 `;
+                
+                setTimeout(() => {
+                    const errActivo = document.getElementById(idErrNuc);
+                    if (errActivo) errActivo.remove();
+                }, 4000);
             }
         })
         .catch(error => {
@@ -367,7 +386,6 @@ const configurarEnvioFormularioNucleo = (idForm, idModal, msgExitoDefault) => {
     });
 };
 
-// Inicializamos los dos formularios del módulo
 configurarEnvioFormularioNucleo('formRegistrarNucleo', 'modalRegistrarNucleo', "¡Núcleo registrado con éxito!");
 configurarEnvioFormularioNucleo('formActualizarNucleo', 'modalActualizarNucleo', "¡Núcleo actualizado con éxito!");
 
@@ -385,7 +403,7 @@ document.addEventListener('submit', function(e) {
         .then(data => {
             if (data.status === 'success') {
                 actualizarTablaNucleos();
-                setTimeout(() => { mostrarAlertaNucleo(data.message || "¡Núcleo eliminado!", "success"); }, 300);
+                mostrarAlertaNucleo(data.message || "¡Núcleo eliminado!", "success");
             } else {
                 mostrarAlertaNucleo(data.message || "Error al eliminar.", "error");
             }
@@ -394,22 +412,25 @@ document.addEventListener('submit', function(e) {
 });
 
 // =========================================================================
-// 6. ALERTAS EXCLUSIVAS PARA NÚCLEOS
+// 6. ALERTAS EXCLUSIVAS PARA NÚCLEOS (AUTO-BORRADO SEGURO)
 // =========================================================================
 function mostrarAlertaNucleo(mensaje, tipo) {
     const contenedor = document.getElementById('alert-container-nucleo');
     if (!contenedor) return;
     
+    const idAlertaNucleo = 'alert_nuc_gen_' + Date.now();
+
     contenedor.innerHTML = `
-        <div class="action-card" style="padding: 1rem; border-left: 5px solid ${tipo === 'success' ? '#2ecc71' : '#e74c3c'}; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+        <div id="${idAlertaNucleo}" class="action-card" style="padding: 1rem; border-left: 5px solid ${tipo === 'success' ? '#2ecc71' : '#e74c3c'}; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
             <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span>${mensaje}</span>
-                <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.parentElement.parentElement.parentElement.innerHTML = ''">×</span>
+                <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
             </p>
         </div>
     `;
 
     setTimeout(() => {
-        if (contenedor.firstChild) { contenedor.innerHTML = ''; }
-    }, 5000);
+        const alertaActiva = document.getElementById(idAlertaNucleo);
+        if (alertaActiva) alertaActiva.remove();
+    }, 4000);
 }
