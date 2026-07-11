@@ -63,7 +63,7 @@ CREATE TABLE `usuarios` (
   `sexo` tinyint NOT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
   FOREIGN KEY (`tipo`) REFERENCES `lista_tipos` (`id_tipo`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (`rol`) REFERENCES `lista_roles` (`id_rol`) ON DELETE SET DEFAULT ON UPDATE CASCADE
+  FOREIGN KEY (`rol`) REFERENCES `lista_roles` (`id_rol`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `roles_permisos` (
