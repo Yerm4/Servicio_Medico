@@ -11,7 +11,6 @@ class Usuario {
     public function __construct($conexion) {
         $this->pdo = $conexion;
     }
-
     public function loginUsuario($cedula) {
         try {
             $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 

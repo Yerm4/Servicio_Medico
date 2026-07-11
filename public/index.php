@@ -45,8 +45,6 @@ if (empty($_SESSION['csrf_token'])) {
 $pdo = Config::conexion(); 
 $controller = new Controller($pdo);
 $controllerConsulta = new ConsultaController($pdo);
-
-// Instanciamos el controlador aquí de forma global una sola vez
 $controllerOferta = new NucleoPNFController($pdo); 
 
 $userModel = new \app\model\Usuario($pdo);
