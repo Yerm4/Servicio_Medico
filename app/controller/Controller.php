@@ -37,7 +37,7 @@ class Controller {
         }
 
         else {
-            $_SESSION["login_notif"] = "Login no exitoso. No pasaste las validaciones";
+            $_SESSION["login_notif"] = "Login no exitoso.";
         }
     }
 
