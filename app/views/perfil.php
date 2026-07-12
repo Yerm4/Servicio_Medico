@@ -100,11 +100,7 @@ if ($paginaActual === 'oferta' || $paginaActual === 'sedes-carreras' || $paginaA
                     </thead>
                     <tbody id="cuerpoTablaNucleos">
                         <?php 
-                    if (!empty($nucleos)) {
-                        usort($nucleos, function($a, $b) {
-                            return $a['id_nucleo'] <=> $b['id_nucleo']; 
-                        });
-                    }
+    
                     if (!empty($nucleos)): 
                         $i = 1;
                         foreach ($nucleos as $n): 
@@ -155,11 +151,6 @@ if ($paginaActual === 'oferta' || $paginaActual === 'sedes-carreras' || $paginaA
             </thead>
             <tbody id="tabla-pnf-body">
                     <?php 
-                    if (!empty($pnfs)) {
-                    usort($pnfs, function($a, $b) {
-                        return $a['id_pnf'] <=> $b['id_pnf']; 
-                    });
-                }
                 if (!empty($pnfs)): 
                     $i = 1; 
                     foreach ($pnfs as $p): 
