@@ -59,14 +59,15 @@ class Usuario {
         
         try {
 
-        $sqlCheck = "SELECT COUNT(*) FROM usuarios WHERE cedula = :cedula";
+        $sqlCheck = "SELECT activo FROM usuarios WHERE cedula = :cedula";
         $stmtCheck = $this->pdo->prepare($sqlCheck);
         $stmtCheck->execute(
         [':cedula' => $cedula]
     );
 
-    if ($stmtCheck->fetchColumn() > 0){
-        return "La cédula de identidad ya se encuentra registrada en el sistema.";
+    if ($stmtCheck->fetch(PDO::FETCH_ASSOC) == 0){
+        die("El usuario está desactivado");
+        //return "La cédula de identidad ya se encuentra registrada en el sistema.";
     }
 
     $contraseñaCreada = $cedula.'uptaeb';

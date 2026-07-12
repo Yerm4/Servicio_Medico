@@ -38,7 +38,7 @@ $pnfs = $modeloOfertas->obtenerPNFS();
                         
                     <?php endif; ?>
                     <?php if (!empty($_SESSION["registro_status"]) && !empty($_SESSION["registro_msg"])): ?>
-                        <?php $titulo = $_SESSION["registro_status"] === 'success' ? 'Registro xitoso!' : '¡Atención!'; ?>
+                        <?php $titulo = $_SESSION["registro_status"] === 'success' ? 'Registro completo!' : '¡Atención!'; ?>
                         <div>
                             <strong><?= $titulo; unset($_SESSION["registro_status"])?></strong>
                             <strong><?= $_SESSION["registro_msg"]; unset($_SESSION["registro_msg"]) ?></strong>
