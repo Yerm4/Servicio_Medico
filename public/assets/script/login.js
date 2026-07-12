@@ -1,4 +1,4 @@
-const inputCedula = document.querySelectorAll("input[name=cedula]")
+const inputCedula = document.querySelectorAll("input[name=cedula], input[name=tlfprincipal], input[name=tlfemergencia]")
 let modales = document.querySelectorAll(".modal-crud")
 
 inputCedula.forEach(input => {

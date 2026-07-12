@@ -57,6 +57,22 @@ class Controller {
             $nucleo_id         = isset($_POST['nucleo_id']) && $_POST['nucleo_id'] !== '' ? (int)$_POST['nucleo_id'] : null;
             $pnf_id            = isset($_POST['pnf_id']) && $_POST['pnf_id'] !== '' ? (int)$_POST['pnf_id'] : null;
             
+            $datos = [
+                'cedula'           => $cedula,
+                'nombre'           => $nombre,
+                'apellido'         => $apellido,
+                'tipo'             => $tipo,
+                'fecha_nacimiento' => $fecha_nacimiento,
+                'tlfprincipal'     => $tlfprincipal,
+                'nombre_contacto_emergencia' => $nombre_contacto_emergencia,
+                'tlfemergencia'    => $tlfemergencia,
+                'sexo'             => $sexo,
+                'direccion'        => $direccion,
+                'nucleo_id'        => $nucleo_id,
+                'pnf_id'           => $pnf_id,
+                'rol'              => isset($_POST['rol']) ? (int)$_POST['rol'] : null
+            ];
+
             if (isset($_POST['rol']) && isset($_SESSION['cedula'])) {
                 $userModel = new \app\model\Usuario($this->pdo);
                 if ($userModel->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
@@ -89,38 +105,35 @@ class Controller {
                 $direccion, $rol, $nucleo_id, $pnf_id
                 );
 
-                if ($resultado == true) {
+                if ($resultado["status"] === "ok") {
                     unset($_SESSION['inputs']); 
                     $_SESSION["registro_status"] = "success";
-                    $_SESSION["registro_msg"] = "Usuario registrado de manera exitosa!";
+                    $_SESSION["registro_msg"] = $resultado["msg"];
                     header("Location: usuarios");
                     exit();
-                } 
+                }
+
+                else {
+                    $_SESSION['inputs'] = $datos; 
+                    $_SESSION["registro_msg"] = $resultado["msg"];
+                    header("Location: usuarios");
+                    exit();
+                }
             }
             
             else {
-                $_SESSION['inputs'] = $_POST; 
-                $_SESSION["registro_msg"] = "Error. Los datos ingresados no son validos";
+                $_SESSION['inputs'] = $datos; 
+                $_SESSION["registro_msg"] = "Error al registrar. Los datos ingresados no son validos o ";
                 header("Location: usuarios");
                 exit();
             }
         }
         catch (PDOException $e) {
-            $_SESSION['inputs'] = $_POST; 
-            $_SESSION["registro_msg"] = $e->getMessage();
+            $_SESSION['inputs'] = $datos; 
+            $_SESSION["registro_msg"] = "Error al registrar usuario";
+            header("Location: usuarios");
+            exit();
             
-            $rawUri = $_SERVER['REQUEST_URI'];
-            $cleanPath = parse_url($rawUri, PHP_URL_PATH);
-            $currentPage = trim($cleanPath, '/');
-            if ($currentPage === "login") {
-                header("Location: login");
-                exit();
-            }
-
-            if ($currentPage === "usuarios") {
-                header("Location: usuarios"); 
-                exit();
-            }
         }
     
     }

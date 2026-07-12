@@ -2,7 +2,7 @@
     <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
     <h3 class="action-card__title">Registro</h3>
     
-    <form class="action-card__form--registrar-usuarios" action="index.php" method="POST">
+    <form class="action-card__form--registrar-usuarios" action="" method="POST">
     <div class="action-card__form--grid">
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         <input type="hidden" name="form" value="registrar_usuario">

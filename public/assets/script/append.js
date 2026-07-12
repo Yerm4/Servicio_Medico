@@ -58,8 +58,7 @@ if (subTabCondiciones) {
         activarTab(subTabCondiciones, subContentCondiciones);
     });
 }
-
-const loginCardCedula = document.querySelectorAll("input[name=cedula]")
+const loginCardCedula = document.querySelectorAll("input[name=cedula], input[name=tlfprincipal], input[name=tlfemergencia]")
 
 if (loginCardCedula) {
     loginCardCedula.forEach(input => {

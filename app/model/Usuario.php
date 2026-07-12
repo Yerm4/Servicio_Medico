@@ -89,75 +89,87 @@ class Usuario {
             ":cedula" => $cedula]);
         $existe = $stmtCheck->fetchColumn();
     
-    if ($existe > 0){
-        $sqlActivo = "SELECT * FROM usuarios WHERE cedula = :cedula";
-        $stmtActivo = $this->pdo->prepare($sqlActivo);
-        $stmtActivo->execute([
-            ":cedula" => $cedula]);
-        $activo = $stmtActivo->fetch(PDO::FETCH_ASSOC);
+        if ($existe > 0) {
+            $sqlActivo = "SELECT * FROM usuarios WHERE cedula = :cedula";
+            $stmtActivo = $this->pdo->prepare($sqlActivo);
+            $stmtActivo->execute([
+                ":cedula" => $cedula]);
+            $activo = $stmtActivo->fetch(PDO::FETCH_ASSOC);
 
-        if ($activo["activo"] == 0) {
-            $sqlActivar = "UPDATE usuarios SET activo = 1 WHERE cedula = :cedula";
-            $stmtActivar = $this->pdo->prepare($sqlActivar);
-            $stmtActivar->execute([
-                ":cedula" => $cedula
-            ]);
-            die("El usuario ha sido activado");
+            if ($activo["activo"] == 0) {
+                $sqlActivar = "UPDATE usuarios SET activo = 1 WHERE cedula = :cedula";
+                $stmtActivar = $this->pdo->prepare($sqlActivar);
+                $stmtActivar->execute([
+                    ":cedula" => $cedula
+                ]);
+                return [
+                    "status" => "ok",
+                    "msg" => "El usuario ha sido registrado"
+                ];
+            }
+            
+            else {
+                return [
+                    "status" => "error",
+                    "msg" => "El usuario ya está registrado"
+                ];
+            }
         }
-        
-        else {
-            die("El usuario ya está registrado");
+
+        $contraseñaCreada = $cedula.'uptaeb';
+        $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
+
+        if ($rol === null) {
+            $rol = $this->obtenerRolDefecto();
         }
-    }
 
-    $contraseñaCreada = $cedula.'uptaeb';
-    $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
+        $this->pdo->beginTransaction();
 
-    if ($rol === null) {
-        $rol = $this->obtenerRolDefecto();
-    }
+        $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
+                VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion, :rol)";
 
-    $this->pdo->beginTransaction();
+        $stmt = $this->pdo->prepare($sql);
 
-    $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
-            VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion, :rol)";
-
-    $stmt = $this->pdo->prepare($sql);
-
-    $stmt->execute([
-        ':cedula'           => (int)$cedula, 
-        ':nombre'           => $nombre,
-        ':apellido'         => $apellido,
-        ':contrasena'       => $contraseñaEncriptada,
-        ':tipo'             => (int)$tipo,
-        ':fecha_nacimiento' => $fecha_nacimiento,
-        ':tlfprincipal'     => $tlfprincipal,
-        ':tlfemergencia'    => $tlfemergencia,
-        ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
-        ':sexo'             => (int)$sexo,
-        ':direccion'        => $direccion,
-        ':rol'              => (int)$rol
-    ]);
-
-    if ($nucleo_id !== null && $pnf_id !== null) {
-        $sqlPU = "INSERT INTO pnfs_usuarios (cedula_usuario, nucleo_id, pnf_id) VALUES (:cedula, :nucleo_id, :pnf_id)";
-        $stmtPU = $this->pdo->prepare($sqlPU);
-        $stmtPU->execute([
-            ':cedula' => (int)$cedula,
-            ':nucleo_id' => (int)$nucleo_id,
-            ':pnf_id' => (int)$pnf_id
+        $stmt->execute([
+            ':cedula'           => (int)$cedula, 
+            ':nombre'           => $nombre,
+            ':apellido'         => $apellido,
+            ':contrasena'       => $contraseñaEncriptada,
+            ':tipo'             => (int)$tipo,
+            ':fecha_nacimiento' => $fecha_nacimiento,
+            ':tlfprincipal'     => $tlfprincipal,
+            ':tlfemergencia'    => $tlfemergencia,
+            ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
+            ':sexo'             => (int)$sexo,
+            ':direccion'        => $direccion,
+            ':rol'              => (int)$rol
         ]);
-    }
 
-    $this->pdo->commit();
-    return true;
-
-    } catch (PDOException $error) {
-        if ($this->pdo->inTransaction()) {
-            $this->pdo->rollBack();
+        if ($nucleo_id !== null && $pnf_id !== null) {
+            $sqlPU = "INSERT INTO pnfs_usuarios (cedula_usuario, nucleo_id, pnf_id) VALUES (:cedula, :nucleo_id, :pnf_id)";
+            $stmtPU = $this->pdo->prepare($sqlPU);
+            $stmtPU->execute([
+                ':cedula' => (int)$cedula,
+                ':nucleo_id' => (int)$nucleo_id,
+                ':pnf_id' => (int)$pnf_id
+            ]);
         }
-        return "Error al registrar al usuario: " . $error->getMessage();
-    }
+
+        $this->pdo->commit();
+        return [
+            "status" => "ok",
+            "msg" => "Usuario registrado"
+        ];
+
+        } catch (PDOException $error) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            return [
+                "status" => "ok",
+                "msg" => "dddddddddddddd"
+            ];
+        }
 }
 
     public function eliminarUsuario($cedula) {
