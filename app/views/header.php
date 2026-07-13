@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="assets/media/img/uptaeb.jpg" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/media/img/uptaeb.png" type="image/x-icon">
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="assets/script/code.js" defer></script>
@@ -14,7 +14,7 @@
     <header>
         <div class="top-menu">
             <div class="top-menu__perfil">
-                <img class="top-menu__perfil-img" src="assets/media/img/uptaeb.jpg" alt="">
+                <img class="top-menu__perfil-img" src="assets/media/img/uptaeb.png" alt="">
                 <p class="top-menu__perfil-name">Bienvenido!</p>
             </div>
             <div class="top-menu__links">
@@ -32,7 +32,6 @@
                 </svg>
                 <div id="avatarMenu" class="avatar__menu">
                     <a class="avatar__link" href="logout">Cerrar sesion</a>
-                    <a class="avatar__link" href="logout">Configuración?</a>
                 </div>
                 <?php else: ?>
                     <a href="#" class="top-menu__login-lang">ESP</a>
