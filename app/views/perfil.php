@@ -294,6 +294,7 @@ if ($paginaActual === 'oferta' || $paginaActual === 'sedes-carreras' || $paginaA
                     <th class="tabla-usuarios__title">Telefono</th>
                     <th class="tabla-usuarios__title"></th>
                     <th class="tabla-usuarios__title"></th>
+                    <th class="tabla-usuarios__title"></th>
                 </tr>
                 </thead>
                 <tbody id="cuerpoTablaUsuarios">

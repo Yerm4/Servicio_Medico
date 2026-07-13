@@ -1,4 +1,4 @@
-const inputCedula = document.querySelectorAll("input[name=cedula], input[name=tlfprincipal], input[name=tlfemergencia]")
+const inputCedula = document.querySelectorAll("input[name=cedula]")
 let modales = document.querySelectorAll(".modal-crud")
 
 inputCedula.forEach(input => {
@@ -24,6 +24,63 @@ if (inputCedula) {
             }
         })
     });    
+}
+
+const loginCardCedula = document.querySelectorAll("input[name=cedula]")
+
+if (loginCardCedula) {
+    loginCardCedula.forEach(input => {
+    input.addEventListener('input', function() {
+        
+        this.value = this.value.replace(/\D/g, '');
+        
+        if (this.value.length > 8) {
+            this.value = this.value.slice(0, 8);
+        }
+    });
+});
+}
+
+const telefonos = document.querySelectorAll("input[name=tlfprincipal], input[name=tlfemergencia]")
+
+if (telefonos) {
+    telefonos.forEach(input => {
+    input.addEventListener('input', function() {
+        
+        this.value = this.value.replace(/\D/g, '');
+        
+        if (this.value.length > 20) {
+            this.value = this.value.slice(0, 20);
+        }
+    });
+});
+}
+
+const inputNombre = document.querySelectorAll("input[name=nombre], input[name=apellido], input[name=nombre_contacto_emergencia]")
+inputNombre.forEach(input => {
+    input.addEventListener('input', (e) => {
+        const target = e.target;
+        target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
+        
+        if (target.value.length > 30) {
+            target.value = target.value.slice(0, 30);
+        }
+    });
+});
+
+const inputFecha = document.querySelectorAll('input[name=fecha_nacimiento]');
+
+if (inputFecha.length > 0) {
+    const hoy = new Date();
+    const hoyFormateada = hoy.toLocaleDateString('sv-SE');
+
+    const añoMinimo = hoy.getFullYear() - 110;
+    const fechaMinFormateada = `${añoMinimo}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+    inputFecha.forEach(input => {
+        input.max = hoyFormateada;
+        input.min = fechaMinFormateada;
+    });
 }
 
 const boton = document.querySelectorAll(".action-card__button")

@@ -85,14 +85,20 @@ class Controller {
             && !empty($direccion)) {
 
                 if (!ctype_digit((string)$cedula)) {
-                    $_SESSION['inputs'] = $_POST; 
+                    $_SESSION['inputs'] = $datos; 
                     $_SESSION["registro_msg"] = "Error. La cedula no puede contener letras";
                     header("Location: usuarios");
                     exit();
                 }
                 if (strlen($cedula) >= 9 || strlen($cedula) <= 5) {
-                    $_SESSION['inputs'] = $_POST; 
+                    $_SESSION['inputs'] = $datos; 
                     $_SESSION["registro_msg"] = "Error. La cedula no puede tener más de 8 caracteres y menos de 6";
+                    header("Location: usuarios");
+                    exit();
+                }
+                if (strlen($nombre) > 30 || strlen($apellido) > 30) {
+                    $_SESSION['inputs'] = $datos; 
+                    $_SESSION["registro_msg"] = "Error. El nombre no puede poseer mas de 25 caracteres";
                     header("Location: usuarios");
                     exit();
                 }

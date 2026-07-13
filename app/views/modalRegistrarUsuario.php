@@ -8,7 +8,7 @@
         <input type="hidden" name="form" value="registrar_usuario">
         
             <label for="cedula" class="action-card__label">Cédula de Identidad
-                <input type="tel" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
+                <input type="tel" placeholder="12345678" inputmode="numeric" class="action-card__input" id="cedula" name="cedula" value="<?php echo isset($inputs['cedula']) ? $inputs['cedula'] : ''; ?>" required>
             </label>
 
             <label for="tipo" class="action-card__label">Tipo de Usuario
@@ -25,27 +25,27 @@
                 </select>
             </label>
         <label for="nombre" class="action-card__label">Nombres
-            <input type="text" class="action-card__input" id="nombre" name="nombre" value="<?php echo isset($inputs['nombre']) ? $inputs['nombre'] : ''; ?>" required>
+            <input placeholder="Iris" type="text" class="action-card__input" id="nombre" name="nombre" value="<?php echo isset($inputs['nombre']) ? $inputs['nombre'] : ''; ?>" required>
         </label>
         <label for="apellido" class="action-card__label">Apellidos
-            <input type="text" class="action-card__input" id="apellido" name="apellido" value="<?php echo isset($inputs['apellido']) ? $inputs['apellido'] : ''; ?>" required>
+            <input type="text" placeholder="Out" class="action-card__input" id="apellido" name="apellido" value="<?php echo isset($inputs['apellido']) ? $inputs['apellido'] : ''; ?>" required>
         </label>
         
         <label for="fecha_nacimiento" class="action-card__label">Fecha de Nacimiento
             <input type="date" class="action-card__input" id="fecha_nacimiento" name="fecha_nacimiento" value="<?php echo isset($inputs['fecha_nacimiento']) ? $inputs['fecha_nacimiento'] : ''; ?>" required>
         </label>
         <label for="tlfprincipal" class="action-card__label">Teléfono Principal
-            <input type="text" class="action-card__input" id="tlfprincipal" name="tlfprincipal" value="<?php echo isset($inputs['tlfprincipal']) ? $inputs['tlfprincipal'] : ''; ?>" required>
+            <input type="text" placeholder="04121234567" class="action-card__input" id="tlfprincipal" name="tlfprincipal" value="<?php echo isset($inputs['tlfprincipal']) ? $inputs['tlfprincipal'] : ''; ?>" required>
         </label>
         <label for="tlfemergencia" class="action-card__label">Teléfono de Emergencia
-            <input type="text" class="action-card__input" id="tlfemergencia" name="tlfemergencia" value="<?php echo isset($inputs['tlfemergencia']) ? $inputs['tlfemergencia'] : ''; ?>" required>
+            <input type="text" placeholder="04241234567" class="action-card__input" id="tlfemergencia" name="tlfemergencia" value="<?php echo isset($inputs['tlfemergencia']) ? $inputs['tlfemergencia'] : ''; ?>" required>
         </label>
         <label for="nombre_contacto_emergencia" class="action-card__label">Nombre del Contacto de Emergencia
-            <input type="text" class="action-card__input" id="nombre_contacto_emergencia" name="nombre_contacto_emergencia" value="<?php echo isset($inputs['nombre_contacto_emergencia']) ? $inputs['nombre_contacto_emergencia'] : ''; ?>" required>
+            <input type="text" placeholder="Reze" class="action-card__input" id="nombre_contacto_emergencia" name="nombre_contacto_emergencia" value="<?php echo isset($inputs['nombre_contacto_emergencia']) ? $inputs['nombre_contacto_emergencia'] : ''; ?>" required>
         </label>
         
         <label for="direccion" class="action-card__label">Dirección
-            <input type="text" class="action-card__input" id="direccion" name="direccion" value="<?php echo isset($inputs['direccion']) ? $inputs['direccion'] : ''; ?>" required>
+            <input type="text" placeholder="Los pocitos" class="action-card__input" id="direccion" name="direccion" value="<?php echo isset($inputs['direccion']) ? $inputs['direccion'] : ''; ?>" required>
         </label>
 
         <?php if ($tieneGestionarRolesPermisos): ?>

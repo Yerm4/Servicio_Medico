@@ -278,6 +278,8 @@ main.perfil {
     min-height: 70vh;
 }
 
+
+
 @keyframes contentSlideUp {
     from {
         opacity: 0;
@@ -301,6 +303,7 @@ main.perfil {
     gap: 30px;
     opacity: 0;
     animation: contentSlideUp 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    overflow-x: scroll
 }
 
 .section-1--perfil .action-card {
@@ -318,7 +321,8 @@ main.perfil {
     flex-direction: column;
     gap: 10px;
     border-radius: 10px 20px 10px 10px;
-    outline: 2px solid var(--color-blue)
+    outline: 2px solid var(--color-blue);
+    max-width: 200px;
 }
 
 .side-menu a {
@@ -350,6 +354,19 @@ main.perfil {
     transform: none;
 }
 /* MEDIA QUERY */
+@media screen and (max-width: 800px) {
+    main.perfil {
+        grid-template-columns: 150px 1fr;
+    }
+
+    .side-menu a {
+        font-size: 0.9rem;
+    }
+
+    .side-menu h1 {
+        font-size: 1.3rem;
+    }
+}
 
 @media screen and (min-width: 1001px) {
     .action-card__form--grid {
