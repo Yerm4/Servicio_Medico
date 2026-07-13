@@ -498,6 +498,7 @@ tr, th, td {
 }
 .avatar__link {
     font-size: 1rem;
+    font-weight: bolder;
 }
 
 .top-menu__login:hover .avatar__menu {

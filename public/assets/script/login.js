@@ -68,6 +68,18 @@ inputNombre.forEach(input => {
     });
 });
 
+const inputDireccion = document.querySelectorAll("input[name=direccion]")
+inputDireccion.forEach(input => {
+    input.addEventListener('input', (e) => {
+        const target = e.target;
+        target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
+        
+        if (target.value.length > 40) {
+            target.value = target.value.slice(0, 40);
+        }
+    });
+});
+
 const inputFecha = document.querySelectorAll('input[name=fecha_nacimiento]');
 
 if (inputFecha.length > 0) {

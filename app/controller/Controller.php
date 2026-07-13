@@ -32,12 +32,12 @@ class Controller {
             
 
             else {
-                $_SESSION["login_notif"] = "Login no exitoso. Usuario o contraseña incorrectos";
+                $_SESSION["login_notif"] = "Login fallido. Usuario o contraseña incorrectos";
             }
         }
 
         else {
-            $_SESSION["login_notif"] = "Login no exitoso.";
+            $_SESSION["login_notif"] = "Los datos ingresados no son validos";
         }
     }
 

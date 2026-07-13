@@ -20,7 +20,7 @@ $pnfs = $modeloOfertas->obtenerPNFS();
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="form" value="login">
                     <label class="action-card__label"> Cédula de identidad
-                        <input class="action-card__input" placeholder="Ej. 1532423" type="text" name="cedula" id="inputCedula">
+                        <input class="action-card__input" minlength="7" placeholder="Ej. 1532423" type="text" name="cedula" id="inputCedula">
                     </label>
                     <label class="action-card__label"> Contraseña
                         <input class="action-card__input" placeholder="*********" type="password" name="password">

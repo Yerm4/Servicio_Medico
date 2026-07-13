@@ -19,7 +19,7 @@
             </div>
             <div class="top-menu__links">
                 <?php if (!isset($_SESSION["cedula"])): ?>
-                <a href="inicio" class="top-menu__link">Login</a>
+                <a href="login" class="top-menu__link">Login</a>
                 <?php endif ?>
                 <?php if (isset($_SESSION["cedula"])) : ?>
                 <a href="perfil" class="top-menu__link">Perfil</a>
