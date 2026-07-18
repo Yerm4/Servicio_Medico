@@ -1,7 +1,5 @@
 <div class="action-card">
-    <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
     <h3 class="action-card__title">Actualizar Datos</h3>
-    <p class="action-card__p">Modificación de Usuario</p>
     
     <form id="formActualizarUsuario" class="action-card__form--registrar-usuarios">
         <div class="action-card__form--grid">

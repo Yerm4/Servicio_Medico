@@ -66,7 +66,6 @@ a {
 
 .top-menu a:hover {
     background-color: #eaeaea;
-    transform: scale(1.01);
 }
 
 .top-menu__perfil {
@@ -129,20 +128,15 @@ main {
     max-width: 400px;
 }
 
-.action-card:hover {
-    transform: scale(1.0010);
-}
-
 .action-card__logo {
     width: 50px;
 }
 
 .action-card__form {
-    border-top: 1px solid #999;
     display: grid;
     place-items: center;
     width: 100%;
-    margin-top: 10px
+    margin-top: 10px;
 }
 
 .action-card__title {
@@ -162,8 +156,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-size: 1.2rem;
-    padding: 10px;
+    font-size: 1rem;
     gap: 5px;
     width: 100%;
 }
@@ -190,9 +183,8 @@ main {
 }
 
 .action-card__button {
-    padding: 8px; 
+    padding: 6px; 
     border-radius: 10px;
-    outline: 1px solid black;
     background-color: var(--color-blue);
     color: #fff;
     width: 100%;
@@ -228,6 +220,7 @@ main {
     align-items: center;
     flex-wrap: wrap;
     width: 100%;
+    gap: 5px;
 }
 
 .action-card__form--grid {
@@ -370,7 +363,7 @@ main.perfil {
 
 @media screen and (min-width: 1001px) {
     .action-card__form--grid {
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     }
 }
 
@@ -989,4 +982,15 @@ tr, th, td {
     color: #555;
     font-weight: bold;
     text-align: left;
+}
+
+.action-card__label--radio {
+    flex-direction: row;
+}
+
+.tabla__elipsis {
+    width: 100px; 
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis;
 }

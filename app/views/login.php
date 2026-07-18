@@ -25,7 +25,7 @@ $pnfs = $modeloOfertas->obtenerPNFS();
                     <label class="action-card__label"> Contraseña
                         <input class="action-card__input" placeholder="*********" type="password" name="password">
                     </label>
-                    
+                    <br>
                     <button class="action-card__button" type="submit">Ingresar al sistema</button>
                 </form>
                     <p class="action-card__disclaimer">@ 2026 PNF Informatica - Universidad Politecnica Territorial de Lara Andres Eloy Blanco</p>

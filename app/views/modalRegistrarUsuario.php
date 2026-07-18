@@ -1,5 +1,4 @@
 <div class="action-card">
-    <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
     <h3 class="action-card__title">Registro</h3>
     
     <form class="action-card__form--registrar-usuarios" action="" method="POST">
@@ -79,20 +78,21 @@
                 <option value="" selected>No aplica / Seleccione...</option>
             </select>
         </label>
-
-    </div>
-        
-        <label class="action-card__label">Sexo
+        <label class="action-card__label"> Sexo
             <?php $s = isset($inputs['sexo']) ? $inputs['sexo'] : ''; ?>
             
-            <label >Masculino
+            <label> Masculino
                 <input type="radio" name="sexo" id="sexo_m" value="1" <?php echo ($s === '1') ? 'checked' : ''; ?> required>
             </label>
         
-            <label >Femenino
+            <label> Femenino
                 <input type="radio" name="sexo" id="sexo_f" value="2" <?php echo ($s === '2') ? 'checked' : ''; ?>>
             </label>
         </label>
+
+    </div>
+        
+        
         <div class="action-card__button-grid">
         <button type="reset" class="action-card__button action-card__button--red">Limpiar Formulario</button>
         <button type="submit" class="action-card__button">Guardar en Sistema</button>

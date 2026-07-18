@@ -71,7 +71,7 @@ class Usuario {
                     LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
                     WHERE u.activo = 1 
                     ORDER BY u.fecha_creacion DESC 
-                    LIMIT 19";
+                    LIMIT 5";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
