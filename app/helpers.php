@@ -27,3 +27,30 @@ function calcularEdad(?string $fechaNacimiento): string {
         return 'Error de formato';
     }
 }
+
+function reload() {
+    $url = $_SERVER["REQUEST_URI"];
+    header("Location: ".$url);
+    die();
+}
+
+function code($num) {
+    if ($num === null) {
+        return "";
+    }
+    return http_response_code($num);
+}
+
+function cleanString($value): ?string {
+    if (!is_string($value) && !is_int($value) && !is_float($value)) {
+        return null; 
+    }
+
+    $trimmed = trim((string)$value);
+    return $trimmed !== '' ? $trimmed : null;
+}
+
+
+function cleanValue(?array $data, string $key): ?string {
+    return cleanString($data[$key] ?? null);
+}

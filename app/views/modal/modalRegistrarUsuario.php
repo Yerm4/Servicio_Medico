@@ -2,7 +2,7 @@
     <div class="action-card">
         <h3 class="action-card__title">Registro</h3>
         
-        <form class="action-card__form--registrar-usuarios" action="" method="POST">
+        <form id="registroUsuarioForm" class="action-card__form--registrar-usuarios">
         <div class="action-card__form--grid">
         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <input type="hidden" name="form" value="registrar_usuario">
@@ -16,7 +16,6 @@
                         <?php $t = isset($inputs['tipo']) ? (string)$inputs['tipo'] : ''; ?>
                         <option value="" <?php echo ($t === '') ? 'selected' : ''; ?> disabled>Seleccione...</option>
                         <?php 
-                        $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
                         foreach ($tipos as $tipo): 
                             $idTipoStr = (string)$tipo['id_tipo'];
                         ?>

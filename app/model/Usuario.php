@@ -11,52 +11,43 @@ class Usuario {
     public function __construct($conexion) {
         $this->pdo = $conexion;
     }
-    public function loginUsuario($cedula) {
-        
-        try {
-            $sqlCheck = "SELECT COUNT(*) FROM usuarios WHERE cedula = :cedula";
-            $stmtCheck = $this->pdo->prepare($sqlCheck);
-            $stmtCheck->execute([
-            ":cedula" => $cedula]);
-            $existe = $stmtCheck->fetchColumn();
-    
-        if ($existe > 0) {
-            $sqlActivo = "SELECT * FROM usuarios WHERE cedula = :cedula";
-            $stmtActivo = $this->pdo->prepare($sqlActivo);
-            $stmtActivo->execute([
-                ":cedula" => $cedula]);
-            $activo = $stmtActivo->fetch(PDO::FETCH_ASSOC);
 
-            if ($activo["activo"] == 0) {
-                return false;
-            }
-            
-            else {
-                $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
-                        FROM usuarios u
-                        LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
-                        LEFT JOIN lista_roles r ON u.rol = r.id_rol
-                        LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
-                        LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
-                        LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                        WHERE u.cedula = :cedula";
-                $stmt = $this->pdo->prepare($sql);
-                $stmt->execute([
-                    "cedula" => $cedula
-                ]);
-                            
-                return $stmt->fetch(PDO::FETCH_ASSOC);
-            }
-        }
-
-        else {
-            return false;
-        }
+    private function response($status, $message = "", $data = null, $redirect = null) {
+        return    [
+        "status" => $status,
+        "message" => $message,
+        "data" => $data,
+        "redirect" => $redirect
+        ];
     }
 
-        catch (PDOException $e) {
-            echo $e;
-            return false;
+    public function login($cedula) {
+        
+        try { 
+            $stmt = $this->pdo->prepare("SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
+                FROM usuarios u 
+                LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo 
+                LEFT JOIN lista_roles r ON u.rol = r.id_rol 
+                LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario 
+                LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo 
+                LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf 
+                WHERE u.cedula = :cedula"); 
+            
+            $stmt->execute(['cedula' => $cedula]); 
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+            if (!$usuario) {
+                return $this->response('error', 'El usuario no se encuentra registrado');
+            }
+        
+            if ((int)$usuario['activo'] !== 1) { 
+                return $this->response('error', 'El usuario esta inactivo/eliminado'); 
+            } 
+        
+            return $this->response('ok', '', $usuario); 
+        
+        } catch (PDOException $e) {
+            return $this->response('error', 'Error en la consulta: ' . $e->getMessage());
         }
     }
 
@@ -80,7 +71,7 @@ class Usuario {
         }
     }
 
-    public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
+    public function registrarUsuario($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
         
         try {
         $sqlCheck = "SELECT COUNT(*) FROM usuarios WHERE cedula = :cedula";

@@ -97,7 +97,6 @@ if (inputFecha.length > 0) {
 
 const boton = document.querySelectorAll(".action-card__button")
     if (boton) {
-        console.log("aaaa")
         boton.forEach(botonModal => {
             botonModal.addEventListener("click", (event) => {
             let modalId = botonModal.dataset.modal;
@@ -159,7 +158,8 @@ modales.forEach(modal => {
     })
 })
 
-function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
+async function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
+    
     if (!selectPnfElement) return;
 
     selectPnfElement.innerHTML = '<option value="">No aplica / Seleccione...</option>';
@@ -169,18 +169,25 @@ function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null)
         return;
     }
 
-    const tokenCSRF = document.querySelector('input[name="csrf_token"]').value;
+    try {
+        const response = await fetch(`api/nucleos/pnfs/${idNucleo}`)
+        const result = await response.json().catch(() => null)
 
-    fetch('index.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `csrf_token=${tokenCSRF}&form=obtener_pnfs_por_nucleo&id_nucleo=${idNucleo}`
-    })
-    .then(response => response.json())
-    .then(pnfs => {
-        if (Array.isArray(pnfs) && pnfs.length > 0) {
-            selectPnfElement.disabled = false;
-            pnfs.forEach(pnf => {
+        if (!response.ok) {
+            const error = (result?.message ?? "") || response.status+": "+response.statusText
+            throw new Error(error)
+        }
+            
+        if (!result) {
+            throw new Error("La respuesta no es JSON")
+        }
+
+        if (result.status === "ok") {
+            console.log(idNucleo)
+            const data = result.data
+            if (Array.isArray(data) && data.length > 0) {
+                selectPnfElement.disabled = false;
+                data.forEach(pnf => {
                 const opt = document.createElement('option');
                 opt.value = pnf.id_pnf;
                 opt.textContent = pnf.nombre_pnf;
@@ -189,9 +196,12 @@ function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null)
                 }
                 selectPnfElement.appendChild(opt);
             });
+            }
         }
-    })
-    .catch(error => console.error("Error al cargar PNFs:", error));
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 const selectNucleoReg = document.getElementById('nucleo_id');
@@ -200,4 +210,87 @@ if (selectNucleoReg && selectPnfReg) {
     selectNucleoReg.addEventListener('change', function() {
         cargarPnfsPorNucleo(this.value, selectPnfReg);
     });
+}
+
+const loginForm = document.getElementById("loginForm")
+
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const formData = new FormData(loginForm)
+        const datos = Object.fromEntries(formData.entries())
+    
+        try {
+            const response = await fetch("api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+            
+            const result = await response.json().catch(() => null)
+            
+            if (!response.ok) {
+                const error = result?.message || response.status + ": " + response.statusText
+                msg(loginMessage, error)
+                throw new Error(error)
+            }
+            
+            if (!result) throw new Error("La respuesta no fue JSON")
+            
+            if (result.status === "ok") {
+                const data = result.data
+                console.log(result.message)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
+            } else {
+                throw new Error (result.message)
+            }
+        } catch(error) {
+            console.error(error)
+        }
+    })
+}
+
+const signupForm = document.getElementById("registroUsuarioForm") 
+
+if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        const formData = new FormData(signupForm)
+        const datos = Object.fromEntries(formData.entries())
+
+        try {
+            const response = await fetch("api/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+            
+            const result = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                const error = result?.message || response.status + ": " + response.statusText
+                msg(signUpMessage, error)
+                throw new Error(error)
+            }
+
+            if (!result) throw new Error("La respuesta no es JSON")
+
+            if (result.status === "ok") {
+                const data = result.data
+                console.log(result.message)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    })
 }

@@ -10,6 +10,7 @@ use app\model\NucleoPNF;
 use app\model\Consulta;
 use app\model\Condicion;
 use app\config\Config;
+use app\model\Usuario;
 
 class ViewController {
 
@@ -18,10 +19,16 @@ class ViewController {
         $this->pdo = $conexion;
     }
 
+    private function auth() {
+        
+    }
+
     public function showLogin() {
         $modeloOfertas = new NucleoPNF($this->pdo);
         $nucleos = $modeloOfertas->obtenerNucleos();
         $pnfs = $modeloOfertas->obtenerPNFS();
+        $userModel = new Usuario($this->pdo);
+        $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
 
         if ($pnfs && $nucleos) {
             include_once __DIR__."/../views/login.php";

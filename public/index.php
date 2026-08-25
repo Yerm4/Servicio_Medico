@@ -7,6 +7,7 @@ use app\controller\ConsultaController;
 use app\controller\CondicionController;
 use app\controller\NucleoPNFController;
 use app\controller\ViewController;
+use app\controller\ApiController;
 use app\model\Consulta;
 use app\config\Config;
 
@@ -15,6 +16,7 @@ $controller = new Controller($pdo);
 $controllerConsulta = new ConsultaController($pdo);
 $controllerOferta = new NucleoPNFController($pdo);
 $viewController = new ViewController($pdo);  
+$apiController = new ApiController($pdo);
 
 
 if (file_exists(__DIR__ . '/.env')) {
@@ -35,21 +37,6 @@ if ($appEnv === 'local') {
     error_reporting(0);
 }
 
-if (isset($_SESSION['cedula'])) {
-    if (!isset($_SESSION['user_agent']) || $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
-        session_unset();
-        session_destroy();
-        header("Location: login");
-        exit();
-    }
-}
-
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-//$form = isset($_POST["form"]) ? $_POST["form"] : '';
-
 $method = !empty($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "";
 
 $rutasApi = [
@@ -60,7 +47,7 @@ $rutasApi = [
         "api/consultas/detalle"             => "obtenerConsulta",
         "api/consultas/reporte-morbilidad"  => "generarReporteMorbilidad",
         "api/pnfs"                          => "buscarPnfs",
-        "api/nucleos/pnfs"                  => "obtenerPnfsPorNucleo"
+        "api/nucleos/pnfs/{id}"                  => "obtenerPnfsPorNucleo"
     ],
     "POST" => [
         "api/auth/login"                    => "login",
@@ -83,7 +70,6 @@ $rutasApi = [
         "api/pnfs"                          => "actualizarPnf"
     ],
     "PATCH" => [
-        // Reservado para actualizaciones parciales
     ],
     "DELETE" => [
         "api/users"                         => "eliminarUsuario",
@@ -107,13 +93,27 @@ if ($paginaActual === "logout") {
     exit();
 }
 
-if (isset($rutasApi[$method][$ruta])) {
-    header("Content-Type: application/json; charset=UTF-8");
-    
-    $metodoController = $rutasApi[$method][$ruta];
+$metodoEncontrado = null;
+$parametros = [];
 
-    if (method_exists($apiController, $metodoController)) {
-        $apiController->$metodoController();
+if (isset($rutasApi[$method])) {
+    foreach ($rutasApi[$method] as $patronRuta => $metodo) {
+        $patronRegex = "#^" . preg_replace('/\{[a-zA-Z0-9_]+\}/', '([^/]+)', $patronRuta) . "$#";
+        if (preg_match($patronRegex, $ruta, $coincidencias)) {
+            $metodoEncontrado = $metodo;
+            array_shift($coincidencias);
+            $parametros = $coincidencias;
+            break;
+        }
+    }
+}
+
+if ($metodoEncontrado) {
+    header("Content-Type: application/json; charset=UTF-8");
+    $apiController = new ApiController($pdo);
+
+    if (method_exists($apiController, $metodoEncontrado)) {
+        $apiController->$metodoEncontrado(...$parametros);
         exit();
     } else {
         http_response_code(500);
@@ -124,13 +124,28 @@ if (isset($rutasApi[$method][$ruta])) {
 
 if (str_starts_with($ruta, "api/")) { 
     header("Content-Type: application/json; 
-    charset=UTF-8"); http_response_code(400); 
+    charset=UTF-8"); http_response_code(404); 
     echo json_encode([ 
         "status" => "error", 
         "message" => "La ruta: ".$ruta." no existe" 
         ]); 
     exit(); 
 }
+
+if (isset($_SESSION['cedula'])) {
+    if (!isset($_SESSION['user_agent']) || $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
+        session_unset();
+        session_destroy();
+        header("Location: login");
+        exit();
+    }
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+//$form = isset($_POST["form"]) ? $_POST["form"] : '';
 
 /*switch($form) {
     case "registrar_usuario":
