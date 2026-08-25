@@ -3,9 +3,8 @@ if (isset($_SESSION["cedula"])) {
     header("Location: perfil");
     exit();
 }
-$modeloOfertas = new \app\model\NucleoPNF($pdo);
-$nucleos = $modeloOfertas->obtenerNucleos();
-$pnfs = $modeloOfertas->obtenerPNFS();
+$titulo = "login";
+include __DIR__."/header.php";
 ?>
 
 <main class="login">
@@ -46,7 +45,7 @@ $pnfs = $modeloOfertas->obtenerPNFS();
             </div>
         </section>
         <dialog id="modalRegistrarUsuario" class="modal-crud">
-            <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
+            <?php include_once __DIR__."/modal/modalRegistrarUsuario.php" ?>
         </dialog>
     </main>
     <footer>

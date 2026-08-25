@@ -14,6 +14,18 @@ class Controller {
         $consulta = new Usuario($this->pdo);
         return $consulta->consultarUsuarios();
     }
+
+    private function jsonResponse($status, $message = "", $data = null, $redirect = null) {
+        header("Content-Type: application/json");
+        echo json_encode([
+            "status" => $status,
+            "message" => $message,
+            "data" => $data,
+            "redirect" => $redirect
+        ]);
+        exit();
+    }
+    
     public function login() {
         $cedula = isset($_POST["cedula"]) ? trim($_POST["cedula"]) : "";
         $password = isset($_POST["password"]) ? trim($_POST["password"]) : "";
