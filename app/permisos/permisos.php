@@ -67,7 +67,7 @@ $defaultRol = $userModel->obtenerRolDefecto();
 $rolUsuario = $defaultRol;
 
 if (isset($_SESSION['cedula'])) {
-    $datosUsuarioLogueado = $userModel->loginUsuario($_SESSION['cedula']);
+    $datosUsuarioLogueado = $userModel->login($_SESSION['cedula']);
     $rolUsuario = isset($datosUsuarioLogueado['rol']) ? (int)$datosUsuarioLogueado['rol'] : $defaultRol;
 
     $tieneGestionarUsuarios = checkPerm("gestionar_usuarios", $userModel);

@@ -36,22 +36,30 @@ class ViewController {
     }
 
     public function showPerfil() {
+        // 1. Traemos las variables que tu archivo permisos.php ya calculó globalmente
+        global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta;
+
         $consultaModel = new Consulta($this->pdo);
         $stats = [];
         $consultasRecientesDashboard = [];
         $misConsultas = [];
 
-        extract($permisos);
-
+        // 2. Lógica del Controlador: Buscar datos según el tipo de usuario
         if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos) {
+            // Es un paciente
             $misConsultas = $consultaModel->obtenerConsultasPorPaciente($_SESSION["cedula"]);
         } else {
+            // Es personal médico / administrativo
             $stats = $consultaModel->obtenerEstadisticasDashboard();
             $consultasRecientesDashboard = $consultaModel->obtenerConsultasRecientes(5);
         }
 
         $paginaActual = 'perfil';
-        include __DIR__ . "/../views/dashboard/perfil.php";
+        $inputs = isset($_SESSION['inputs']) ? $_SESSION['inputs'] : [];
+        unset($_SESSION['inputs']);
+        
+        // 3. Renderizamos la Vista (Corregimos la ruta, quitando la carpeta 'dashboard/')
+        include __DIR__ . "/../views/perfil.php";
     }
 
     public function showUsuarios($userModel, $permisos) {

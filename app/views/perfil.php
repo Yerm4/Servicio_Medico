@@ -1,114 +1,97 @@
-<?php
-use app\controller\Controller;
-// Validar autenticación
-if (empty($_SESSION["cedula"])) {
-    header("Location: login");
-    exit;
-}
 
-// Inicialización de variables generales
-$inputs = $_SESSION['inputs'] ?? [];
-unset($_SESSION['inputs']);
-
-$usuariosEncontrados = [];
-$roles = [];
-$permisos = [];
-$rolePermMap = [];
-$condicionesRegistradas = [];
-$consultasRecientes = [];
-$misConsultas = [];
-$stats = [];
-$consultasRecientesDashboard = [];
-$nucleos = [];
-$pnfs = [];
-$ofertas = [];
-
-// Carga de datos según vista activa y permisos
-if ($tieneGestionarUsuarios) {
-    $controller = new \app\controller\Controller($pdo);
-    $usuariosEncontrados = $controller->consultar();
-}
-
-if ($tieneGestionarRolesPermisos) {
-    $roles = $userModel->obtenerRoles();
-    $permisos = $userModel->obtenerPermisos();
-    $rolesPermisos = $userModel->obtenerRolesPermisos();
-    foreach ($rolesPermisos as $rp) {
-        $rolePermMap[$rp['id_rol']][$rp['id_permiso']] = true;
-    }
-}
-
-if (($paginaActual === 'condiciones' || $paginaActual === 'configuracion') && $tieneGestionarCondiciones) {
-    $condicionesRegistradas = (new \app\model\Condicion($pdo))->consultarCondiciones();
-}
-
-$consultaModel = new \app\model\Consulta($pdo);
-
-if ($paginaActual === 'consultas' && $tieneVerConsultas) {
-    $consultasRecientes = $consultaModel->obtenerConsultasRecientes(20);
-}
-
-if ($paginaActual === 'perfil') {
-    if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos) {
-        $misConsultas = $consultaModel->obtenerConsultasPorPaciente($_SESSION["cedula"]);
-    } else {
-        $stats = $consultaModel->obtenerEstadisticasDashboard();
-        $consultasRecientesDashboard = $consultaModel->obtenerConsultasRecientes(5);
-    }
-}
-
-if (in_array($paginaActual, ['oferta', 'sedes-carreras', 'usuarios'])) {
-    $modeloOfertas = new \app\model\NucleoPNF($pdo);
-    $nucleos = $modeloOfertas->obtenerNucleos();
-    $pnfs = $modeloOfertas->obtenerPNFS();
-    if ($paginaActual === 'oferta') {
-        $ofertas = $modeloOfertas->obtenerOfertasActivas();
-    }
-}
+<?php 
+$titulo = "Login";
+include __DIR__."/header.php";
 ?>
 <main class="perfil">    
-<main class="perfil">
-    <?php include_once __DIR__ . '/../components/sidebar.php'; ?>
-
+    <aside class="side-menu">
+        <h1>Menu</h1>
+        <hr>
+        <a href="perfil" id="inicio" class="focus">Inicio</a>
+        <a href="usuarios" id="usuario" class="">Usuarios</a>
+        <a href="consultas" id="consulta" class="">Consultas</a>
+        <a href="configuracion" id="configuracion" class="">Configuración</a>
+    </aside>
+    
     <section class="section-1 section-1--perfil">
-        <?php include_once __DIR__ . '/../components/action_bar.php'; ?>
+        <div class="buscador-caja">
+            <div class="section-1__box transition" id="section-1-box"></div>
+        </div>
 
-        <?php
-        // Enrutador de vistas dinámicas
-        switch ($paginaActual) {
-            case 'sedes-carreras':
-                include_once __DIR__ . '/../pages/sedes_carreras.php';
-                break;
-            case 'oferta':
-                include_once __DIR__ . '/../pages/ofertas.php';
-                break;
-            case 'usuarios':
-                include_once __DIR__ . '/../pages/usuarios.php';
-                break;
-            case 'consultas':
-                include_once __DIR__ . '/../pages/consultas.php';
-                break;
-            case 'perfil':
-                include_once __DIR__ . '/../pages/perfil.php';
-                break;
-            case 'configuracion':
-                include_once __DIR__ . '/../pages/configuracion.php';
-                break;
-        }
-        ?>
+        <div class="dashboard-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 class="titulo-configuracion-interna" style="margin: 0;">Panel de Inicio</h3>
+                <a name="openModal" data-modal="modalReporteMorbilidad" class="action-card__button btn-generar-reporte" href="#" style="background-color: #0284c7; width: fit-content; text-align: center;">Generar Reporte de Morbilidad</a>
+            </div>
+            
+            <div class="dashboard-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card__number"><?= $stats['total_consultas'] ?? 0 ?></div>
+                    <div class="stat-card__label">Consultas Realizadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number"><?= $stats['total_usuarios'] ?? 0 ?></div>
+                    <div class="stat-card__label">Usuarios Registrados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number"><?= $stats['total_condiciones'] ?? 0 ?></div>
+                    <div class="stat-card__label">Condiciones Médicas</div>
+                </div>
+            </div>
+
+            <div class="contenedor-tabla-consultas">
+                <h3 class="titulo-tabla-consultas" style="text-align: left; margin-bottom: 15px;">Últimas Consultas Registradas</h3>
+                <?php if (empty($consultasRecientesDashboard)): ?>
+                    <div class="contenedor-historial-vacio">
+                        <p class="texto-historial-vacio">No hay consultas médicas registradas recientemente.</p>
+                    </div>
+                <?php else: ?>
+                    <table class="tabla-consultas">
+                        <thead>
+                            <tr class="tr-head-consultas">
+                                <th class="th-consultas">Fecha</th>
+                                <th class="th-consultas">Paciente</th>
+                                <th class="th-consultas">Médico Tratante</th>
+                                <th class="th-consultas">Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($consultasRecientesDashboard as $c): ?>
+                                <tr class="tr-body-consultas">
+                                    <td class="td-consultas-nowrap"><?= e(date('d/m/Y H:i', strtotime($c['fecha_consulta']))) ?></td>
+                                    <td class="td-consultas"><strong><?= e(($c['paciente_nombre'] ?? '') . ' ' . ($c['paciente_apellido'] ?? '')) ?></strong></td>
+                                    <td class="td-consultas"><?= e(($c['medico_nombre'] ?? '') . ' ' . ($c['medico_apellido'] ?? '')) ?></td>
+                                    <td class="td-consultas"><?= e($c['motivo_de_visita']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+            </div>
+        </div>
 
         <?php if (!empty($_SESSION["registro_msg"])): ?>
             <div class="notification-banner notification-banner--<?= $_SESSION["registro_status"] ?>">
-                <p><strong><?= e($_SESSION["registro_msg"]); unset($_SESSION["registro_msg"]); ?></strong></p>
+                <p><strong><?php echo e($_SESSION["registro_msg"]); unset($_SESSION["registro_msg"]); ?></strong></p>
             </div>
         <?php endif; ?>
     </section>
 
-    <?php include_once __DIR__ . '/../components/modals_container.php'; ?>
+    <!-- Modales -->
+    <dialog id="modalRegistrarUsuario" class="modal-crud"><?php include_once __DIR__."/modalRegistrarUsuario.php" ?></dialog>
+    <dialog id="modalActualizarUsuario" class="modal-crud"><?php include_once __DIR__."/modalActualizarUsuario.php" ?></dialog>
+    <dialog id="modalDetallesUsuario" class="modal-crud"><?php include_once __DIR__."/modalDetallesUsuario.php" ?></dialog>
+    <dialog id="modalRegistrarConsulta" class="modal-crud"><?php include_once __DIR__."/modalRegistrarConsulta.php" ?></dialog>
+    <dialog id="modalActualizarConsulta" class="modal-crud"><?php include_once __DIR__."/modalActualizarConsulta.php" ?></dialog>
+    <dialog id="modalBuscarConsulta" class="modal-crud"><?php include_once __DIR__."/modalBuscarConsulta.php" ?></dialog>
+    <dialog id="modalReporteMorbilidad" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;"><?php include_once __DIR__."/modalReporteMorbilidad.php" ?></dialog>
+    
+    <script>
+        const ES_MEDICO_O_DIRECTOR = <?= isset($tieneModificarConsulta) && $tieneModificarConsulta ? 'true' : 'false' ?>;
+    </script>
 </main>
 
 <footer>
-    <script>const ES_MEDICO_O_DIRECTOR = <?= $tieneModificarConsulta ? 'true' : 'false' ?>;</script>
     <script src="assets/script/append.js" defer></script>
     <script src="assets/script/eliminar.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
