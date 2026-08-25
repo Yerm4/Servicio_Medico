@@ -76,7 +76,6 @@ $rutasApi = [
 $ruta = isset($_GET["ruta"]) ? trim($_GET["ruta"], "/") : "login";
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
-$paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
 if ($paginaActual === "logout") {
     session_unset();
@@ -127,7 +126,7 @@ if (str_starts_with($ruta, "api/")) {
 $rutasVistas = [
     "login"          => "showLogin",
     "perfil"         => "showPerfil",
-    "usuarios"       => "showUsuarios",
+    "usuario"        => "showUsuario",
     "consultas"      => "showConsultas",
     "configuracion"  => "showConfiguracion",
     "oferta"         => "showOferta",
@@ -135,6 +134,7 @@ $rutasVistas = [
 ];
 
 include_once __DIR__."/../app/permisos/permisos.php";
+$paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
 if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
     $metodoController = $rutasVistas[$paginaActual];

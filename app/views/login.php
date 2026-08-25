@@ -1,8 +1,4 @@
 <?php 
-if (isset($_SESSION["cedula"])) {
-    header("Location: perfil");
-    exit();
-}
 $titulo = "Login";
 include __DIR__."/header.php";
 ?>

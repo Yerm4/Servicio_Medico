@@ -28,7 +28,7 @@ class ViewController {
         $nucleos = $modeloOfertas->obtenerNucleos();
         $pnfs = $modeloOfertas->obtenerPNFS();
         $userModel = new Usuario($this->pdo);
-        $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
+        $tipos = $userModel->obtenerTipos();
 
         if ($pnfs && $nucleos) {
             include_once __DIR__."/../views/login.php";
@@ -36,9 +36,9 @@ class ViewController {
     }
 
     public function showPerfil() {
-        // 1. Traemos las variables que tu archivo permisos.php ya calculó globalmente
-        global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta;
 
+        global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta;
+        $this->auth();
         $consultaModel = new Consulta($this->pdo);
         $stats = [];
         $consultasRecientesDashboard = [];
@@ -62,18 +62,12 @@ class ViewController {
         include __DIR__ . "/../views/perfil.php";
     }
 
-    public function showUsuarios($userModel, $permisos) {
-        extract($permisos);
-        if (!$tieneGestionarUsuarios) {
-            header("Location: perfil");
-            exit();
-        }
+    public function showUsuario($userModel = null, $permisos = null) {
 
         $controller = new Controller($this->pdo);
         $usuariosEncontrados = $controller->consultar();
 
-        $paginaActual = 'usuarios';
-        include __DIR__ . "/../views/usuarios.php";
+        include __DIR__ . "/../views/usuario.php";
     }
 
     public function showConsultas($userModel, $permisos) {
