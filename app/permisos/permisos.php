@@ -1,5 +1,22 @@
 <?php
-$userModel = new \app\model\Usuario($pdo);
+
+
+use app\controller\Controller;
+use app\controller\ConsultaController;
+use app\controller\CondicionController;
+use app\controller\NucleoPNFController;
+use app\controller\ViewController;
+use app\controller\ApiController;
+use app\model\Consulta;
+use app\model\Usuario;
+use app\config\Config;
+
+$pdo = Config::conexion(); 
+$controller = new Controller($pdo);
+$controllerConsulta = new ConsultaController($pdo);
+$controllerOferta = new NucleoPNFController($pdo);
+
+$userModel = new Usuario($pdo);
 $userModel->sincronizarPermisos([
     "gestionar_usuarios" => "Permite registrar, actualizar y eliminar usuarios",
     "ver_consultas" => "Permite ver y buscar el historial de consultas médicas",
@@ -104,9 +121,81 @@ if (!isset($_SESSION['cedula'])) {
     }
 }
 
+
+
+if (isset($_SESSION['cedula'])) {
+    if (!isset($_SESSION['user_agent']) || $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
+        session_unset();
+        session_destroy();
+        header("Location: login");
+        exit();
+    }
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         http_response_code(403);
         exit("CSRF token validation failed");
     }
+}
+
+
+if ($paginaActual === "buscar_patologia") {
+    if (!checkPerm("ver_consultas", $userModel)) {
+        header('Content-Type: application/json');
+        echo json_encode([]);
+        exit();
+    }
+    $controllerConsulta->buscarPatologiaAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_paciente") {
+    if (!checkPerm("ver_consultas", $userModel)) {
+        header('Content-Type: application/json');
+        echo json_encode([]);
+        exit();
+    }
+    $controllerConsulta->buscarPacienteAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_consultas_paciente") {
+    if (!checkPerm("ver_consultas", $userModel)) {
+        header('Content-Type: application/json');
+        echo json_encode([]);
+        exit();
+    }
+    $controllerConsulta->obtenerConsultasPacienteAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_condicion") {
+    if (!checkPerm("ver_consultas", $userModel)) {
+        header('Content-Type: application/json');
+        echo json_encode([]);
+        exit();
+    }
+    $controllerConsulta->buscarCondicionAjax();
+    exit();
+}
+
+if ($paginaActual === "buscar_condiciones_paciente") {
+    if (!checkPerm("ver_consultas", $userModel)) {
+        header('Content-Type: application/json');
+        echo json_encode([]);
+        exit();
+    }
+    $controllerConsulta->obtenerCondicionesPacienteAjax();
+    exit();
+}
+
+$todosLosUsuarios = [];
+if (isset($_SESSION['cedula']) && $tieneGestionarUsuarios) {
+    $modeloConsulta = new Consulta($pdo);
+    $todosLosUsuarios = $modeloConsulta->obtenerTodosLosUsuarios();
 }

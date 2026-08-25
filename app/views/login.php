@@ -44,7 +44,7 @@ include __DIR__."/header.php";
                 </div>
             </div>
         </section>
-            <?php include_once __DIR__."/modal/modalRegistrarUsuario.php" ?>
+            <?php include_once __DIR__."/modals/modalRegistrarUsuario.php" ?>
     </main>
     <footer>
 

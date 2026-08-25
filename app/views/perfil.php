@@ -78,13 +78,13 @@ include __DIR__."/header.php";
     </section>
 
     <!-- Modales -->
-    <dialog id="modalRegistrarUsuario" class="modal-crud"><?php include_once __DIR__."/modalRegistrarUsuario.php" ?></dialog>
-    <dialog id="modalActualizarUsuario" class="modal-crud"><?php include_once __DIR__."/modalActualizarUsuario.php" ?></dialog>
-    <dialog id="modalDetallesUsuario" class="modal-crud"><?php include_once __DIR__."/modalDetallesUsuario.php" ?></dialog>
-    <dialog id="modalRegistrarConsulta" class="modal-crud"><?php include_once __DIR__."/modalRegistrarConsulta.php" ?></dialog>
-    <dialog id="modalActualizarConsulta" class="modal-crud"><?php include_once __DIR__."/modalActualizarConsulta.php" ?></dialog>
-    <dialog id="modalBuscarConsulta" class="modal-crud"><?php include_once __DIR__."/modalBuscarConsulta.php" ?></dialog>
-    <dialog id="modalReporteMorbilidad" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;"><?php include_once __DIR__."/modalReporteMorbilidad.php" ?></dialog>
+    <dialog id="modalRegistrarUsuario" class="modal-crud"><?php include_once __DIR__."/modals/modalRegistrarUsuario.php" ?></dialog>
+    <dialog id="modalActualizarUsuario" class="modal-crud"><?php include_once __DIR__."/modals/modalActualizarUsuario.php" ?></dialog>
+    <dialog id="modalDetallesUsuario" class="modal-crud"><?php include_once __DIR__."/modals/modalDetallesUsuario.php" ?></dialog>
+    <dialog id="modalRegistrarConsulta" class="modal-crud"><?php include_once __DIR__."/modals/modalRegistrarConsulta.php" ?></dialog>
+    <dialog id="modalActualizarConsulta" class="modal-crud"><?php include_once __DIR__."/modals/modalActualizarConsulta.php" ?></dialog>
+    <dialog id="modalBuscarConsulta" class="modal-crud"><?php include_once __DIR__."/modals/modalBuscarConsulta.php" ?></dialog>
+    <dialog id="modalReporteMorbilidad" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;"><?php include_once __DIR__."/modals/modalReporteMorbilidad.php" ?></dialog>
     
     <script>
         const ES_MEDICO_O_DIRECTOR = <?= isset($tieneModificarConsulta) && $tieneModificarConsulta ? 'true' : 'false' ?>;
