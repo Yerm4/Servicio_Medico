@@ -41,7 +41,7 @@ class ApiController {
 
         $lenCedula = strlen((string)$cedula);
         if ($lenCedula < 7 || $lenCedula > 8) {
-            http_response_code(400);
+            code(400);
             $this->jsonResponse("error", "Cédula inválida");
         }
 
@@ -88,23 +88,23 @@ class ApiController {
         if (empty($cedula) || empty($nombre) || empty($apellido) || empty($tipo) || 
             empty($fecha_nacimiento) || empty($tlfprincipal) || empty($tlfemergencia) || 
             empty($nombre_contacto_emergencia) || empty($sexo) || empty($direccion)) {
-            http_response_code(400);
+            code(400);
             $this->jsonResponse("error", "Por favor completa todos los campos requeridos");
         }
     
         if (!ctype_digit((string)$cedula)) {
-            http_response_code(400);
+            code(400);
             $this->jsonResponse("error", "La cédula solo debe contener números");
         }
     
         $lenCedula = strlen((string)$cedula);
         if ($lenCedula < 6 || $lenCedula > 8) {
-            http_response_code(400);
+            code(400);
             $this->jsonResponse("error", "La cédula debe contener entre 6 y 8 dígitos");
         }
     
         if (strlen($nombre) > 30 || strlen($apellido) > 30) {
-            http_response_code(400);
+            code(400);
             $this->jsonResponse("error", "El nombre y el apellido no pueden exceder los 30 caracteres");
         }
     
@@ -117,11 +117,68 @@ class ApiController {
         );
 
         if ($resultado["status"] === "ok") {
-            http_response_code(201);
+            code(201);
             $this->jsonResponse("ok", $resultado["msg"] ?? "Usuario registrado con éxito");
         } else {
-            http_response_code(400);
+            code(400);
             $this->jsonResponse("error", $resultado["msg"] ?? "Error al registrar el usuario");
+        }
+    }
+
+    public function actualizarUsuario() {
+        $data = json_decode(file_get_contents("php://input"), true);
+    
+        $cedula                     = cleanValue($data, "cedula");
+        $nombre                     = cleanValue($data, "nombre");
+        $apellido                   = cleanValue($data, "apellido");
+        $tipo                       = cleanValue($data, "tipo");
+        $fecha_nacimiento           = cleanValue($data, "fecha_nacimiento");
+        $tlfprincipal               = cleanValue($data, "tlfprincipal");
+        $nombre_contacto_emergencia = cleanValue($data, "nombre_contacto_emergencia");
+        $tlfemergencia              = cleanValue($data, "tlfemergencia");
+        $sexo                       = cleanValue($data, "sexo");
+        $direccion                  = cleanValue($data, "direccion");
+    
+        $nucleo_id = isset($data['nucleo_id']) && $data['nucleo_id'] !== '' ? (int)$data['nucleo_id'] : null;
+        $pnf_id    = isset($data['pnf_id']) && $data['pnf_id'] !== '' ? (int)$data['pnf_id'] : null;
+    
+        $rol = null;
+        if (isset($data['rol']) && !empty($_SESSION['cedula'])) {
+            $userModel = new Usuario($this->pdo);
+            if ($userModel->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
+                $rol = (int)$data['rol'];
+            }
+        }
+    
+        if (empty($cedula)) {
+            code(400);
+            $this->jsonResponse("error", "La cédula es requerida para actualizar el usuario");
+        }
+    
+        if (!ctype_digit((string)$cedula)) {
+            code(400);
+            $this->jsonResponse("error", "La cédula solo debe contener números");
+        }
+    
+        if (strlen($nombre) > 30 || strlen($apellido) > 30) {
+            code(400);
+            $this->jsonResponse("error", "El nombre y el apellido no pueden exceder los 30 caracteres");
+        }
+    
+        $userModel = new Usuario($this->pdo);
+    
+        $guardado = $userModel->actualizarUsuarioCompleto(
+            $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
+            $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, 
+            $sexo, $direccion, $rol, $nucleo_id, $pnf_id
+        );
+    
+        if ($guardado["status"] === "ok") {
+            code(200);
+            $this->jsonResponse("ok", "Usuario actualizado con éxito");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "No se realizaron cambios o hubo un fallo al actualizar");
         }
     }
 

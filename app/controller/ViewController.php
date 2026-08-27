@@ -77,7 +77,7 @@ class ViewController {
 
         if ($data["status"] === "ok") {
             $usuariosEncontrados = $data["data"];
-            include __DIR__ . "/../views/usuario.php";
+            include __DIR__ . "/../views/usuarios.php";
         } else {
             include __DIR__ . "/../views/404.php";
         }

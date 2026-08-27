@@ -190,19 +190,18 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
         $this->pdo->beginTransaction();
 
         if ($rol !== null) {
-            $sql = "UPDATE usuarios 
-                    SET nombre = :nombre, 
-                        apellido = :apellido, 
-                        tipo = :tipo, 
-                        fecha_nacimiento = :fecha_nacimiento, 
-                        tlfprincipal = :tlfprincipal, 
-                        nombre_contacto_emergencia = :nombre_contacto_emergencia, 
-                        tlfemergencia = :tlfemergencia, 
-                        sexo = :sexo,
-                        direccion = :direccion,
-                        rol = :rol
-                    WHERE cedula = :cedula";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("UPDATE usuarios 
+            SET nombre = :nombre, 
+                apellido = :apellido, 
+                tipo = :tipo, 
+                fecha_nacimiento = :fecha_nacimiento, 
+                tlfprincipal = :tlfprincipal, 
+                nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                tlfemergencia = :tlfemergencia, 
+                sexo = :sexo,
+                direccion = :direccion,
+                rol = :rol
+            WHERE cedula = :cedula");
             $params = [
                 'nombre'                      => $nombre,
                 'apellido'                    => $apellido,
@@ -217,18 +216,17 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
                 'cedula'                      => (int)$cedula
             ];
         } else {
-            $sql = "UPDATE usuarios 
-                    SET nombre = :nombre, 
-                        apellido = :apellido, 
-                        tipo = :tipo, 
-                        fecha_nacimiento = :fecha_nacimiento, 
-                        tlfprincipal = :tlfprincipal, 
-                        nombre_contacto_emergencia = :nombre_contacto_emergencia, 
-                        tlfemergencia = :tlfemergencia, 
-                        sexo = :sexo,
-                        direccion = :direccion
-                    WHERE cedula = :cedula";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("UPDATE usuarios 
+            SET nombre = :nombre, 
+                apellido = :apellido, 
+                tipo = :tipo, 
+                fecha_nacimiento = :fecha_nacimiento, 
+                tlfprincipal = :tlfprincipal, 
+                nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                tlfemergencia = :tlfemergencia, 
+                sexo = :sexo,
+                direccion = :direccion
+            WHERE cedula = :cedula");
             $params = [
                 'nombre'                      => $nombre,
                 'apellido'                    => $apellido,
@@ -261,7 +259,7 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
         }
 
         $this->pdo->commit();
-        return true;
+        return $this->response("ok", "Usuario actualizado");
         
     } catch (PDOException $e) {
         if ($this->pdo->inTransaction()) {

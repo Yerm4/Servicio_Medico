@@ -7,6 +7,7 @@
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="assets/script/code.js" defer></script>
+    <script src="assets/script/regex.js" defer></script>
     <title><?= e(!empty($titulo) ? $titulo : "UPTAEB") ?></title>
 </head>
 <body>

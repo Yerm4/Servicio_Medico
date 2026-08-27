@@ -60,34 +60,6 @@ if (subTabCondiciones) {
 }
 const loginCardCedula = document.querySelectorAll("input[name=cedula]")
 
-if (loginCardCedula) {
-    loginCardCedula.forEach(input => {
-    input.addEventListener('input', function() {
-        
-        this.value = this.value.replace(/\D/g, '');
-        
-        if (this.value.length > 8) {
-            this.value = this.value.slice(0, 8);
-        }
-    });
-});
-}
-
-const telefonos = document.querySelectorAll("input[name=tlfprincipal], input[name=tlfemergencia]")
-
-if (telefonos) {
-    telefonos.forEach(input => {
-    input.addEventListener('input', function() {
-        
-        this.value = this.value.replace(/\D/g, '');
-        
-        if (this.value.length > 20) {
-            this.value = this.value.slice(0, 20);
-        }
-    });
-});
-}
-
 const inputNombre = document.querySelectorAll("input[name=nombre], input[name=apellido], input[name=nombre_contacto_emergencia]")
 inputNombre.forEach(input => {
     input.addEventListener('input', (e) => {

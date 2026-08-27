@@ -126,7 +126,7 @@ if (str_starts_with($ruta, "api/")) {
 $rutasVistas = [
     "login"          => "showLogin",
     "perfil"         => "showPerfil",
-    "usuario"        => "showUsuario",
+    "usuarios"       => "showUsuario",
     "consultas"      => "showConsultas",
     "configuracion"  => "showConfiguracion",
     "oferta"         => "showOferta",
