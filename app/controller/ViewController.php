@@ -81,21 +81,19 @@ class ViewController {
         } else {
             include __DIR__ . "/../views/404.php";
         }
-
-        
     }
 
-    public function showConsultas($userModel, $permisos) {
-        extract($permisos);
-        if (!$tieneVerConsultas) {
-            header("Location: perfil");
-            exit();
-        }
+    public function showConsultas($userModel = null, $permisos = null) {
+        
+        $pnfModel = new NucleoPNF($this->pdo);
+        $userModel = new Usuario($this->pdo);
 
-        $consultaModel = new Consulta($this->pdo);
-        $consultasRecientes = $consultaModel->obtenerConsultasRecientes(20);
-
-        $paginaActual = 'consultas';
+        $nucleos = $pnfModel->obtenerNucleos();
+        $pnfs = $pnfModel->obtenerPNFS();
+        
+        $tipos = $userModel->obtenerTipos();
+        $data = $userModel->consultarUsuarios();
+        
         include __DIR__ . "/../views/consultas.php";
     }
 
@@ -133,6 +131,16 @@ class ViewController {
     }
 
     public function showSedes() {
+        
+        $nucleos = [];
+        $pnfs = [];
+        $ofertas = [];
+
+        
+        $modeloOfertas = new NucleoPNF($this->pdo);
+        $nucleos = $modeloOfertas->obtenerNucleos();
+        $pnfs = $modeloOfertas->obtenerPNFS();
+        
         include_once __DIR__."/../views/sedes.php";
     }
 }

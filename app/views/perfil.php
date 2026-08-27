@@ -1,17 +1,10 @@
 
 <?php 
-$titulo = "Login";
-include __DIR__."/header.php";
+$titulo = "Perfil";
+include __DIR__."/layout/header.php";
 ?>
 <main class="perfil">    
-    <aside class="side-menu">
-        <h1>Menu</h1>
-        <hr>
-        <a href="perfil" id="inicio" class="focus">Inicio</a>
-        <a href="usuarios" id="usuario" class="">Usuarios</a>
-        <a href="consultas" id="consulta" class="">Consultas</a>
-        <a href="configuracion" id="configuracion" class="">Configuración</a>
-    </aside>
+    <?php include_once __DIR__."/layout/sidebar.php"; ?>
     
     <section class="section-1 section-1--perfil">
         <div class="buscador-caja">

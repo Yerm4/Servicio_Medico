@@ -1,12 +1,12 @@
 <?php
 
 $titulo = "Usuarios";
-include_once __DIR__."/header.php";
+include_once __DIR__."/layout/header.php";
 ?>
 
 
 <main class="perfil">    
-    <?php include_once __DIR__."/sidebar.php"; ?>
+    <?php include_once __DIR__."/layout/sidebar.php"; ?>
     
     <section class="section-1 section-1--perfil">
     <div class="buscador-caja">
