@@ -79,17 +79,14 @@
                     <option value="">No aplica / Seleccione...</option>
                 </select>
             </label>
-
-            <label class="action-card__label">Sexo
-                <label for="edit_sexo_m">Masculino
-                    <input type="radio" name="sexo" id="edit_sexo_m" value="1" required>
-                </label>
-            
-                <label for="edit_sexo_f">Femenino
-                    <input type="radio" name="sexo" id="edit_sexo_f" value="2">
-                </label>
-            </label>
         </div>
+        <label for="edit_sexo_m">Masculino
+            <input type="radio" name="sexo" id="edit_sexo_m" value="1" required>
+        </label>
+
+        <label for="edit_sexo_f">Femenino
+            <input type="radio" name="sexo" id="edit_sexo_f" value="2">
+        </label>
 
         <div class="action-card__button-grid" style="margin-top: 15px;">
             <button type="submit" class="action-card__button">Guardar Cambios</button>

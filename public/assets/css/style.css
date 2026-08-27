@@ -226,7 +226,7 @@ main {
 .action-card__form--grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 10px;
+    gap: 5px;
     width: 100%;
 }
 
@@ -236,7 +236,6 @@ main {
     border-radius: 20px;
     min-width: 90vw;
     margin: auto;
-    position: relative;
     opacity: 0;
     transition: opacity .15s ease-out;
 }
