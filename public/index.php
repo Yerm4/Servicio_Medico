@@ -33,13 +33,13 @@ $method = !empty($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "";
 
 $rutasApi = [
     "GET" => [
-        "api/users/buscar"                  => "buscarUsuario",
+        "api/users/buscar/{id}"             => "buscarUsuario",
         "api/users/cedula"                  => "obtenerUsuario",
         "api/consultas"                     => "buscarConsultas",
         "api/consultas/detalle"             => "obtenerConsulta",
         "api/consultas/reporte-morbilidad"  => "generarReporteMorbilidad",
         "api/pnfs"                          => "buscarPnfs",
-        "api/nucleos/pnfs/{id}"                  => "obtenerPnfsPorNucleo"
+        "api/nucleos/pnfs/{id}"             => "obtenerPnfsPorNucleo"
     ],
     "POST" => [
         "api/auth/login"                    => "login",

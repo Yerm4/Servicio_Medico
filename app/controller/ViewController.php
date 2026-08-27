@@ -24,6 +24,8 @@ class ViewController {
     }
 
     public function showLogin() {
+
+        if (!empty($_SESSION["cedula"])) header("Location: perfil");
         $modeloOfertas = new NucleoPNF($this->pdo);
         $nucleos = $modeloOfertas->obtenerNucleos();
         $pnfs = $modeloOfertas->obtenerPNFS();
@@ -64,10 +66,23 @@ class ViewController {
 
     public function showUsuario($userModel = null, $permisos = null) {
 
-        $controller = new Controller($this->pdo);
-        $usuariosEncontrados = $controller->consultar();
+        $pnfModel = new NucleoPNF($this->pdo);
+        $userModel = new Usuario($this->pdo);
 
-        include __DIR__ . "/../views/usuario.php";
+        $nucleos = $pnfModel->obtenerNucleos();
+        $pnfs = $pnfModel->obtenerPNFS();
+        
+        $tipos = $userModel->obtenerTipos();
+        $data = $userModel->consultarUsuarios();
+
+        if ($data["status"] === "ok") {
+            $usuariosEncontrados = $data["data"];
+            include __DIR__ . "/../views/usuario.php";
+        } else {
+            include __DIR__ . "/../views/404.php";
+        }
+
+        
     }
 
     public function showConsultas($userModel, $permisos) {

@@ -52,7 +52,6 @@
                 <input type="text" class="action-card__input" id="edit_direccion" name="direccion" required>
             </label>
 
-            <?php if ($tieneGestionarRolesPermisos): ?>
             <label for="edit_rol" class="action-card__label">Rol de Acceso
                 <select class="action-card__select" id="edit_rol" name="rol" required>
                     <?php 
@@ -63,7 +62,6 @@
                     <?php endforeach; ?>
                 </select>
             </label>
-            <?php endif; ?>
 
             <label for="edit_nucleo" class="action-card__label">Núcleo
                 <select class="action-card__select" id="edit_nucleo" name="nucleo_id">

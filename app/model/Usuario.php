@@ -117,44 +117,46 @@ class Usuario {
 
     public function consultarUsuarios() {
         try {
-            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
-                    FROM usuarios u
-                    LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
-                    LEFT JOIN lista_roles r ON u.rol = r.id_rol
-                    LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
-                    LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
-                    LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                    WHERE u.activo = 1 
-                    ORDER BY u.fecha_creacion DESC 
-                    LIMIT 5";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
+            FROM usuarios u
+            LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
+            LEFT JOIN lista_roles r ON u.rol = r.id_rol
+            LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
+            LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+            LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
+            WHERE u.activo = 1 
+            ORDER BY u.fecha_creacion DESC 
+            LIMIT 10");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->response("ok", "Resultados enviados", $stmt->fetchAll(PDO::FETCH_ASSOC));
         } catch (PDOException $e) {
-            return [];
+            return $this->response("error", "Resultados enviados", $e->getMessage());
         }
     }
 
     public function eliminarUsuario($cedula) {
-    try {
-        
-        $sql = "UPDATE usuarios SET activo = 0 WHERE cedula = :cedula";
+        try {
+            $stmt = $this->pdo->prepare("UPDATE usuarios
+            SET activo = 0 
+            WHERE cedula = :cedula");
+            $resultado = $stmt->execute(["cedula" => $cedula]);
 
-        $stmt = $this->pdo->prepare($sql);
-        
-        $resultado = $stmt->execute([
-            "cedula" => $cedula
-        ]);
-        
-        return $resultado; 
+            if (!$resultado) {
+                return $this->response("error", "La consulta falló");
+            } 
 
-        } 
-        catch (PDOException $e) {
-            return false;
+            $filasAfectadas = $stmt->rowCount();
+            if ($filasAfectadas > 0) {
+                return $this->response("ok", "Se elimino el usuario");
+            } else {
+                return $this->response("error", "No se encontro ese usuario");
+            }
+        } catch (PDOException $e) {
+            return $this->response("error", $e->getMessage());
+            }
         }
-    }
 
-    public function buscarUsuarios($query) {
+    public function buscarUsuarios($id) {
         try {
         
             $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
@@ -164,19 +166,19 @@ class Usuario {
                     LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
                     LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
                     LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                    WHERE (u.cedula LIKE :query 
-                    OR u.nombre LIKE :query 
-                    OR u.apellido LIKE :query)
+                    WHERE (u.cedula LIKE :id 
+                    OR u.nombre LIKE :id 
+                    OR u.apellido LIKE :id)
                     AND u.activo = 1
                     LIMIT 10"; 
                     
             $stmt = $this->pdo->prepare($sql);
             
             $stmt->execute([
-                'query' => '%' . $query . '%'
+                'id' => "%".$id."%"
             ]);
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->response("ok", "Resultados enviados", $stmt->fetchAll(PDO::FETCH_ASSOC));
             
         } catch (PDOException $e) {
             return [];

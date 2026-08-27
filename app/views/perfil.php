@@ -93,7 +93,6 @@ include __DIR__."/header.php";
 
 <footer>
     <script src="assets/script/append.js" defer></script>
-    <script src="assets/script/eliminar.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
     <script src="assets/script/gestionpnfnucleo.js" defer></script>
     <script src="assets/script/gestionoferta.js" defer></script>

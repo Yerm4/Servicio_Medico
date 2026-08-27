@@ -125,6 +125,18 @@ class ApiController {
         }
     }
 
+    public function buscarUsuario($id) {
+        $model = new Usuario($this->pdo);
+
+        if (empty($id)) {
+            $resultados = $model->consultarUsuarios();
+        } else {
+            $resultados = $model->buscarUsuarios($id);
+        }
+
+        $this->jsonResponse("ok", "Resultados enviadoss", $resultados["data"]);
+    }
+
     public function obtenerPnfsPorNucleo($id) {
 
         if ($id <= 0) {
@@ -136,4 +148,21 @@ class ApiController {
             $this->jsonResponse("ok", "Pnfs enviados", $pnfs);
         }
     }
+
+    public function eliminarUsuario() {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $idd = $data["cedula"];
+        $id = cleanValue($data, "cedula");
+
+        $userModel = new Usuario($this->pdo);
+
+        $data = $userModel->eliminarUsuario($id);
+
+        if ($data["status"] === "ok") {
+            $this->jsonResponse("ok", "Usuario ".$id." eliminado");
+        } else {
+            $this->jsonResponse("error", $idd);
+        }
+    }
 }
+

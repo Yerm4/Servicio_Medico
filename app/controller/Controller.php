@@ -10,10 +10,6 @@ class Controller {
     public function __construct($conexion){
         $this->pdo = $conexion;
     }
-    public function consultar () {
-        $consulta = new Usuario($this->pdo);
-        return $consulta->consultarUsuarios();
-    }
 
     private function jsonResponse($status, $message = "", $data = null, $redirect = null) {
         header("Content-Type: application/json");
@@ -24,6 +20,11 @@ class Controller {
             "redirect" => $redirect
         ]);
         exit();
+    }
+
+    
+    public function consultar () {
+        
     }
 
     public function eliminar() {
@@ -46,23 +47,6 @@ class Controller {
             echo json_encode(['status' => 'error', 'message' => 'Cédula no válida o vacía.']);
         }
         
-        exit();
-    }
-    
-    public function buscar() {
-        header('Content-Type: application/json');
-
-        $query = isset($_POST['query']) ? trim($_POST['query']) : '';
-
-        $model = new Usuario($this->pdo);
-
-        if (empty($query)) {
-            $resultados = $model->consultarUsuarios();
-        } else {
-            $resultados = $model->buscarUsuarios($query);
-        }
-
-        echo json_encode($resultados);
         exit();
     }
 

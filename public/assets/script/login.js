@@ -183,19 +183,18 @@ async function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado =
         }
 
         if (result.status === "ok") {
-            console.log(idNucleo)
-            const data = result.data
-            if (Array.isArray(data) && data.length > 0) {
+            const pnfs = result.data
+            if (Array.isArray(pnfs) && pnfs.length > 0) {
                 selectPnfElement.disabled = false;
-                data.forEach(pnf => {
-                const opt = document.createElement('option');
-                opt.value = pnf.id_pnf;
-                opt.textContent = pnf.nombre_pnf;
-                if (pnfSeleccionado && String(pnf.id_pnf) === String(pnfSeleccionado)) {
-                    opt.selected = true;
-                }
-                selectPnfElement.appendChild(opt);
-            });
+                pnfs.forEach(pnf => {
+                    const opt = document.createElement('option');
+                    opt.value = pnf.id_pnf;
+                    opt.textContent = pnf.nombre_pnf;
+                    if (pnfSeleccionado && String(pnf.id_pnf) === String(pnfSeleccionado)) {
+                        opt.selected = true;
+                    }
+                    selectPnfElement.appendChild(opt);
+                });
             }
         }
 
