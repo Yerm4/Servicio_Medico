@@ -1,0 +1,4 @@
+.env
+vendor/
+run_dev.bat
+proyectomedicina.zip

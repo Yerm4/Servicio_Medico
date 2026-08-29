@@ -1,0 +1,27 @@
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+RewriteEngine On
+
+RewriteRule ^$ public/index.php [L,QSA]
+
+RewriteRule ^index\.php$ public/index.php [L,QSA]
+
+RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/index.php?ruta=$1 [L,QSA]
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
