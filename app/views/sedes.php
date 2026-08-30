@@ -121,11 +121,29 @@ include_once __DIR__."/layout/header.php";
         </div>
 
         <!-- Importación de Modales vinculados a la vista -->
+<<<<<<< HEAD
                 <?php include_once __DIR__."/modals/modalRegistrarPNF.php" ?>
                 <?php include_once __DIR__."/modals/modalActualizarPNF.php" ?>
                 <?php include_once __DIR__."/modals/modalRegistrarNucleo.php" ?>
                 <?php include_once __DIR__."/modals/modalActualizarNucleo.php" ?>
                 <?php include_once __DIR__."/modals/modalRegistrarOferta.php" ?>
+=======
+            <dialog id="modalRegistrarPNF" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+                <?php include_once __DIR__."/modalRegistrarPNF.php" ?>
+            </dialog>
+            <dialog id="modalActualizarPNF" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+                <?php include_once __DIR__."/modalActualizarPNF.php" ?>
+            </dialog>
+            <dialog id="modalRegistrarNucleo" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+                <?php include_once __DIR__."/modalRegistrarNucleo.php" ?>
+            </dialog>
+            <dialog id="modalActualizarNucleo" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+                <?php include_once __DIR__."/modalActualizarNucleo.php" ?>
+            </dialog>
+            <dialog id="modalRegistrarOferta" class="modal-crud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+                <?php include_once __DIR__."/modalRegistrarOferta.php" ?>
+            </dialog>
+>>>>>>> origin/refactorizar
 
         <!-- Caja de Buscador (vacía en el renderizado hola.html debido a las condiciones de la vista) -->
         <div class="buscador-caja">
@@ -141,7 +159,13 @@ include_once __DIR__."/layout/header.php";
     </section>
 
     <!-- Modal de Usuario (presente al final del archivo hola.html) -->
+<<<<<<< HEAD
         <?php include_once __DIR__."/modals/modalRegistrarUsuario.php" ?>
         <script src="assets/script/gestionpnfnucleo.js" defer></script>
 
+=======
+    <dialog id="modalRegistrarUsuario" class="modal-crud">
+        <?php include_once __DIR__."/modals/modalRegistrarUsuario.php" ?>
+    </dialog>
+>>>>>>> origin/refactorizar
 </main>
