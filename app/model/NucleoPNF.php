@@ -11,7 +11,6 @@ class NucleoPNF {
     public function __construct($conexion) {
         $this->pdo = $conexion;
     }
-<<<<<<< HEAD
     
       private function response($status, $message = "", $data = null, $redirect = null) {
         return    [
@@ -22,8 +21,6 @@ class NucleoPNF {
         ];
     }
 
-=======
->>>>>>> origin/refactorizar
 
     private function existeNucleo($nombre) {
         $sql = "SELECT id_nucleo, estado FROM lista_nucleos
@@ -100,21 +97,13 @@ class NucleoPNF {
 
     public function actualizarNucleo($id, $nombre) {
         if ($this->existeNucleoParaActualizar($nombre, $id)) {
-<<<<<<< HEAD
             return $this->response('error','duplicado');
-=======
-            return "duplicado";
->>>>>>> origin/refactorizar
         }
 
         $sql = "UPDATE lista_nucleos SET nombre_nucleo = :nombre WHERE id_nucleo = :id";
         $stmt = $this->pdo->prepare($sql);
-<<<<<<< HEAD
         $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
         return $this->response('ok','Nucleo Actualizado');
-=======
-        return $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
->>>>>>> origin/refactorizar
     }
 
     public function desactivarNucleo($id) {

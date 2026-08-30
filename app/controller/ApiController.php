@@ -221,9 +221,8 @@ class ApiController {
             $this->jsonResponse("error", $idd);
         }
     }
-<<<<<<< HEAD
 
- public function actualizarNucleo() {
+    public function actualizarNucleo() {
         $data = json_decode(file_get_contents("php://input"), true);
         $id = isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0;
         $nombre = isset($data['nombre_nucleo']) ? trim($data['nombre_nucleo']) : '';
@@ -232,7 +231,7 @@ class ApiController {
             $this->jsonResponse('error', 'El campo no puede estar vacio.');
         }
 
-         if (strlen($nombre) < 4 || strlen($nombre) > 100) {
+            if (strlen($nombre) < 4 || strlen($nombre) > 100) {
             $this->jsonResponse('error', 'El nombre del núcleo debe tener entre 4 y 100 caracteres.');
         }
 
@@ -251,9 +250,5 @@ class ApiController {
             $this->jsonResponse('error', 'Ocurrió un error al intentar actualizar el núcleo.');
         }
     }
-
-    
-=======
->>>>>>> origin/refactorizar
 }
 

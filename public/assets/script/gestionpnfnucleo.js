@@ -319,85 +319,60 @@ const configurarEnvioFormularioNucleo = (idForm, idModal, msgExitoDefault) => {
     const form = document.getElementById(idForm);
     if (!form) return;
 
-<<<<<<< HEAD
     form.addEventListener('submit', async function(e) {
-=======
-    form.addEventListener('submit', function(e) {
->>>>>>> origin/refactorizar
         e.preventDefault();
         const formData = new FormData(this);
         const modal = document.getElementById(idModal);
 
-<<<<<<< HEAD
-try{
-const response = await fetch("api/nucleos", {
-    method: "PUT",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify(formData)
+    try {
+        const response = await fetch("api/nucleos", {
+            method: "PUT",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(formData)
 
-});
-const result = await response.json();
-if (!response.ok){throw new Error("Error en la consulta")}
-if (result.status === "ok"){
-                const data = result.message 
-=======
-        fetch('index.php', { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
->>>>>>> origin/refactorizar
-                form.reset();
-                const contenedorModal = form.querySelector('.alert-container-modal');
-                if (contenedorModal) contenedorModal.innerHTML = '';
-                
-                if (modal) {
-                    modal.style.opacity = '0';
-                    modal.close();
-                }
-                
-                actualizarTablaNucleos(); 
-                
-                setTimeout(() => {
-                    mostrarAlertaNucleo(data.message || msgExitoDefault, "success");
-                }, 50);
-            } else {
-                let contenedorModal = form.querySelector('.alert-container-modal');
-                if (!contenedorModal) {
-                    contenedorModal = document.createElement('div');
-                    contenedorModal.className = 'alert-container-modal';
-                    form.insertBefore(contenedorModal, form.firstChild);
-                }
-                
-                const idErrNuc = 'err_nuc_' + Date.now();
-                contenedorModal.innerHTML = `
-                    <div id="${idErrNuc}" class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
-                        <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-<<<<<<< HEAD
-                            <span>${result.message || "Ocurrió un error."}</span>
-=======
-                            <span>${data.message || "Ocurrió un error."}</span>
->>>>>>> origin/refactorizar
-                            <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
-                        </p>
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    const errActivo = document.getElementById(idErrNuc);
-                    if (errActivo) errActivo.remove();
-                }, 4000);
-<<<<<<< HEAD
-
-
-                
-            }  
-}
- catch(error) {
-=======
+        });
+        const result = await response.json();
+        if (!response.ok){throw new Error("Error en la consulta")}
+        if (result.status === "ok"){
+            const data = result.message 
+            form.reset();
+            const contenedorModal = form.querySelector('.alert-container-modal');
+            if (contenedorModal) contenedorModal.innerHTML = '';
+            
+            if (modal) {
+                modal.style.opacity = '0';
+                modal.close();
             }
-        })
-        .catch(error => {
->>>>>>> origin/refactorizar
+                
+            actualizarTablaNucleos(); 
+            
+            setTimeout(() => {
+                mostrarAlertaNucleo(data.message || msgExitoDefault, "success");
+            }, 50);
+        } else {
+            let contenedorModal = form.querySelector('.alert-container-modal');
+            if (!contenedorModal) {
+                contenedorModal = document.createElement('div');
+                contenedorModal.className = 'alert-container-modal';
+                form.insertBefore(contenedorModal, form.firstChild);
+            }
+            
+            const idErrNuc = 'err_nuc_' + Date.now();
+            contenedorModal.innerHTML = `
+                <div id="${idErrNuc}" class="action-card" style="padding: 1rem; border-left: 5px solid #e74c3c; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+                    <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>${result.message || "Ocurrió un error."}</span>
+                        <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
+                    </p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                const errActivo = document.getElementById(idErrNuc);
+                if (errActivo) errActivo.remove();
+            }, 4000); 
+        }  
+    } catch(error) {
             console.error(`Error en formulario ${idForm}:`, error);
             let contenedorModal = form.querySelector('.alert-container-modal');
             if (!contenedorModal) {
@@ -413,19 +388,7 @@ if (result.status === "ok"){
                     </p>
                 </div>
             `;
-<<<<<<< HEAD
         };
-
-
-
-
-
-           
-        
-       
-=======
-        });
->>>>>>> origin/refactorizar
     });
 };
 
