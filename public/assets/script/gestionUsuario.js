@@ -244,10 +244,8 @@ if (cuerpoTabla && modalActualizar) {
             
             if (confirm(`¿Segura de eliminar al usuario con cédula ${cedulaUsuario}?`)) {
                 try {
-                    const response = await fetch('api/users', {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ "cedula": cedulaUsuario })
+                    const response = await fetch(`api/users/${cedulaUsuario}`, {
+                        method: 'DELETE'
                     })
 
                     const result = await response.json().catch(() => null)

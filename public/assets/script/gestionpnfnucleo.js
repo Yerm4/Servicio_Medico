@@ -329,11 +329,10 @@ const configurarEnvioFormularioNucleo = (idForm, idModal, msgExitoDefault) => {
         const response = await fetch("api/nucleos", {
             method: "PUT",
             headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(formData)
-
+            body: JSON.stringify(datos)
         });
         const result = await response.json();
-        if (!response.ok){throw new Error("Error en la consulta")}
+        if (!response.ok){throw new Error(result.message ?? "Error en la consulta")}
         if (result.status === "ok"){
             const data = result.message 
             form.reset();
@@ -374,7 +373,7 @@ const configurarEnvioFormularioNucleo = (idForm, idModal, msgExitoDefault) => {
             }, 4000); 
         }  
     } catch(error) {
-            console.error(`Error en formulario ${idForm}:`, error);
+            console.error(`Error en formulario ${idForm}: `, error);
             let contenedorModal = form.querySelector('.alert-container-modal');
             if (!contenedorModal) {
                 contenedorModal = document.createElement('div');

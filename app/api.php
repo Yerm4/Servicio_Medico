@@ -46,7 +46,7 @@ $rutasApi = [
     "PATCH" => [
     ],
     "DELETE" => [
-        "api/users"                         => "eliminarUsuario",
+        "api/users/{id}"                    => "eliminarUsuario",
         "api/roles"                         => "eliminarRol",
         "api/condiciones"                   => "eliminarCondicion",
         "api/nucleos"                       => "eliminarNucleo",

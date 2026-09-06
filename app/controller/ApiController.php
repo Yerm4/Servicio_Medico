@@ -288,7 +288,7 @@ class ApiController {
         }
     }
 
-    public function eliminarUsuario() {
+    public function eliminarUsuario($id) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -299,8 +299,7 @@ class ApiController {
             $this->jsonResponse("error", "No tiene permisos para eliminar usuarios");
         }
 
-        $data = $this->getRequestData();
-        $id = cleanValue($data, "cedula");
+        $id = cleanString($id);
 
         if (empty($id)) {
             code(400);
@@ -888,7 +887,7 @@ class ApiController {
         $NucleoModelo = new NucleoPNF($this->pdo);
         $resultado = $NucleoModelo->actualizarNucleo($id, $nombre);
 
-        if ($resultado === "duplicado") {
+        if ($resultado["message"] === "duplicado") {
             code(400);
             $this->jsonResponse('error', 'El nucleo ya se encuentra registrado.');
         } elseif ($resultado) {
