@@ -55,7 +55,6 @@ if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
 
 $ruta = isset($_GET["ruta"]) && $_GET["ruta"] !== '' ? trim($_GET["ruta"], "/") : "login";
 
-
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
 $GLOBALS['paginaActual'] = $paginaActual;
@@ -172,26 +171,6 @@ if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
         case "registrar_nucleo":
             $apiCtrl->registrarNucleo();
-            header("Location: sedes");
-            exit();
-        case "actualizar_nucleo":
-            $apiCtrl->actualizarNucleo();
-            header("Location: sedes");
-            exit();
-        case "eliminar_nucleo":
-            $apiCtrl->eliminarNucleo();
-            header("Location: sedes");
-            exit();
-        case "registrar_pnf":
-            $apiCtrl->registrarPnf();
-            header("Location: sedes");
-            exit();
-        case "actualizar_pnf":
-            $apiCtrl->actualizarPnf();
-            header("Location: sedes");
-            exit();
-        case "eliminar_pnf":
-            $apiCtrl->eliminarPnf();
             header("Location: sedes");
             exit();
         case "registrar_oferta":

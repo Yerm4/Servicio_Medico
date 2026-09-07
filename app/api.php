@@ -49,8 +49,8 @@ $rutasApi = [
         "api/users/{id}"                    => "eliminarUsuario",
         "api/roles"                         => "eliminarRol",
         "api/condiciones"                   => "eliminarCondicion",
-        "api/nucleos"                       => "eliminarNucleo",
-        "api/pnfs"                          => "eliminarPnf",
+        "api/nucleos/{id}"                       => "eliminarNucleo",
+        "api/pnfs/{id}"                          => "eliminarPnf",
         "api/ofertas"                       => "eliminarOferta"
     ]
 ];

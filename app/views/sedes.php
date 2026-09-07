@@ -46,13 +46,7 @@ include_once __DIR__."/layout/header.php";
                                         <td class="td-acciones-btn" style="text-align: left;">
                                             <div style="display: flex; gap: 10px; justify-content: flex-start; align-items: center;">
                                                 <button class="action-card__button editar-nucleo" name="openModal" data-modal="modalActualizarNucleo" data-id="<?= e($n['id_nucleo']) ?>" data-nombre="<?= e($n['nombre_nucleo']) ?>" style="width: fit-content; padding: 0.5rem 1rem; cursor: pointer">Actualizar</button>
-
-                                                <form method="POST" action="index.php" class="form-eliminar-nucleo" style="display: inline; width: fit-content; margin: 0;">
-                                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-                                                    <input type="hidden" name="form" value="eliminar_nucleo">
-                                                    <input type="hidden" name="id_nucleo" value="<?= e($n['id_nucleo']) ?>">
-                                                    <button type="submit" class="action-card__button" style="background-color: #d9534f; width: fit-content; padding: 0.5rem 1rem; cursor: pointer;">Eliminar</button>
-                                                </form>
+                                                <button name="eliminarNucleo" type="submit" nameclass="action-card__button" data-id="<?=e($n['id_nucleo'])?>" style="background-color: #d9534f; width: fit-content; padding: 0.5rem 1rem; cursor: pointer;">Eliminar</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -96,13 +90,7 @@ include_once __DIR__."/layout/header.php";
                                         <td class="td-acciones-btn" style="text-align: left;">
                                             <div style="display: flex; gap: 10px; justify-content: flex-start; align-items: center;">
                                                 <button class="action-card__button editar-pnf" name="openModal" data-modal="modalActualizarPNF" data-id="<?= e($p['id_pnf']) ?>" data-nombre="<?= e($p['nombre_pnf']) ?>" style="width: fit-content; padding: 0.5rem 1rem; cursor: pointer;">Actualizar</button>
-                            
-                                                <form method="POST" action="index.php" class="form-eliminar-pnf" style="display: inline; width: fit-content; margin: 0;">
-                                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-                                                    <input type="hidden" name="form" value="eliminar_pnf">
-                                                    <input type="hidden" name="id_pnf" value="<?= e($p['id_pnf']) ?>">
-                                                    <button type="submit" class="action-card__button" style="background-color: #d9534f; width: fit-content; padding: 0.5rem 1rem; cursor: pointer;">Eliminar</button>
-                                                </form>
+                                                <button name="eliminarPnf" type="submit" data-id="<?= e($p['id_pnf']) ?>" class="action-card__button" style="background-color: #d9534f; width: fit-content; padding: 0.5rem 1rem; cursor: pointer;">Eliminar</button>
                                             </div>
                                         </td>
                                     </tr>

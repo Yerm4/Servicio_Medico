@@ -899,14 +899,12 @@ class ApiController {
         }
     }
 
-    public function eliminarNucleo() {
+    public function eliminarNucleo($id) {
         if (!$this->checkPerm("gestionar_oferta_academica")) {
             code(403);
             $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
-
-        $data = $this->getRequestData();
-        $id = isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : (isset($data['id']) ? (int)$data['id'] : 0);
+        $id = (int)$id;
 
         if ($id <= 0) {
             code(400);
@@ -1002,15 +1000,12 @@ class ApiController {
         }
     }
 
-    public function eliminarPnf() {
+    public function eliminarPnf($id) {
         if (!$this->checkPerm("gestionar_oferta_academica")) {
             code(403);
             $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
-
-        $data = $this->getRequestData();
-        $id = isset($data['id_pnf']) ? (int)$data['id_pnf'] : (isset($data['id']) ? (int)$data['id'] : 0);
-
+        $id = (int)$id;
         if ($id <= 0) {
             code(400);
             $this->jsonResponse("error", "ID de PNF inválido");
