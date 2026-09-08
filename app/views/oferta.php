@@ -32,13 +32,11 @@ include_once __DIR__."/layout/header.php";
                             <td class="td-consultas"><strong><?= e($o['nombre_nucleo']) ?></strong></td>
                             <td class="td-consultas"><?= e($o['nombre_pnf']) ?></td>
                             <td class="td-acciones-btn">
-                                <form method="POST" action="index.php" style="display:inline; margin:0;">
-                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-                                    <input type="hidden" name="form" value="eliminar_oferta">
+                                <form id="eliminarOferta" method="POST" action="index.php" style="display:inline; margin:0;">
                                     <input type="hidden" name="id_oferta" value="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>">
                                     <input type="hidden" name="id_nucleo" value="<?= e($o['id_nucleo']) ?>">
                                     <input type="hidden" name="id_pnf" value="<?= e($o['id_pnf']) ?>">
-                                    <button type="submit" class="action-card__button" style="background-color: #d9534f; cursor: pointer;">Eliminar</button>
+                                    <button type="submit" data-id="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>" class="action-card__button" style="background-color: #d9534f; cursor: pointer;">Eliminar</button>
                                 </form>
                             </td>
                         </tr>

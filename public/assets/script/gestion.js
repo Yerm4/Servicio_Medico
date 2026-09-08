@@ -397,3 +397,25 @@ if (selectNucleoEdit && selectPnfEdit) {
         cargarPnfsPorNucleo(this.value, selectPnfEdit);
     });
 }
+
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".editar-rol");
+    if (!btn) return;
+
+    const idRol = btn.getAttribute("data-id");
+    const nombreRol = btn.getAttribute("data-nombre");
+    const descripcionRol = btn.getAttribute("data-descripcion");
+
+    const inputId = document.getElementById("edit_id_rol");
+    const inputNombre = document.getElementById("edit_nombre_rol");
+    const inputDesc = document.getElementById("edit_descripcion_rol");
+    const modal = document.getElementById("modalEditarRol");
+
+    if (inputId && inputNombre && inputDesc && modal) {
+        inputId.value = idRol;
+        inputNombre.value = nombreRol;
+        inputDesc.value = descripcionRol;
+        modal.showModal();
+        modal.style.opacity = "1";
+    }
+});

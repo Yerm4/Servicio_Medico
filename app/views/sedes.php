@@ -127,7 +127,5 @@ include_once __DIR__."/layout/header.php";
         <?php endif; ?>
     </section>
 
-    <!-- Modal de Usuario (presente al final del archivo hola.html) -->
         <script src="assets/script/gestionpnfnucleo.js" defer></script>
-
 </main>

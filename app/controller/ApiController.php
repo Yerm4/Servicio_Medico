@@ -1026,19 +1026,20 @@ class ApiController {
             code(403);
             $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
-
+    
         $data = $this->getRequestData();
-        $nucleoId = isset($data['nucleo_id']) ? (int)$data['nucleo_id'] : 0;
-        $pnfId = isset($data['pnf_id']) ? (int)$data['pnf_id'] : 0;
-
+        // Aceptamos tanto nucleo_id como id_nucleo por compatibilidad
+        $nucleoId = isset($data['nucleo_id']) ? (int)$data['nucleo_id'] : (isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0);
+        $pnfId    = isset($data['pnf_id']) ? (int)$data['pnf_id'] : (isset($data['id_pnf']) ? (int)$data['id_pnf'] : 0);
+    
         if ($nucleoId <= 0 || $pnfId <= 0) {
             code(400);
             $this->jsonResponse("error", "Debe seleccionar un núcleo y una carrera válidos");
         }
-
+    
         $model = new NucleoPNF($this->pdo);
         $resultado = $model->registrarOferta($nucleoId, $pnfId);
-
+    
         if ($resultado === "duplicado") {
             code(400);
             $this->jsonResponse("error", "Esta carrera ya está ofertada en la sede seleccionada");
@@ -1050,23 +1051,28 @@ class ApiController {
             $this->jsonResponse("error", "Ocurrió un error al asignar la oferta");
         }
     }
-
-    public function eliminarOferta() {
+    
+    public function eliminarOferta($id = null) {
         if (!$this->checkPerm("gestionar_oferta_academica")) {
             code(403);
             $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
-
+    
         $data = $this->getRequestData();
-        $idOferta = isset($data['id_oferta']) ? (int)$data['id_oferta'] : (isset($data['id']) ? (int)$data['id'] : 0);
-
-        if ($idOferta <= 0) {
-            code(400);
-            $this->jsonResponse("error", "ID de oferta inválido");
-        }
-
+        $nucleoId = isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0;
+        $pnfId    = isset($data['id_pnf']) ? (int)$data['id_pnf'] : 0;
+    
         $model = new NucleoPNF($this->pdo);
-        if ($model->desactivarOferta($idOferta)) {
+        $resultado = false;
+
+        if ($nucleoId > 0 && $pnfId > 0) {
+            $resultado = $model->desactivarOferta($nucleoId, $pnfId);
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Datos insuficientes para eliminar la oferta");
+        }
+    
+        if ($resultado) {
             code(200);
             $this->jsonResponse("ok", "¡Oferta académica eliminada con éxito!");
         } else {

@@ -169,18 +169,6 @@ if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
             $apiCtrl->eliminarCondicion();
             header("Location: configuracion");
             exit();
-        case "registrar_nucleo":
-            $apiCtrl->registrarNucleo();
-            header("Location: sedes");
-            exit();
-        case "registrar_oferta":
-            $apiCtrl->registrarOferta();
-            header("Location: oferta");
-            exit();
-        case "eliminar_oferta":
-            $apiCtrl->eliminarOferta();
-            header("Location: oferta");
-            exit();
     }
 }
 
