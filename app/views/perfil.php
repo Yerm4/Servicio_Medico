@@ -160,8 +160,7 @@ include __DIR__."/layout/header.php";
 </main>
 
 <footer>
-    <script src="assets/script/append.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
-    <script src="assets/script/gestionpnfnucleo.js" defer></script>
-    <script src="assets/script/gestionoferta.js" defer></script>
+    <script src="assets/script/gestionPnfNucleo.js" defer></script>
+    <script src="assets/script/gestionOferta.js" defer></script>
 </footer>

@@ -177,6 +177,5 @@ include_once __DIR__."/layout/header.php";
     <?php include_once __DIR__."/modals/modalEditarRol.php"; ?>
     <?php include_once __DIR__."/modals/modalEditarCondicion.php"; ?>
     <?php include_once __DIR__."/modals/modalRegistrarCondicion.php"; ?>
-    <script src="assets/script/append.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
 </main>

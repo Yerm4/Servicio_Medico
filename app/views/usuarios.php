@@ -83,7 +83,6 @@ include_once __DIR__."/layout/header.php";
     </tbody>
 </table>
     </section>
-    <script src="assets/script/append.js" defer></script>
     <script src="assets/script/gestionUsuario.js" defer></script>
     <!-- Modales -->
     <?php include_once __DIR__."/modals/modalRegistrarUsuario.php" ?>

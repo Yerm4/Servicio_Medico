@@ -126,6 +126,5 @@ include_once __DIR__."/layout/header.php";
             </div>
         <?php endif; ?>
     </section>
-
-        <script src="assets/script/gestionpnfnucleo.js" defer></script>
+    <script src="assets/script/gestionPnfNucleo.js" defer></script>
 </main>

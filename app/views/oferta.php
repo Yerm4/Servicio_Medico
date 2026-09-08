@@ -49,5 +49,5 @@ include_once __DIR__."/layout/header.php";
 
         <?php include_once __DIR__."/modals/modalRegistrarOferta.php"; ?>
     </section>
-    <script src="assets/script/gestionoferta.js" defer></script>
+    <script src="assets/script/gestionOferta.js" defer></script>
 </main>

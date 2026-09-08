@@ -111,6 +111,5 @@ include_once __DIR__."/layout/header.php";
 </main>
 
 <footer>
-    <script src="assets/script/append.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
 </footer>
