@@ -35,8 +35,6 @@
                 <div id="avatarMenu" class="avatar__menu">
                     <a class="avatar__link" href="logout">Cerrar sesion</a>
                 </div>
-                <?php else: ?>
-                    <a href="#" class="top-menu__login-lang">ESP</a>
                 <?php endif ?>
             </div>
         </div>
