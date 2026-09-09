@@ -101,7 +101,7 @@ class ViewController {
     }
 
     public function showConfiguracion($partesRuta = null) {
-        global $tieneGestionarRolesPermisos, $tieneGestionarCondiciones;
+        global $tieneGestionarRolesPermisos, $tieneGestionarCondiciones, $tieneGestionarOferta;
         $userModel = new Usuario($this->pdo);
         $roles = [];
         $permisos = [];
@@ -121,19 +121,13 @@ class ViewController {
             $condicionesRegistradas = (new Condicion($this->pdo))->consultarCondiciones();
         }
 
-        $paginaActual = 'configuracion';
-        include __DIR__ . "/../views/configuracion.php";
-    }
-
-    public function showOferta($partesRuta = null, $permisos = null) {
-        global $tieneGestionarOferta;
         $modeloOfertas = new NucleoPNF($this->pdo);
         $nucleos = $modeloOfertas->obtenerNucleos();
         $pnfs = $modeloOfertas->obtenerPNFS();
         $ofertas = $modeloOfertas->obtenerOfertasActivas();
 
-        $paginaActual = 'oferta';
-        include __DIR__ . "/../views/oferta.php";
+        $paginaActual = 'configuracion';
+        include __DIR__ . "/../views/configuracion.php";
     }
 
     public function showSedes() {

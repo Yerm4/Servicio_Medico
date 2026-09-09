@@ -993,3 +993,11 @@ tr, th, td {
     overflow: hidden; 
     text-overflow: ellipsis;
 }
+
+.btn-eliminar {
+    background-color: #d9534f; width: fit-content; padding: 0.4rem 0.7rem; cursor: pointer; border-radius: 5px;
+}
+
+.btn-add {
+    width: fit-content; padding: 0.4rem 0.7rem; cursor: pointer
+}

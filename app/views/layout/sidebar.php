@@ -19,8 +19,4 @@ $tOferta = $tieneGestionarOferta ?? ($GLOBALS['tieneGestionarOferta'] ?? false);
     <?php if ($tConfiguracion): ?>
     <a href="configuracion" id="configuracion" class="<?= $paginaActual === 'configuracion' ? 'focus' : '' ?>">Configuración</a>
     <?php endif; ?>
-    <?php if ($tOferta): ?>
-    <a href="sedes" id="sedes-carreras" class="<?= $paginaActual === 'sedes-carreras' ? 'focus' : '' ?>">Nucleos y PNFS</a>
-    <a href="oferta" id="oferta" class="<?= $paginaActual === 'oferta' ? 'focus' : '' ?>">Ofertas Academicas</a>
-    <?php endif; ?>
 </aside>

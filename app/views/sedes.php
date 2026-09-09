@@ -25,39 +25,7 @@ include_once __DIR__."/layout/header.php";
                         <a name="openModal" data-modal="modalRegistrarNucleo" class="action-card__button" href="#" style="width: fit-content; display: inline-block;">Registrar Nucleo</a>
                     </div>
                     <div id="alert-container-nucleo" style="margin-bottom: 1rem;"></div>
-                    <table id="tablaNucleos" class="tabla-consultas" style="width: 100%;">
-                        <thead>
-                            <tr class="tr-head-consultas">
-                                <th class="th-consultas" style="text-align: left;">ID</th>
-                                <th class="th-consultas" style="text-align: left;">Nombre del Núcleo</th>
-                                <th class="th-consultas" style="text-align: left;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cuerpoTablaNucleos">
-                            <?php 
-                            if (!empty($nucleos)): 
-                                $i = 1;
-                                foreach ($nucleos as $n): 
-                            ?>
-                                    <tr class="tr-body-consultas">
-                                        <td class="td-consultas-nowrap" style="text-align: left;"><?= $i++ ?></td>
-                                        <td class="td-consultas" style="text-align: left;"><strong><?= e($n['nombre_nucleo']) ?></strong></td>
-                                        
-                                        <td class="td-acciones-btn" style="text-align: left;">
-                                            <div style="display: flex; gap: 10px; justify-content: flex-start; align-items: center;">
-                                                <button class="action-card__button editar-nucleo" name="openModal" data-modal="modalActualizarNucleo" data-id="<?= e($n['id_nucleo']) ?>" data-nombre="<?= e($n['nombre_nucleo']) ?>" style="width: fit-content; padding: 0.5rem 1rem; cursor: pointer">Actualizar</button>
-                                                <button name="eliminarNucleo" type="submit" nameclass="action-card__button" data-id="<?=e($n['id_nucleo'])?>" style="background-color: #d9534f; width: fit-content; padding: 0.5rem 1rem; cursor: pointer;">Eliminar</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="3" class="td-tabla-vacia">No hay núcleos registrados en el sistema.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                    
                 </div>
 
                 <!-- Tabla PNFs -->
