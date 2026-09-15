@@ -1,4 +1,4 @@
-<<?php
+<?php
 
 if (!isset($_SESSION["cedula"])) {
     header("Location: login");
