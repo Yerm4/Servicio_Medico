@@ -24,20 +24,56 @@ const btnCargarMas = document.getElementById('btnCargarMasConsultas');
 function checkCargarMasVisibility() {
     if (!btnCargarMas || !cuerpoTablaConsultas) return;
     const rowsCount = cuerpoTablaConsultas.querySelectorAll('tr:not(.no-registros)').length;
-    if (rowsCount > 0 && rowsCount % 20 === 0) {
-        btnCargarMas.style.display = 'block';
-    } else {
-        btnCargarMas.style.display = 'none';
-    }
+    btnCargarMas.style.display = (rowsCount > 0 && rowsCount % 20 === 0) ? 'block' : 'none';
 }
 
-// Run initial visibility check on page load
 checkCargarMasVisibility();
+
+function renderFilaConsulta(c) {
+    const fila = document.createElement('tr');
+    fila.className = 'tr-body-consultas';
+
+    const dateObj = new Date(c.fecha_consulta);
+    const formattedDate = !isNaN(dateObj) ? 
+        `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}` : 
+        c.fecha_consulta;
+
+    const pacienteNombre = `${c.paciente_nombre || ''} ${c.paciente_apellido || ''}`.trim();
+    const medicoNombre = `${c.medico_nombre || ''} ${c.medico_apellido || ''}`.trim();
+
+    let sintomasHtml = '<span class="sintomas-ninguno">Ninguno</span>';
+    if (c.sintomas && c.sintomas.length > 0) {
+        sintomasHtml = c.sintomas.join(', ');
+    }
+
+    let diagsHtml = '<span class="sintomas-ninguno">Sin diagnóstico</span>';
+    if (c.diagnosticos && c.diagnosticos.length > 0) {
+        diagsHtml = c.diagnosticos.map(d => 
+            `<div class="diagnostico-item-tabla"><strong class="diagnostico-codigo">${d.codigo_icd_diagnostico}</strong> - ${d.patologia || 'Sin detalle'}</div>`
+        ).join('');
+    }
+
+    fila.innerHTML = `
+        <td class="td-consultas-nowrap">${formattedDate}</td>
+        <td class="td-consultas">
+            <strong>${pacienteNombre}</strong>
+            <div class="td-paciente-sub">C.I. ${c.id_usuario}</div>
+        </td>
+        <td class="td-consultas">${medicoNombre}</td>
+        <td class="td-consultas">${c.motivo_de_visita}</td>
+        <td class="td-consultas">${sintomasHtml}</td>
+        <td class="td-consultas">${diagsHtml}</td>
+        <td class="td-acciones-btn">
+            <button class="ver-detalles-consulta action-card__button btn-detalles-consulta" data-id="${c.id}">Ver detalles</button>
+            ${ES_MEDICO_O_DIRECTOR ? `<button class="editar-consulta action-card__button" data-id="${c.id}">Actualizar</button>` : ''}
+        </td>
+    `;
+    return fila;
+}
 
 if (inputBuscarC && cuerpoTablaConsultas) {
     inputBuscarC.addEventListener('input', function() {
         const textoBusqueda = inputBuscarC.value.trim();
-        const tokenCSRF = document.querySelector('input[name="csrf_token"]')?.value || '';
 
         fetch(`api/consulta?query=${encodeURIComponent(textoBusqueda)}`)
         .then(response => response.json())
@@ -46,54 +82,12 @@ if (inputBuscarC && cuerpoTablaConsultas) {
             cuerpoTablaConsultas.innerHTML = '';
 
             if (consultas.length === 0) {
-                cuerpoTablaConsultas.innerHTML = `<tr class="no-registros"><td colspan="7" style="text-align:center; padding: 30px; color: #666;">No hay ninguna consulta asociada a ese usuario.</td></tr>`;
+                cuerpoTablaConsultas.innerHTML = `<tr class="no-registros"><td colspan="7" class="td-tabla-vacia">No hay ninguna consulta asociada a ese usuario.</td></tr>`;
                 if (btnCargarMas) btnCargarMas.style.display = 'none';
                 return;
             }
 
-            consultas.forEach(c => {
-                const fila = document.createElement('tr');
-                fila.style.borderBottom = '1px solid #eee';
-
-                const dateObj = new Date(c.fecha_consulta);
-                const formattedDate = !isNaN(dateObj) ? 
-                    `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}` : 
-                    c.fecha_consulta;
-
-                const pacienteNombre = `${c.paciente_nombre || ''} ${c.paciente_apellido || ''}`.trim();
-                const medicoNombre = `${c.medico_nombre || ''} ${c.medico_apellido || ''}`.trim();
-
-                let sintomasHtml = '<span style="color: #999;">Ninguno</span>';
-                if (c.sintomas && c.sintomas.length > 0) {
-                    sintomasHtml = c.sintomas.join(', ');
-                }
-
-                let diagsHtml = '<span style="color: #999;">Sin diagnóstico</span>';
-                if (c.diagnosticos && c.diagnosticos.length > 0) {
-                    diagsHtml = '';
-                    c.diagnosticos.forEach(d => {
-                        diagsHtml += `<div style="margin-bottom: 2px;"><strong style="color: #b91c1c;">${d.codigo_icd_diagnostico}</strong> - ${d.patologia || 'Sin detalle'}</div>`;
-                    });
-                }
-
-                fila.innerHTML = `
-                    <td style="padding: 10px; font-size: 0.9em; white-space: nowrap;">${formattedDate}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">
-                        <strong>${pacienteNombre}</strong>
-                        <div style="font-size: 0.8em; color: #666;">C.I. ${c.id_usuario}</div>
-                    </td>
-                    <td style="padding: 10px; font-size: 0.9em;">${medicoNombre}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">${c.motivo_de_visita}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">${sintomasHtml}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">${diagsHtml}</td>
-                    <td style="padding: 10px; font-size: 0.9em; display: flex; gap: 5px;">
-                        <button class="ver-detalles-consulta action-card__button" data-id="${c.id}" style="background: #4a5568; color: #fff;">Ver detalles</button>
-                        ${ES_MEDICO_O_DIRECTOR ? `<button class="editar-consulta action-card__button" data-id="${c.id}">Actualizar</button>` : ''}
-                    </td>
-                `;
-                cuerpoTablaConsultas.appendChild(fila);
-            });
-
+            consultas.forEach(c => cuerpoTablaConsultas.appendChild(renderFilaConsulta(c)));
             checkCargarMasVisibility();
         })
         .catch(error => console.error("Error al buscar consultas:", error));
@@ -104,7 +98,6 @@ if (btnCargarMas && cuerpoTablaConsultas) {
     btnCargarMas.addEventListener('click', function() {
         const query = inputBuscarC ? inputBuscarC.value.trim() : '';
         const offset = cuerpoTablaConsultas.querySelectorAll('tr:not(.no-registros)').length;
-        const tokenCSRF = document.querySelector('input[name="csrf_token"]')?.value || '';
 
         fetch(`api/consulta?query=${encodeURIComponent(query)}&offset=${offset}`)
         .then(response => response.json())
@@ -115,49 +108,7 @@ if (btnCargarMas && cuerpoTablaConsultas) {
                 return;
             }
 
-            consultas.forEach(c => {
-                const fila = document.createElement('tr');
-                fila.style.borderBottom = '1px solid #eee';
-
-                const dateObj = new Date(c.fecha_consulta);
-                const formattedDate = !isNaN(dateObj) ? 
-                    `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}` : 
-                    c.fecha_consulta;
-
-                const pacienteNombre = `${c.paciente_nombre || ''} ${c.paciente_apellido || ''}`.trim();
-                const medicoNombre = `${c.medico_nombre || ''} ${c.medico_apellido || ''}`.trim();
-
-                let sintomasHtml = '<span style="color: #999;">Ninguno</span>';
-                if (c.sintomas && c.sintomas.length > 0) {
-                    sintomasHtml = c.sintomas.join(', ');
-                }
-
-                let diagsHtml = '<span style="color: #999;">Sin diagnóstico</span>';
-                if (c.diagnosticos && c.diagnosticos.length > 0) {
-                    diagsHtml = '';
-                    c.diagnosticos.forEach(d => {
-                        diagsHtml += `<div style="margin-bottom: 2px;"><strong style="color: #b91c1c;">${d.codigo_icd_diagnostico}</strong> - ${d.patologia || 'Sin detalle'}</div>`;
-                    });
-                }
-
-                fila.innerHTML = `
-                    <td style="padding: 10px; font-size: 0.9em; white-space: nowrap;">${formattedDate}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">
-                        <strong>${pacienteNombre}</strong>
-                        <div style="font-size: 0.8em; color: #666;">C.I. ${c.id_usuario}</div>
-                    </td>
-                    <td style="padding: 10px; font-size: 0.9em;">${medicoNombre}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">${c.motivo_de_visita}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">${sintomasHtml}</td>
-                    <td style="padding: 10px; font-size: 0.9em;">${diagsHtml}</td>
-                    <td style="padding: 10px; font-size: 0.9em; display: flex; gap: 5px;">
-                        <button class="ver-detalles-consulta action-card__button" data-id="${c.id}" style="background: #4a5568; color: #fff;">Ver detalles</button>
-                        ${ES_MEDICO_O_DIRECTOR ? `<button class="editar-consulta action-card__button" data-id="${c.id}">Actualizar</button>` : ''}
-                    </td>
-                `;
-                cuerpoTablaConsultas.appendChild(fila);
-            });
-
+            consultas.forEach(c => cuerpoTablaConsultas.appendChild(renderFilaConsulta(c)));
             checkCargarMasVisibility();
         })
         .catch(error => console.error("Error al cargar más consultas:", error));
@@ -169,7 +120,6 @@ if (cuerpoTablaConsultas && modalActualizarConsulta) {
         if (event.target.classList.contains('ver-detalles-consulta')) {
             event.preventDefault();
             const idConsulta = event.target.getAttribute('data-id');
-            const tokenCSRF = document.querySelector('input[name="csrf_token"]')?.value || '';
             const modalVer = document.getElementById('modalVerDetallesConsulta');
 
             fetch(`api/consulta/${idConsulta}`)
@@ -194,38 +144,32 @@ if (cuerpoTablaConsultas && modalActualizarConsulta) {
                 document.getElementById('det_medicamento').textContent = consulta.medicamento_suministrado || 'Ninguno';
 
                 const sintomasSpan = document.getElementById('det_sintomas');
-                if (consulta.sintomas && consulta.sintomas.length > 0) {
-                    sintomasSpan.textContent = consulta.sintomas.join(', ');
-                } else {
-                    sintomasSpan.innerHTML = '<span style="color: #999;">Ninguno</span>';
-                }
+                sintomasSpan.textContent = (consulta.sintomas && consulta.sintomas.length > 0) 
+                    ? consulta.sintomas.join(', ') 
+                    : 'Ninguno';
 
                 const diagnosticosDiv = document.getElementById('det_diagnosticos');
                 diagnosticosDiv.innerHTML = '';
                 if (consulta.diagnosticos && consulta.diagnosticos.length > 0) {
                     consulta.diagnosticos.forEach(d => {
                         const div = document.createElement('div');
-                        div.style.marginBottom = '4px';
-                        div.innerHTML = `<strong style="color: #b91c1c;">${d.codigo_icd_diagnostico}</strong> - ${d.patologia || 'Sin detalle'}`;
+                        div.className = 'diagnostico-item-tabla';
+                        div.innerHTML = `<strong class="diagnostico-codigo">${d.codigo_icd_diagnostico}</strong> - ${d.patologia || 'Sin detalle'}`;
                         diagnosticosDiv.appendChild(div);
                     });
                 } else {
-                    diagnosticosDiv.innerHTML = '<span style="color: #999;">Sin diagnóstico</span>';
+                    diagnosticosDiv.innerHTML = '<span class="sintomas-ninguno">Sin diagnóstico</span>';
                 }
 
                 modalVer.showModal();
-                setTimeout(() => {
-                    modalVer.style.opacity = '1';
-                }, 50);
+                setTimeout(() => modalVer.style.opacity = '1', 50);
             })
             .catch(error => console.error("Error al cargar detalles de la consulta:", error));
         }
 
         if (event.target.classList.contains('editar-consulta')) {
             event.preventDefault();
-            
             const idConsulta = event.target.getAttribute('data-id');
-            const tokenCSRF = document.querySelector('input[name="csrf_token"]').value;
 
             fetch(`api/consulta/${idConsulta}`)
             .then(response => response.json())
@@ -236,7 +180,6 @@ if (cuerpoTablaConsultas && modalActualizarConsulta) {
                     return;
                 }
 
-                // Hide search and show only the edit form
                 const editForm = document.getElementById("formulario-edicion-consulta");
                 const searchSection = document.getElementById("seccion-busqueda-paciente-actualizar");
                 const listContainer = document.getElementById("consultas-lista-actualizar");
@@ -252,16 +195,13 @@ if (cuerpoTablaConsultas && modalActualizarConsulta) {
                 }
 
                 modalActualizarConsulta.showModal();
-                setTimeout(() => {
-                    modalActualizarConsulta.style.opacity = "1";
-                }, 500);
+                setTimeout(() => modalActualizarConsulta.style.opacity = "1", 500);
             })
             .catch(error => console.error("Error al cargar datos de la consulta:", error));
         }
     });
 }
 
-// Handle top menu "Actualizar consulta" button click to show search section and hide form
 const btnActualizarConsultaTop = document.querySelector('[data-modal="modalActualizarConsulta"]');
 if (btnActualizarConsultaTop) {
     btnActualizarConsultaTop.addEventListener('click', function() {
@@ -284,7 +224,6 @@ if (btnActualizarConsultaTop) {
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('editar-condicion')) {
         event.preventDefault();
-        
         const idCondicion = event.target.getAttribute('data-id');
         const nombreCondicion = event.target.getAttribute('data-nombre');
         const descripcionCondicion = event.target.getAttribute('data-descripcion');
@@ -296,9 +235,7 @@ document.addEventListener('click', function(event) {
             document.getElementById('edit_descripcion_condicion').value = descripcionCondicion;
             
             modalEditar.showModal();
-            setTimeout(() => {
-                modalEditar.style.opacity = '1';
-            }, 50);
+            setTimeout(() => modalEditar.style.opacity = '1', 50);
         }
     }
 });
@@ -335,7 +272,7 @@ if (inputBuscarCondicion && cuerpoTablaCondiciones) {
                 if (!rowVacio) {
                     rowVacio = document.createElement('tr');
                     rowVacio.className = 'fila-vacia-sugerida';
-                    rowVacio.innerHTML = '<td colspan="4" class="td-tabla-vacia" style="text-align:center;">No se encontraron condiciones que coincidan.</td>';
+                    rowVacio.innerHTML = '<td colspan="4" class="td-tabla-vacia">No se encontraron condiciones que coincidan.</td>';
                     cuerpoTablaCondiciones.appendChild(rowVacio);
                 } else {
                     rowVacio.style.display = "";
@@ -356,11 +293,7 @@ function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null)
     selectPnfElement.innerHTML = '<option value="">No aplica / Seleccione...</option>';
     selectPnfElement.disabled = true;
 
-    if (!idNucleo || idNucleo === "") {
-        return;
-    }
-
-    const tokenCSRF = document.querySelector('input[name="csrf_token"]').value;
+    if (!idNucleo || idNucleo === "") return;
 
     fetch(`api/nucleos/pnfs/${idNucleo}`)
     .then(response => response.json())

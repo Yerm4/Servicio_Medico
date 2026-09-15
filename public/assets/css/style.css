@@ -1074,4 +1074,65 @@ tr, th, td {
     padding-bottom: 15px;
 }
 
-/*git commit -m "Sedes.php eliminado (y de viewcontroller/index), estilos arreglados en configuraicon perfil y
+/* AUTOCOMPLETE Y SUGERENCIAS FLOTANTES (OVERLAY) */
+.action-card__label--relative {
+    position: relative;
+}
+
+.sugerencias-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 200;
+    background-color: #fff;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+    padding: 4px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* CAJAS Y GRUPOS DE FORMULARIO DE CONSULTA */
+.paciente-info-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.sintomas-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.sintomas-input-group .action-card__button {
+    width: auto;
+}
+
+.lista-items-seleccionados {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 8px;
+}
+
+.formulario-edicion-seccion {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.subtitulo-modal {
+    margin-bottom: 15px;
+}
+
+.consultas-lista-scroll {
+    margin-top: 15px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
