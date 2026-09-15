@@ -1186,3 +1186,6 @@ tr, th, td {
     overflow-y: auto;
 }
 
+.bg-red {
+    background-color: oklch(1 0.38 30) !important;
+}

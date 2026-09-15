@@ -204,7 +204,12 @@ include_once __DIR__."/layout/header.php";
                                                 <input type="hidden" name="id_oferta" value="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>">
                                                 <input type="hidden" name="id_nucleo" value="<?= e($o['id_nucleo']) ?>">
                                                 <input type="hidden" name="id_pnf" value="<?= e($o['id_pnf']) ?>">
-                                                <button type="submit" data-id="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>" class="action-card__button action-card__button--danger">Eliminar</button>
+                                                <button type="submit" data-id="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>" class="action-card__button action-card__button--danger bg-red">
+                                                    <svg style="pointer-events:none" width="30" height="30" viewBox="0 0 512 512" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M316.325 44.522V0H195.68l-.003 44.522H61.217v87.982h21.616c3.975 75.409 20.548 350.983 21.319 363.803L105.097 512h301.806l.944-15.694c.771-12.821 17.345-288.394 21.319-363.803h21.616V44.522H316.325zM229.069 33.391h53.866v11.13h-53.866V33.391zM375.458 478.609H136.542c-3.633-60.548-16.681-278.597-20.27-346.105h279.456c-3.588 67.503-16.637 285.551-20.27 346.105zM417.391 99.112H94.609V77.913h322.783v21.199z"/>
+                                                        <path d="M239.304 167.947h33.391v280.031h-33.391z"/>
+                                                    </svg>
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
