@@ -115,9 +115,7 @@ $rutasVistas = [
     "perfil"         => "showPerfil",
     "usuarios"       => "showUsuario",
     "consultas"      => "showConsultas",
-    "configuracion"  => "showConfiguracion",
-    "oferta"         => "showOferta",
-    "sedes"          => "showSedes"
+    "configuracion"  => "showConfiguracion"
 ];
 
 include_once __DIR__."/../app/permisos/permisos.php";

@@ -129,18 +129,4 @@ class ViewController {
         $paginaActual = 'configuracion';
         include __DIR__ . "/../views/configuracion.php";
     }
-
-    public function showSedes() {
-        
-        $nucleos = [];
-        $pnfs = [];
-        $ofertas = [];
-
-        
-        $modeloOfertas = new NucleoPNF($this->pdo);
-        $nucleos = $modeloOfertas->obtenerNucleos();
-        $pnfs = $modeloOfertas->obtenerPNFS();
-        
-        include_once __DIR__."/../views/sedes.php";
-    }
 }

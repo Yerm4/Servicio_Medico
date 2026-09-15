@@ -1,4 +1,3 @@
-
 <?php 
 $titulo = "Perfil";
 include __DIR__."/layout/header.php";
@@ -13,11 +12,11 @@ include __DIR__."/layout/header.php";
 
         <?php if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos): ?>
             <?php if (!empty($misCondiciones)): ?>
-                <div style="background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 10px 0; color: #333;">Condiciones Médicas / Crónicas Registradas</h4>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <div class="condiciones-medicas-box">
+                    <h4 class="condiciones-medicas-titulo">Condiciones Médicas / Crónicas Registradas</h4>
+                    <div class="condiciones-medicas-lista">
                         <?php foreach ($misCondiciones as $cond): ?>
-                            <span style="background-color: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">
+                            <span class="badge-condicion">
                                 <?= e($cond['nombre_condicion'] ?? $cond['condicion'] ?? '') ?>
                             </span>
                         <?php endforeach; ?>
@@ -77,14 +76,14 @@ include __DIR__."/layout/header.php";
             <?php endif; ?>
         <?php else: ?>
             <div class="dashboard-container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 class="titulo-configuracion-interna" style="margin: 0;">Panel de Inicio</h3>
-                    <div style="display: flex; gap: 10px;">
+                <div class="dashboard-cabecera">
+                    <h3 class="titulo-configuracion-interna">Panel de Inicio</h3>
+                    <div class="dashboard-acciones">
                         <?php if (!empty($tieneRealizarConsulta) || !empty($GLOBALS['tieneRealizarConsulta'])): ?>
-                            <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#">Iniciar consulta</a>
+                            <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#"><p>Iniciar consulta</p></a>
                         <?php endif; ?>
                         <?php if (!empty($tieneGenerarReportes) || !empty($GLOBALS['tieneGenerarReportes'])): ?>
-                            <a name="openModal" data-modal="modalReporteMorbilidad" class="action-card__button btn-generar-reporte" href="#" style="background-color: #0284c7; width: fit-content; text-align: center;">Generar Reporte de Morbilidad</a>
+                            <a name="openModal" data-modal="modalReporteMorbilidad" class="action-card__button btn-generar-reporte" href="#">Generar Reporte de Morbilidad</a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -105,7 +104,7 @@ include __DIR__."/layout/header.php";
                 </div>
 
                 <div class="contenedor-tabla-consultas">
-                    <h3 class="titulo-tabla-consultas" style="text-align: left; margin-bottom: 15px;">Últimas Consultas Registradas</h3>
+                    <h3 class="titulo-tabla-consultas titulo-tabla-consultas--left">Últimas Consultas Registradas</h3>
                     <?php if (empty($consultasRecientesDashboard)): ?>
                         <div class="contenedor-historial-vacio">
                             <p class="texto-historial-vacio">No hay consultas médicas registradas recientemente.</p>
