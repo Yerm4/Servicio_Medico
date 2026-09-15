@@ -172,37 +172,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btnConsultar) {
                 e.preventDefault();
                 const cedula = btnConsultar.getAttribute('data-id');
-
+            
                 try {
                     const result = await apiFetch(`api/users/buscar/${cedula}`);
                     const usuario = result.data[0];
-                    const detalles = document.getElementById('detallesUsuario');
-                    detalles.innerHTML = "";
-
-                    const fragment = document.createDocumentFragment();
-                    const campos = [
-                        ["Cédula: ", usuario.cedula],
-                        ["Nombre: ", usuario.nombre],
-                        ["Apellido: ", usuario.apellido],
-                        ["Tipo: ", usuario.nombre_tipo || usuario.tipo],
-                        ["Fecha de Nacimiento: ", usuario.fecha_nacimiento],
-                        ["Edad: ", calcularEdadJS(usuario.fecha_nacimiento)],
-                        ["Teléfono Principal: ", usuario.tlfprincipal],
-                        ["Teléfono Emergencia: ", usuario.tlfemergencia],
-                        ["Contacto de Emergencia: ", usuario.nombre_contacto_emergencia],
-                        ["Dirección: ", usuario.direccion],
-                        ["Sexo: ", usuario.sexo == 1 ? "Masculino" : "Femenino"],
-                        ["Núcleo: ", usuario.nombre_nucleo || "No asignado"],
-                        ["PNF: ", usuario.nombre_pnf || "No asignado"]
-                    ];
-
-                    campos.forEach(([label, val]) => {
-                        const p = document.createElement("p");
-                        p.textContent = `${label}${val ?? ''}`;
-                        fragment.appendChild(p);
-                    });
-
-                    detalles.appendChild(fragment);
+            
+                    document.getElementById('det_usr_cedula').textContent = usuario.cedula || 'N/A';
+                    document.getElementById('det_usr_nombre').textContent = usuario.nombre || '';
+                    document.getElementById('det_usr_apellido').textContent = usuario.apellido || '';
+                    document.getElementById('det_usr_tipo').textContent = usuario.nombre_tipo || (usuario.tipo === 0 ? "Estudiante" : "Docente");
+                    document.getElementById('det_usr_fecha_nacimiento').textContent = usuario.fecha_nacimiento || 'No registrada';
+                    document.getElementById('det_usr_edad').textContent = calcularEdadJS(usuario.fecha_nacimiento);
+                    document.getElementById('det_usr_sexo').textContent = usuario.sexo == 1 ? "Masculino" : (usuario.sexo == 2 ? "Femenino" : "No especificado");
+                    document.getElementById('det_usr_tlfprincipal').textContent = usuario.tlfprincipal || 'No registrado';
+                    document.getElementById('det_usr_tlfemergencia').textContent = usuario.tlfemergencia || 'No registrado';
+                    document.getElementById('det_usr_contacto').textContent = usuario.nombre_contacto_emergencia || 'No registrado';
+                    document.getElementById('det_usr_direccion').textContent = usuario.direccion || 'No registrada';
+                    document.getElementById('det_usr_nucleo').textContent = usuario.nombre_nucleo || "No asignado";
+                    document.getElementById('det_usr_pnf').textContent = usuario.nombre_pnf || "No asignado";
+            
                     modalDetallesUsuario?.showModal();
                     setTimeout(() => modalDetallesUsuario.style.opacity = "1", 50);
                 } catch (error) {
