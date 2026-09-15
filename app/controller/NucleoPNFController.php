@@ -10,7 +10,6 @@ class NucleoPnfController {
     public function __construct($conexion) {
         $this->model = new NucleoPNF($conexion);
     }
-    // NÚCLEOS
 
    public function registrarNucleo() {
         header('Content-Type: application/json');

@@ -11,6 +11,16 @@ class NucleoPNF {
     public function __construct($conexion) {
         $this->pdo = $conexion;
     }
+    
+      private function response($status, $message = "", $data = null, $redirect = null) {
+        return    [
+        "status" => $status,
+        "message" => $message,
+        "data" => $data,
+        "redirect" => $redirect
+        ];
+    }
+
 
     private function existeNucleo($nombre) {
         $sql = "SELECT id_nucleo, estado FROM lista_nucleos
@@ -77,28 +87,31 @@ class NucleoPNF {
                 $stmt = $this->pdo->prepare($sql);
                 return $stmt->execute([':id' => $existe['id_nucleo']]);
             }
-            return "duplicado"; 
+            return $this->response('error','duplicado'); 
         }
 
         $sql = "INSERT INTO lista_nucleos (nombre_nucleo) VALUES (:nombre)";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':nombre' => trim($nombre)]);
+        $stmt->execute([':nombre' => trim($nombre)]);
+        return $this->response('ok', 'Nucleo Registrado');
     }
 
     public function actualizarNucleo($id, $nombre) {
         if ($this->existeNucleoParaActualizar($nombre, $id)) {
-            return "duplicado";
+            return $this->response('error','duplicado');
         }
 
         $sql = "UPDATE lista_nucleos SET nombre_nucleo = :nombre WHERE id_nucleo = :id";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
+        $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
+        return $this->response('ok','Nucleo Actualizado');
     }
 
     public function desactivarNucleo($id) {
         $sql = "UPDATE lista_nucleos SET estado = 0 WHERE id_nucleo = :id";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':id' => $id]);
+        $stmt->execute([':id' => $id]);
+        return $this->response('ok', 'Nucleo Eliminado');
     }
 
 
@@ -121,30 +134,33 @@ class NucleoPNF {
             if ($existe['estado'] == 0) {
                 $sql = "UPDATE lista_pnfs SET estado = 1 WHERE id_pnf = :id";
                 $stmt = $this->pdo->prepare($sql);
-                return $stmt->execute([':id' => $existe['id_pnf']]);
+                $stmt->execute([':id' => $existe['id_pnf']]);
             }
-            return "duplicado";
+            return $this->response('error','duplicado');
         }
 
         $sql = "INSERT INTO lista_pnfs (nombre_pnf) VALUES (:nombre)";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':nombre' => trim($nombre)]);
+        $stmt->execute([':nombre' => trim($nombre)]);
+        return $this->response('ok', 'PNF Registrado');
     }
 
     public function actualizarPNF($id, $nombre) {
         if ($this->existePnfParaActualizar($nombre, $id)) {
-            return "duplicado";
+            return $this->response('error','duplicado');
         }
 
         $sql = "UPDATE lista_pnfs SET nombre_pnf = :nombre WHERE id_pnf = :id";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
+        $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
+        return $this->response('ok', 'PNF Actualizado');
     }
 
     public function desactivarPNF($id) {
         $sql = "UPDATE lista_pnfs SET estado = 0 WHERE id_pnf = :id";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':id' => $id]);
+        $stmt->execute([':id' => $id]);
+        return $this->response('ok', 'PNF Eliminado');
     }
 
     public function obtenerOfertasActivas() {

@@ -11,187 +11,152 @@ class Usuario {
     public function __construct($conexion) {
         $this->pdo = $conexion;
     }
-    public function loginUsuario($cedula) {
-        
-        try {
-            $sqlCheck = "SELECT COUNT(*) FROM usuarios WHERE cedula = :cedula";
-            $stmtCheck = $this->pdo->prepare($sqlCheck);
-            $stmtCheck->execute([
-            ":cedula" => $cedula]);
-            $existe = $stmtCheck->fetchColumn();
-    
-        if ($existe > 0) {
-            $sqlActivo = "SELECT * FROM usuarios WHERE cedula = :cedula";
-            $stmtActivo = $this->pdo->prepare($sqlActivo);
-            $stmtActivo->execute([
-                ":cedula" => $cedula]);
-            $activo = $stmtActivo->fetch(PDO::FETCH_ASSOC);
 
-            if ($activo["activo"] == 0) {
-                return false;
-            }
-            
-            else {
-                $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
-                        FROM usuarios u
-                        LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
-                        LEFT JOIN lista_roles r ON u.rol = r.id_rol
-                        LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
-                        LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
-                        LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                        WHERE u.cedula = :cedula";
-                $stmt = $this->pdo->prepare($sql);
-                $stmt->execute([
-                    "cedula" => $cedula
-                ]);
-                            
-                return $stmt->fetch(PDO::FETCH_ASSOC);
-            }
-        }
-
-        else {
-            return false;
-        }
+    private function response($status, $message = "", $data = null, $redirect = null) {
+        return    [
+        "status" => $status,
+        "message" => $message,
+        "data" => $data,
+        "redirect" => $redirect
+        ];
     }
 
-        catch (PDOException $e) {
-            echo $e;
-            return false;
+    public function registrarUsuario($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
+        try {
+            $stmtCheck = $this->pdo->prepare("SELECT activo FROM usuarios WHERE cedula = :cedula LIMIT 1");
+            $stmtCheck->execute([':cedula' => $cedula]);
+            $usuarioExistente = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+    
+            if ($usuarioExistente) {
+                if ((int)$usuarioExistente['activo'] === 0) {
+                    $stmtActivar = $this->pdo->prepare("UPDATE usuarios SET activo = 1 WHERE cedula = :cedula");
+                    $stmtActivar->execute([':cedula' => $cedula]);
+    
+                    return $this->response('ok', 'El usuario ha sido reactivado con éxito');
+                }
+    
+                return $this->response('error', 'El usuario ya se encuentra registrado');
+            }
+    
+            $contrasenaCreada = $cedula . 'uptaeb';
+            $contrasenaEncriptada = password_hash($contrasenaCreada, PASSWORD_ARGON2I);
+    
+            if ($rol === null) {
+                $rol = $this->obtenerRolDefecto();
+            }
+    
+            $this->pdo->beginTransaction();
+    
+            $stmtUsuario = $this->pdo->prepare("INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
+            VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion, :rol)");
+            $stmtUsuario->execute([
+                ':cedula'                     => (int)$cedula, 
+                ':nombre'                     => $nombre,
+                ':apellido'                   => $apellido,
+                ':contrasena'                 => $contrasenaEncriptada,
+                ':tipo'                       => (int)$tipo,
+                ':fecha_nacimiento'          => $fecha_nacimiento,
+                ':tlfprincipal'               => $tlfprincipal,
+                ':tlfemergencia'              => $tlfemergencia,
+                ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
+                ':sexo'                       => (int)$sexo,
+                ':direccion'                  => $direccion,
+                ':rol'                        => (int)$rol
+            ]);
+    
+            // 4. Asignación opcional de Núcleo y PNF
+            if (!empty($nucleo_id) && !empty($pnf_id)) {
+                $stmtPU = $this->pdo->prepare("INSERT INTO pnfs_usuarios (cedula_usuario, nucleo_id, pnf_id) 
+                VALUES (:cedula, :nucleo_id, :pnf_id)");
+                $stmtPU->execute([
+                    ':cedula'    => (int)$cedula,
+                    ':nucleo_id' => (int)$nucleo_id,
+                    ':pnf_id'    => (int)$pnf_id
+                ]);
+            }
+    
+            $this->pdo->commit();
+            return $this->response('ok', 'Usuario registrado exitosamente');
+    
+        } catch (PDOException $error) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            return $this->response('error', 'Error en la base de datos: ' . $error->getMessage());
+        }
+    }
+    
+    public function login($cedula) {
+        try { 
+            $stmt = $this->pdo->prepare("SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
+                FROM usuarios u 
+                LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo 
+                LEFT JOIN lista_roles r ON u.rol = r.id_rol 
+                LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario 
+                LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo 
+                LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf 
+                WHERE u.cedula = :cedula"); 
+            
+            $stmt->execute([':cedula' => $cedula]); 
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+            if (!$usuario) {
+                return $this->response('error', 'El usuario no se encuentra registrado');
+            }
+        
+            if ((int)$usuario['activo'] !== 1) { 
+                return $this->response('error', 'El usuario está inactivo o eliminado'); 
+            } 
+        
+            return $this->response('ok', 'Inicio de sesión exitoso', $usuario); 
+        
+        } catch (PDOException $e) {
+            return $this->response('error', 'Error en la consulta: ' . $e->getMessage());
         }
     }
 
     public function consultarUsuarios() {
         try {
-            $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
-                    FROM usuarios u
-                    LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
-                    LEFT JOIN lista_roles r ON u.rol = r.id_rol
-                    LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
-                    LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
-                    LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                    WHERE u.activo = 1 
-                    ORDER BY u.fecha_creacion DESC 
-                    LIMIT 5";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
+            FROM usuarios u
+            LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
+            LEFT JOIN lista_roles r ON u.rol = r.id_rol
+            LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
+            LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+            LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
+            WHERE u.activo = 1 
+            ORDER BY u.fecha_creacion DESC 
+            LIMIT 10");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->response("ok", "Resultados enviados", $stmt->fetchAll(PDO::FETCH_ASSOC));
         } catch (PDOException $e) {
-            return [];
+            return $this->response("error", "Resultados enviados", $e->getMessage());
         }
     }
-
-    public function registrarPaciente($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
-        
-        try {
-        $sqlCheck = "SELECT COUNT(*) FROM usuarios WHERE cedula = :cedula";
-        $stmtCheck = $this->pdo->prepare($sqlCheck);
-        $stmtCheck->execute([
-            ":cedula" => $cedula]);
-        $existe = $stmtCheck->fetchColumn();
-    
-        if ($existe > 0) {
-            $sqlActivo = "SELECT * FROM usuarios WHERE cedula = :cedula";
-            $stmtActivo = $this->pdo->prepare($sqlActivo);
-            $stmtActivo->execute([
-                ":cedula" => $cedula]);
-            $activo = $stmtActivo->fetch(PDO::FETCH_ASSOC);
-
-            if ($activo["activo"] == 0) {
-                $sqlActivar = "UPDATE usuarios SET activo = 1 WHERE cedula = :cedula";
-                $stmtActivar = $this->pdo->prepare($sqlActivar);
-                $stmtActivar->execute([
-                    ":cedula" => $cedula
-                ]);
-                return [
-                    "status" => "ok",
-                    "msg" => "El usuario ha sido registrado"
-                ];
-            }
-            
-            else {
-                return [
-                    "status" => "error",
-                    "msg" => "El usuario ya está registrado"
-                ];
-            }
-        }
-
-        $contraseñaCreada = $cedula.'uptaeb';
-        $contraseñaEncriptada = password_hash($contraseñaCreada, PASSWORD_ARGON2I);
-
-        if ($rol === null) {
-            $rol = $this->obtenerRolDefecto();
-        }
-
-        $this->pdo->beginTransaction();
-
-        $sql = "INSERT INTO usuarios (cedula, nombre, apellido, contrasena, tipo, fecha_nacimiento, tlfprincipal, tlfemergencia, nombre_contacto_emergencia, sexo, direccion, rol) 
-                VALUES (:cedula, :nombre, :apellido, :contrasena, :tipo, :fecha_nacimiento, :tlfprincipal, :tlfemergencia, :nombre_contacto_emergencia, :sexo, :direccion, :rol)";
-
-        $stmt = $this->pdo->prepare($sql);
-
-        $stmt->execute([
-            ':cedula'           => (int)$cedula, 
-            ':nombre'           => $nombre,
-            ':apellido'         => $apellido,
-            ':contrasena'       => $contraseñaEncriptada,
-            ':tipo'             => (int)$tipo,
-            ':fecha_nacimiento' => $fecha_nacimiento,
-            ':tlfprincipal'     => $tlfprincipal,
-            ':tlfemergencia'    => $tlfemergencia,
-            ':nombre_contacto_emergencia' => $nombre_contacto_emergencia,
-            ':sexo'             => (int)$sexo,
-            ':direccion'        => $direccion,
-            ':rol'              => (int)$rol
-        ]);
-
-        if ($nucleo_id !== null && $pnf_id !== null) {
-            $sqlPU = "INSERT INTO pnfs_usuarios (cedula_usuario, nucleo_id, pnf_id) VALUES (:cedula, :nucleo_id, :pnf_id)";
-            $stmtPU = $this->pdo->prepare($sqlPU);
-            $stmtPU->execute([
-                ':cedula' => (int)$cedula,
-                ':nucleo_id' => (int)$nucleo_id,
-                ':pnf_id' => (int)$pnf_id
-            ]);
-        }
-
-        $this->pdo->commit();
-        return [
-            "status" => "ok",
-            "msg" => "Usuario registrado"
-        ];
-
-        } catch (PDOException $error) {
-            if ($this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
-            }
-            return [
-                "status" => "ok",
-                "msg" => "dddddddddddddd"
-            ];
-        }
-}
 
     public function eliminarUsuario($cedula) {
-    try {
-        
-        $sql = "UPDATE usuarios SET activo = 0 WHERE cedula = :cedula";
+        try {
+            $stmt = $this->pdo->prepare("UPDATE usuarios
+            SET activo = 0 
+            WHERE cedula = :cedula");
+            $resultado = $stmt->execute(["cedula" => $cedula]);
 
-        $stmt = $this->pdo->prepare($sql);
-        
-        $resultado = $stmt->execute([
-            "cedula" => $cedula
-        ]);
-        
-        return $resultado; 
+            if (!$resultado) {
+                return $this->response("error", "La consulta falló");
+            } 
 
-        } 
-        catch (PDOException $e) {
-            return false;
+            $filasAfectadas = $stmt->rowCount();
+            if ($filasAfectadas > 0) {
+                return $this->response("ok", "Se elimino el usuario");
+            } else {
+                return $this->response("error", "No se encontro ese usuario");
+            }
+        } catch (PDOException $e) {
+            return $this->response("error", $e->getMessage());
+            }
         }
-    }
 
-    public function buscarUsuarios($query) {
+    public function buscarUsuarios($id) {
         try {
         
             $sql = "SELECT u.*, t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id, n.nombre_nucleo, pnf.nombre_pnf 
@@ -201,19 +166,19 @@ class Usuario {
                     LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
                     LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
                     LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                    WHERE (u.cedula LIKE :query 
-                    OR u.nombre LIKE :query 
-                    OR u.apellido LIKE :query)
+                    WHERE (u.cedula LIKE :id 
+                    OR u.nombre LIKE :id 
+                    OR u.apellido LIKE :id)
                     AND u.activo = 1
                     LIMIT 10"; 
                     
             $stmt = $this->pdo->prepare($sql);
             
             $stmt->execute([
-                'query' => '%' . $query . '%'
+                'id' => "%".$id."%"
             ]);
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->response("ok", "Resultados enviados", $stmt->fetchAll(PDO::FETCH_ASSOC));
             
         } catch (PDOException $e) {
             return [];
@@ -225,19 +190,18 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
         $this->pdo->beginTransaction();
 
         if ($rol !== null) {
-            $sql = "UPDATE usuarios 
-                    SET nombre = :nombre, 
-                        apellido = :apellido, 
-                        tipo = :tipo, 
-                        fecha_nacimiento = :fecha_nacimiento, 
-                        tlfprincipal = :tlfprincipal, 
-                        nombre_contacto_emergencia = :nombre_contacto_emergencia, 
-                        tlfemergencia = :tlfemergencia, 
-                        sexo = :sexo,
-                        direccion = :direccion,
-                        rol = :rol
-                    WHERE cedula = :cedula";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("UPDATE usuarios 
+            SET nombre = :nombre, 
+                apellido = :apellido, 
+                tipo = :tipo, 
+                fecha_nacimiento = :fecha_nacimiento, 
+                tlfprincipal = :tlfprincipal, 
+                nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                tlfemergencia = :tlfemergencia, 
+                sexo = :sexo,
+                direccion = :direccion,
+                rol = :rol
+            WHERE cedula = :cedula");
             $params = [
                 'nombre'                      => $nombre,
                 'apellido'                    => $apellido,
@@ -252,18 +216,17 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
                 'cedula'                      => (int)$cedula
             ];
         } else {
-            $sql = "UPDATE usuarios 
-                    SET nombre = :nombre, 
-                        apellido = :apellido, 
-                        tipo = :tipo, 
-                        fecha_nacimiento = :fecha_nacimiento, 
-                        tlfprincipal = :tlfprincipal, 
-                        nombre_contacto_emergencia = :nombre_contacto_emergencia, 
-                        tlfemergencia = :tlfemergencia, 
-                        sexo = :sexo,
-                        direccion = :direccion
-                    WHERE cedula = :cedula";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("UPDATE usuarios 
+            SET nombre = :nombre, 
+                apellido = :apellido, 
+                tipo = :tipo, 
+                fecha_nacimiento = :fecha_nacimiento, 
+                tlfprincipal = :tlfprincipal, 
+                nombre_contacto_emergencia = :nombre_contacto_emergencia, 
+                tlfemergencia = :tlfemergencia, 
+                sexo = :sexo,
+                direccion = :direccion
+            WHERE cedula = :cedula");
             $params = [
                 'nombre'                      => $nombre,
                 'apellido'                    => $apellido,
@@ -296,7 +259,7 @@ public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $f
         }
 
         $this->pdo->commit();
-        return true;
+        return $this->response("ok", "Usuario actualizado");
         
     } catch (PDOException $e) {
         if ($this->pdo->inTransaction()) {

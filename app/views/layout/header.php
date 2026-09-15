@@ -7,8 +7,10 @@
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="assets/script/code.js" defer></script>
-    
-    <title>Consultorio</title>
+    <script src="assets/script/regex.js" defer></script>
+    <script src="assets/script/modals.js" defer></script>
+    <script src="assets/script/sidebar.js" defer></script>
+    <title><?= e(!empty($titulo) ? $titulo : "UPTAEB") ?></title>
 </head>
 <body>
     <header>
@@ -33,8 +35,6 @@
                 <div id="avatarMenu" class="avatar__menu">
                     <a class="avatar__link" href="logout">Cerrar sesion</a>
                 </div>
-                <?php else: ?>
-                    <a href="#" class="top-menu__login-lang">ESP</a>
                 <?php endif ?>
             </div>
         </div>

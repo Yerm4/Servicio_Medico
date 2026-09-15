@@ -1,11 +1,6 @@
 <?php 
-if (isset($_SESSION["cedula"])) {
-    header("Location: perfil");
-    exit();
-}
-$modeloOfertas = new \app\model\NucleoPNF($pdo);
-$nucleos = $modeloOfertas->obtenerNucleos();
-$pnfs = $modeloOfertas->obtenerPNFS();
+$titulo = "Login";
+include __DIR__."/layout/header.php";
 ?>
 
 <main class="login">
@@ -16,7 +11,7 @@ $pnfs = $modeloOfertas->obtenerPNFS();
                 <h3 class="action-card__title">Servicio de Salud universitaria UPTAEB</h3>
                 <p class="action-card__p">Control de Acceso</p>
                 
-                <form class="action-card__form" action="" method="POST">
+                <form id="loginForm" class="action-card__form">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="form" value="login">
                     <label class="action-card__label"> Cédula de identidad
@@ -45,9 +40,7 @@ $pnfs = $modeloOfertas->obtenerPNFS();
                 </div>
             </div>
         </section>
-        <dialog id="modalRegistrarUsuario" class="modal-crud">
-            <?php include_once __DIR__."/modalRegistrarUsuario.php" ?>
-        </dialog>
+            <?php include_once __DIR__."/modals/modalRegistrarUsuario.php" ?>
     </main>
     <footer>
 

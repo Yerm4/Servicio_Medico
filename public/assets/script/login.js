@@ -1,84 +1,11 @@
+const modales = document.querySelectorAll(".modal-crud")
 const inputCedula = document.querySelectorAll("input[name=cedula]")
-let modales = document.querySelectorAll(".modal-crud")
-
-inputCedula.forEach(input => {
-    input.addEventListener('input', function() {
-        
-        this.value = this.value.replace(/\D/g, '');
-        
-        if (this.value.length > 8) {
-            this.value = this.value.slice(0, 8);
-        }
-    });
-});
-
-
-if (inputCedula) {
-    inputCedula.forEach(inputCedula => {
-        inputCedula.addEventListener("input", (event) => {
-            const cedulaValue = event.target.value
-            if (cedulaValue.length < 7 || cedulaValue.length > 8) {
-                inputCedula.style.border = "2px red solid"
-            } else {
-                inputCedula.style.border = "2px green solid"
-            }
-        })
-    });    
-}
-
 const loginCardCedula = document.querySelectorAll("input[name=cedula]")
-
-if (loginCardCedula) {
-    loginCardCedula.forEach(input => {
-    input.addEventListener('input', function() {
-        
-        this.value = this.value.replace(/\D/g, '');
-        
-        if (this.value.length > 8) {
-            this.value = this.value.slice(0, 8);
-        }
-    });
-});
-}
-
 const telefonos = document.querySelectorAll("input[name=tlfprincipal], input[name=tlfemergencia]")
 
-if (telefonos) {
-    telefonos.forEach(input => {
-    input.addEventListener('input', function() {
-        
-        this.value = this.value.replace(/\D/g, '');
-        
-        if (this.value.length > 20) {
-            this.value = this.value.slice(0, 20);
-        }
-    });
-});
-}
-
 const inputNombre = document.querySelectorAll("input[name=nombre], input[name=apellido], input[name=nombre_contacto_emergencia]")
-inputNombre.forEach(input => {
-    input.addEventListener('input', (e) => {
-        const target = e.target;
-        target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
-        
-        if (target.value.length > 30) {
-            target.value = target.value.slice(0, 30);
-        }
-    });
-});
 
 const inputDireccion = document.querySelectorAll("input[name=direccion]")
-inputDireccion.forEach(input => {
-    input.addEventListener('input', (e) => {
-        const target = e.target;
-        target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
-        
-        if (target.value.length > 40) {
-            target.value = target.value.slice(0, 40);
-        }
-    });
-});
 
 const inputFecha = document.querySelectorAll('input[name=fecha_nacimiento]');
 
@@ -97,7 +24,6 @@ if (inputFecha.length > 0) {
 
 const boton = document.querySelectorAll(".action-card__button")
     if (boton) {
-        console.log("aaaa")
         boton.forEach(botonModal => {
             botonModal.addEventListener("click", (event) => {
             let modalId = botonModal.dataset.modal;
@@ -159,7 +85,8 @@ modales.forEach(modal => {
     })
 })
 
-function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
+async function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
+    
     if (!selectPnfElement) return;
 
     selectPnfElement.innerHTML = '<option value="">No aplica / Seleccione...</option>';
@@ -169,29 +96,38 @@ function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null)
         return;
     }
 
-    const tokenCSRF = document.querySelector('input[name="csrf_token"]').value;
+    try {
+        const response = await fetch(`api/nucleos/pnfs/${idNucleo}`)
+        const result = await response.json().catch(() => null)
 
-    fetch('index.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `csrf_token=${tokenCSRF}&form=obtener_pnfs_por_nucleo&id_nucleo=${idNucleo}`
-    })
-    .then(response => response.json())
-    .then(pnfs => {
-        if (Array.isArray(pnfs) && pnfs.length > 0) {
-            selectPnfElement.disabled = false;
-            pnfs.forEach(pnf => {
-                const opt = document.createElement('option');
-                opt.value = pnf.id_pnf;
-                opt.textContent = pnf.nombre_pnf;
-                if (pnfSeleccionado && String(pnf.id_pnf) === String(pnfSeleccionado)) {
-                    opt.selected = true;
-                }
-                selectPnfElement.appendChild(opt);
-            });
+        if (!response.ok) {
+            const error = (result?.message ?? "") || response.status+": "+response.statusText
+            throw new Error(error)
         }
-    })
-    .catch(error => console.error("Error al cargar PNFs:", error));
+            
+        if (!result) {
+            throw new Error("La respuesta no es JSON")
+        }
+
+        if (result.status === "ok") {
+            const pnfs = result.data
+            if (Array.isArray(pnfs) && pnfs.length > 0) {
+                selectPnfElement.disabled = false;
+                pnfs.forEach(pnf => {
+                    const opt = document.createElement('option');
+                    opt.value = pnf.id_pnf;
+                    opt.textContent = pnf.nombre_pnf;
+                    if (pnfSeleccionado && String(pnf.id_pnf) === String(pnfSeleccionado)) {
+                        opt.selected = true;
+                    }
+                    selectPnfElement.appendChild(opt);
+                });
+            }
+        }
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 const selectNucleoReg = document.getElementById('nucleo_id');
@@ -200,4 +136,151 @@ if (selectNucleoReg && selectPnfReg) {
     selectNucleoReg.addEventListener('change', function() {
         cargarPnfsPorNucleo(this.value, selectPnfReg);
     });
+}
+
+const loginForm = document.getElementById("loginForm")
+
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const submitBtn = loginForm.querySelector('button[type="submit"]')
+        const originalBtnText = submitBtn ? submitBtn.textContent : 'Ingresar al sistema'
+        
+        let msgBox = document.getElementById("loginAlert")
+        if (!msgBox) {
+            msgBox = document.createElement("div")
+            msgBox.id = "loginAlert"
+            msgBox.style.cssText = "margin-bottom: 12px; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 500; text-align: center;"
+            loginForm.prepend(msgBox)
+        }
+        msgBox.style.display = "none"
+
+        const formData = new FormData(loginForm)
+        const datos = Object.fromEntries(formData.entries())
+    
+        try {
+            if (submitBtn) {
+                submitBtn.disabled = true
+                submitBtn.textContent = "Ingresando..."
+            }
+
+            const response = await fetch("api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+            
+            const result = await response.json().catch(() => null)
+            
+            if (!response.ok || !result || result.status !== "ok") {
+                const error = result?.message || "Usuario o contraseña incorrectos"
+                msgBox.textContent = error
+                msgBox.style.backgroundColor = "#fee2e2"
+                msgBox.style.color = "#991b1b"
+                msgBox.style.border = "1px solid #f87171"
+                msgBox.style.display = "block"
+                if (submitBtn) {
+                    submitBtn.disabled = false
+                    submitBtn.textContent = originalBtnText
+                }
+                return
+            }
+            
+            msgBox.textContent = "¡Bienvenido! Redirigiendo..."
+            msgBox.style.backgroundColor = "#dcfce7"
+            msgBox.style.color = "#166534"
+            msgBox.style.border = "1px solid #86efac"
+            msgBox.style.display = "block"
+
+            const destino = result.redirect || "perfil"
+            window.location.href = destino
+        } catch(error) {
+            console.error("Error en login:", error)
+            msgBox.textContent = "Error al conectar con el servidor"
+            msgBox.style.backgroundColor = "#fee2e2"
+            msgBox.style.color = "#991b1b"
+            msgBox.style.border = "1px solid #f87171"
+            msgBox.style.display = "block"
+            if (submitBtn) {
+                submitBtn.disabled = false
+                submitBtn.textContent = originalBtnText
+            }
+        }
+    })
+}
+
+const signupForm = document.getElementById("registroUsuarioForm") 
+
+if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const submitBtn = signupForm.querySelector('button[type="submit"]')
+        const originalBtnText = submitBtn ? submitBtn.textContent : 'Registrar'
+
+        let alertBox = signupForm.querySelector(".signup-alert")
+        if (!alertBox) {
+            alertBox = document.createElement("div")
+            alertBox.className = "signup-alert"
+            alertBox.style.cssText = "margin-bottom: 12px; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 500; text-align: center;"
+            signupForm.prepend(alertBox)
+        }
+        alertBox.style.display = "none"
+
+        const formData = new FormData(signupForm)
+        const datos = Object.fromEntries(formData.entries())
+
+        try {
+            if (submitBtn) {
+                submitBtn.disabled = true
+                submitBtn.textContent = "Registrando..."
+            }
+
+            const response = await fetch("api/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+            
+            const result = await response.json().catch(() => null)
+
+            if (!response.ok || !result || result.status !== "ok") {
+                const error = result?.message || (response.status + ": " + response.statusText)
+                alertBox.textContent = error
+                alertBox.style.backgroundColor = "#fee2e2"
+                alertBox.style.color = "#991b1b"
+                alertBox.style.border = "1px solid #f87171"
+                alertBox.style.display = "block"
+                if (submitBtn) {
+                    submitBtn.disabled = false
+                    submitBtn.textContent = originalBtnText
+                }
+                return
+            }
+
+            alertBox.textContent = result.message || "Usuario registrado con éxito"
+            alertBox.style.backgroundColor = "#dcfce7"
+            alertBox.style.color = "#166534"
+            alertBox.style.border = "1px solid #86efac"
+            alertBox.style.display = "block"
+
+            setTimeout(() => {
+                window.location.href = "perfil"
+            }, 1000)
+        } catch (error) {
+            console.error("Error en registro:", error)
+            alertBox.textContent = "Error al conectar con el servidor"
+            alertBox.style.backgroundColor = "#fee2e2"
+            alertBox.style.color = "#991b1b"
+            alertBox.style.border = "1px solid #f87171"
+            alertBox.style.display = "block"
+            if (submitBtn) {
+                submitBtn.disabled = false
+                submitBtn.textContent = originalBtnText
+            }
+        }
+    })
 }
