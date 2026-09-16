@@ -53,8 +53,6 @@ if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
     }
 }
 
-$ruta = isset($_GET["ruta"]) && $_GET["ruta"] !== '' ? trim($_GET["ruta"], "/") : "login";
-
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
 $GLOBALS['paginaActual'] = $paginaActual;

@@ -331,6 +331,318 @@ if (selectNucleoEdit && selectPnfEdit) {
     });
 }
 
+// -------------------------------------------------------------------------
+// FUNCIONES AUXILIARES DE GESTIÓN Y ALERTAS (ROLES, CONDICIONES, CONFIG)
+// -------------------------------------------------------------------------
+function mostrarAlertaGestion(contenedor, mensaje, tipo = "success") {
+    const target = typeof contenedor === "string" ? document.getElementById(contenedor) : contenedor;
+    if (!target) return;
+
+    const colorBorde = tipo === "success" ? "#2ecc71" : "#e74c3c";
+    const alertaEl = document.createElement("div");
+    alertaEl.className = "action-card";
+    alertaEl.style.cssText = `padding: 1rem; border-left: 5px solid ${colorBorde}; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;`;
+
+    alertaEl.innerHTML = `
+        <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <span>${mensaje}</span>
+            <span class="btn-cerrar-alerta" style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;">×</span>
+        </p>
+    `;
+
+    alertaEl.querySelector(".btn-cerrar-alerta")?.addEventListener("click", () => alertaEl.remove());
+    target.appendChild(alertaEl);
+    setTimeout(() => alertaEl.remove(), 4000);
+}
+
+async function refrescarFragmento(idElemento) {
+    try {
+        const response = await fetch(window.location.href);
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const nuevo = doc.getElementById(idElemento);
+        const actual = document.getElementById(idElemento);
+        if (nuevo && actual) {
+            actual.innerHTML = nuevo.innerHTML;
+        }
+    } catch (err) {
+        console.error(`Error al refrescar #${idElemento}:`, err);
+    }
+}
+
+// -------------------------------------------------------------------------
+// CRUD ROLES (AJAX)
+// -------------------------------------------------------------------------
+const formRegistrarRol = document.getElementById("formRegistrarRol");
+const alertContainerRoles = document.getElementById("alert-container-roles");
+
+if (formRegistrarRol) {
+    formRegistrarRol.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formRegistrarRol);
+        const datos = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("api/roles", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+            const data = await res.json().catch(() => null);
+
+            if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+                formRegistrarRol.reset();
+                await refrescarFragmento("cuerpoTablaRoles");
+                await refrescarFragmento("contenedorMatrizPermisos");
+                await refrescarFragmento("selectRolDefecto");
+                mostrarAlertaGestion(alertContainerRoles, data.message || "¡Rol creado exitosamente!", "success");
+            } else {
+                mostrarAlertaGestion(alertContainerRoles, data?.message || "Error al crear el rol", "error");
+            }
+        } catch (err) {
+            console.error("Error al registrar rol:", err);
+            mostrarAlertaGestion(alertContainerRoles, "Error en la comunicación con el servidor", "error");
+        }
+    });
+}
+
+const formEditarRol = document.getElementById("formEditarRol");
+const modalEditarRol = document.getElementById("modalEditarRol");
+
+if (formEditarRol) {
+    formEditarRol.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formEditarRol);
+        const datos = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("api/roles", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+            const data = await res.json().catch(() => null);
+
+            if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+                modalEditarRol?.close?.();
+                if (modalEditarRol) modalEditarRol.style.opacity = "0";
+                await refrescarFragmento("cuerpoTablaRoles");
+                await refrescarFragmento("contenedorMatrizPermisos");
+                await refrescarFragmento("selectRolDefecto");
+                mostrarAlertaGestion(alertContainerRoles, data.message || "¡Rol actualizado con éxito!", "success");
+            } else {
+                alert(data?.message || "Error al actualizar el rol");
+            }
+        } catch (err) {
+            console.error("Error al actualizar rol:", err);
+            alert("Error en la comunicación con el servidor");
+        }
+    });
+}
+
+document.addEventListener("submit", async (e) => {
+    const formEliminarRol = e.target.closest(".form-eliminar-rol");
+    if (!formEliminarRol) return;
+
+    e.preventDefault();
+    if (!confirm("¿Seguro que deseas eliminar este rol?")) return;
+
+    const formData = new FormData(formEliminarRol);
+    const datos = Object.fromEntries(formData.entries());
+
+    try {
+        const res = await fetch("api/roles", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        });
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+            await refrescarFragmento("cuerpoTablaRoles");
+            await refrescarFragmento("contenedorMatrizPermisos");
+            await refrescarFragmento("selectRolDefecto");
+            mostrarAlertaGestion(alertContainerRoles, data.message || "¡Rol eliminado con éxito!", "success");
+        } else {
+            mostrarAlertaGestion(alertContainerRoles, data?.message || "Error al eliminar el rol", "error");
+        }
+    } catch (err) {
+        console.error("Error al eliminar rol:", err);
+        mostrarAlertaGestion(alertContainerRoles, "Error en la comunicación con el servidor", "error");
+    }
+});
+
+// -------------------------------------------------------------------------
+// MATRIZ DE PERMISOS (AJAX)
+// -------------------------------------------------------------------------
+const formRolesPermisos = document.getElementById("formRolesPermisos");
+if (formRolesPermisos) {
+    formRolesPermisos.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formRolesPermisos);
+
+        // Estructurar permisos[id_rol][] en objeto para JSON
+        const permisosObj = {};
+        for (const [key, val] of formData.entries()) {
+            const match = key.match(/^permisos\[(\d+)\]/);
+            if (match) {
+                const idRol = match[1];
+                if (!permisosObj[idRol]) permisosObj[idRol] = [];
+                permisosObj[idRol].push(val);
+            }
+        }
+
+        try {
+            const res = await fetch("api/roles/permisos", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ permisos: permisosObj })
+            });
+            const data = await res.json().catch(() => null);
+
+            if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+                mostrarAlertaGestion(alertContainerRoles, data.message || "¡Roles y permisos actualizados con éxito!", "success");
+            } else {
+                mostrarAlertaGestion(alertContainerRoles, data?.message || "Error al guardar permisos", "error");
+            }
+        } catch (err) {
+            console.error("Error al guardar permisos:", err);
+            mostrarAlertaGestion(alertContainerRoles, "Error en la comunicación con el servidor", "error");
+        }
+    });
+}
+
+// -------------------------------------------------------------------------
+// CONFIGURACIÓN GENERAL (AJAX)
+// -------------------------------------------------------------------------
+const formGuardarConfiguracion = document.getElementById("formGuardarConfiguracion");
+const alertContainerGeneralConfig = document.getElementById("alert-container-general-config");
+
+if (formGuardarConfiguracion) {
+    formGuardarConfiguracion.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formGuardarConfiguracion);
+        const datos = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("api/configuracion", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+            const data = await res.json().catch(() => null);
+
+            if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+                mostrarAlertaGestion(alertContainerGeneralConfig, data.message || "¡Configuración guardada con éxito!", "success");
+            } else {
+                mostrarAlertaGestion(alertContainerGeneralConfig, data?.message || "Error al guardar configuración", "error");
+            }
+        } catch (err) {
+            console.error("Error al guardar configuración:", err);
+            mostrarAlertaGestion(alertContainerGeneralConfig, "Error en la comunicación con el servidor", "error");
+        }
+    });
+}
+
+// -------------------------------------------------------------------------
+// CRUD CONDICIONES (AJAX)
+// -------------------------------------------------------------------------
+const formRegistrarCondicion = document.getElementById("formRegistrarCondicion");
+const modalRegistrarCondicion = document.getElementById("modalRegistrarCondicion");
+const alertContainerCondiciones = document.getElementById("alert-container-condiciones");
+
+if (formRegistrarCondicion) {
+    formRegistrarCondicion.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formRegistrarCondicion);
+        const datos = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("api/condiciones", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+            const data = await res.json().catch(() => null);
+
+            if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+                formRegistrarCondicion.reset();
+                modalRegistrarCondicion?.close?.();
+                if (modalRegistrarCondicion) modalRegistrarCondicion.style.opacity = "0";
+                await refrescarFragmento("cuerpoTablaCondiciones");
+                mostrarAlertaGestion(alertContainerCondiciones, data.message || "¡Condición registrada con éxito!", "success");
+            } else {
+                alert(data?.message || "Error al registrar la condición");
+            }
+        } catch (err) {
+            console.error("Error al registrar condición:", err);
+            alert("Error en la comunicación con el servidor");
+        }
+    });
+}
+
+const formEditarCondicion = document.getElementById("formEditarCondicion");
+const modalEditarCondicion = document.getElementById("modalEditarCondicion");
+
+if (formEditarCondicion) {
+    formEditarCondicion.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formEditarCondicion);
+        const datos = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("api/condiciones", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+            const data = await res.json().catch(() => null);
+
+            if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+                modalEditarCondicion?.close?.();
+                if (modalEditarCondicion) modalEditarCondicion.style.opacity = "0";
+                await refrescarFragmento("cuerpoTablaCondiciones");
+                mostrarAlertaGestion(alertContainerCondiciones, data.message || "¡Condición actualizada con éxito!", "success");
+            } else {
+                alert(data?.message || "Error al actualizar la condición");
+            }
+        } catch (err) {
+            console.error("Error al actualizar condición:", err);
+            alert("Error en la comunicación con el servidor");
+        }
+    });
+}
+
+document.addEventListener("submit", async (e) => {
+    const formEliminarCond = e.target.closest(".form-eliminar-condicion");
+    if (!formEliminarCond) return;
+
+    e.preventDefault();
+    if (!confirm("¿Seguro que deseas eliminar esta condición?")) return;
+
+    const formData = new FormData(formEliminarCond);
+    const datos = Object.fromEntries(formData.entries());
+
+    try {
+        const res = await fetch("api/condiciones", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        });
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data && (data.status === "ok" || data.status === "success")) {
+            await refrescarFragmento("cuerpoTablaCondiciones");
+            mostrarAlertaGestion(alertContainerCondiciones, data.message || "¡Condición eliminada con éxito!", "success");
+        } else {
+            mostrarAlertaGestion(alertContainerCondiciones, data?.message || "Error al eliminar la condición", "error");
+        }
+    } catch (err) {
+        console.error("Error al eliminar condición:", err);
+        mostrarAlertaGestion(alertContainerCondiciones, "Error en la comunicación con el servidor", "error");
+    }
+});
+
 document.addEventListener("click", (e) => {
     const btn = e.target.closest(".editar-rol");
     if (!btn) return;

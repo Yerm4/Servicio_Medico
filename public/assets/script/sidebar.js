@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        [subContentGeneral, subContentRoles, subContentCondiciones, subContentOferta, subContentOferta, subContentNucleos, subContentPnf].forEach(content => {
+        [subContentGeneral, subContentRoles, subContentCondiciones, subContentOferta, subContentNucleos, subContentPnf].forEach(content => {
             if (content) {
                 content.style.display = (content === contentActivo) ? "block" : "none";
             }
