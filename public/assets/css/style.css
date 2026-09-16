@@ -758,7 +758,7 @@ tr, th, td {
 }
 
 .class-margin-top-20 {
-    margin-top: 30px !important;
+    margin-top: 20px !important;
 }
 
 .subtab-link-comun:hover {
@@ -952,8 +952,7 @@ tr, th, td {
 .modal-detalles-contenedor-datos {
     display: flex; 
     flex-direction: column; 
-    gap: 15px; 
-    margin-top: 15px; 
+    gap: 8px; 
     text-align: left; 
     background: #fafafa; 
     padding: 20px; 
