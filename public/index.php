@@ -44,11 +44,6 @@ if (!is_array($rutasApi)) {
 if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
     $ruta = trim($_GET["ruta"], "/");
 } else {
-    /*$uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-    $ruta = trim($uriPath, "/");
-    if (empty($ruta)) {
-        $ruta = "login";
-    }*/
     $ruta = "login";
 }
 
@@ -168,8 +163,6 @@ if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 $paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
-#die($paginaMostrar."\n".$paginaActual);
-
 if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
     $metodoController = $rutasVistas[$paginaActual];
     $viewController->$metodoController($partesRuta);
@@ -181,5 +174,3 @@ if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
 $rawUri = $_SERVER['REQUEST_URI'];
 $cleanPath = parse_url($rawUri, PHP_URL_PATH);
 $currentPage = trim($cleanPath, '/');
-
-?>
