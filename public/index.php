@@ -13,11 +13,8 @@ require_once __DIR__."/../vendor/autoload.php";
 use app\controller\ViewController;
 use app\controller\ApiController;
 
-if (file_exists(__DIR__ . '/.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-} else {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-}
+if (file_exists(__DIR__ . '/.env')) $dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
+else $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 $appEnv = $_ENV['APP_ENV'] ?? 'production';
@@ -170,7 +167,3 @@ if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
 } else {
     include __DIR__."/../app/views/404.php";
 }
-
-$rawUri = $_SERVER['REQUEST_URI'];
-$cleanPath = parse_url($rawUri, PHP_URL_PATH);
-$currentPage = trim($cleanPath, '/');

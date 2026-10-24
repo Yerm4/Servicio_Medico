@@ -214,15 +214,11 @@ class ConsultaController {
             $pacientesUnicos = count(array_unique(array_column($datos['registros'], 'paciente_cedula')));
 
             $nombreGenerador = 'Médico de Guardia';
-            /*
-            if (isset($_SESSION['cedula'])) {
-                $stmtUser = $this->db->prepare("SELECT nombre, apellido FROM usuarios WHERE cedula = :cedula"); # ARREGLAR 219
-                $stmtUser->execute([':cedula' => (int)$_SESSION['cedula']]);
-                $userLogged = $stmtUser->fetch(\PDO::FETCH_ASSOC);
-                if ($userLogged) {
-                    $nombreGenerador = $userLogged['nombre'] . ' ' . $userLogged['apellido'];
-                }
-            }*/
+            
+            $userLogged = $modeloConsulta->userIsLogged();
+            if ($userLogged) {
+                $nombreGenerador = $userLogged['nombre'] . ' ' . $userLogged['apellido'];
+            }
 
             $fechaInicioFmt = date('d/m/Y', strtotime($fechaInicio));
             $fechaFinFmt = date('d/m/Y', strtotime($fechaFin));

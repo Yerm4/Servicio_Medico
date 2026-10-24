@@ -551,4 +551,10 @@ class Consulta extends BaseModel {
             ];
         }
     }
+
+    public function userIsLogged() {
+        $stmtUser = $this->db->prepare("SELECT nombre, apellido FROM usuarios WHERE cedula = :cedula"); # ARREGLAR 219
+        $stmtUser->execute([':cedula' => (int)$_SESSION['cedula']]);
+        return $stmtUser->fetch(\PDO::FETCH_ASSOC);
+    }
 }

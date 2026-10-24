@@ -3,7 +3,6 @@ namespace app\model;
 
 use app\model\BaseModel;
 use PDO;
-use PDOException;
 
 class Permisos extends BaseModel {
     public function id() {
