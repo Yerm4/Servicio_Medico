@@ -5,11 +5,6 @@ use app\model\Consulta;
 use Exception;
 
 class ConsultaController {
-    private $db;
-
-    public function __construct($conexion){
-        $this->db = $conexion;
-    }
 
     public function registrar() {
         try {
@@ -39,7 +34,7 @@ class ConsultaController {
                 throw new Exception("La consulta no fue registrada, revisa que todos los campos estén llenos");
             }
 
-            $modeloConsulta = new Consulta($this->db);
+            $modeloConsulta = new Consulta();
             $resultado = $modeloConsulta->registrarConsulta($cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento);
 
             if ($resultado === true) {
@@ -67,7 +62,7 @@ class ConsultaController {
             echo json_encode([]);
             exit();
         }
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->buscarPatologia($q);
         echo json_encode($resultados);
         exit();
@@ -80,7 +75,7 @@ class ConsultaController {
             echo json_encode([]);
             exit();
         }
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->buscarUsuario($q);
         echo json_encode($resultados);
         exit();
@@ -112,7 +107,7 @@ class ConsultaController {
                 throw new Exception("La consulta no fue actualizada, revisa que todos los campos estén llenos");
             }
 
-            $modeloConsulta = new Consulta($this->db);
+            $modeloConsulta = new Consulta();
             $resultado = $modeloConsulta->actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento);
 
             if ($resultado === true) {
@@ -140,7 +135,7 @@ class ConsultaController {
             echo json_encode([]);
             exit();
         }
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->obtenerConsultasPorPaciente($cedula);
         echo json_encode($resultados);
         exit();
@@ -153,7 +148,7 @@ class ConsultaController {
             echo json_encode([]);
             exit();
         }
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->buscarCondicion($q);
         echo json_encode($resultados);
         exit();
@@ -166,7 +161,7 @@ class ConsultaController {
             echo json_encode([]);
             exit();
         }
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->obtenerCondicionesPaciente($cedula);
         echo json_encode($resultados);
         exit();
@@ -175,7 +170,7 @@ class ConsultaController {
     public function buscarConsultasAjax() {
         header('Content-Type: application/json');
         $query = isset($_POST['query']) ? trim($_POST['query']) : '';
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         if (empty($query)) {
             $resultados = $modeloConsulta->obtenerConsultasRecientes(10);
         } else {
@@ -192,7 +187,7 @@ class ConsultaController {
             echo json_encode(['error' => 'ID de consulta inválido.']);
             exit();
         }
-        $modeloConsulta = new Consulta($this->db);
+        $modeloConsulta = new Consulta();
         $consulta = $modeloConsulta->obtenerConsultaPorId($id);
         if ($consulta) {
             echo json_encode($consulta);
@@ -214,19 +209,20 @@ class ConsultaController {
                 throw new \Exception("La fecha de inicio no puede ser posterior a la fecha de fin.");
             }
 
-            $modeloConsulta = new Consulta($this->db);
+            $modeloConsulta = new Consulta();
             $datos = $modeloConsulta->obtenerDatosReporteMorbilidad($fechaInicio, $fechaFin);
             $pacientesUnicos = count(array_unique(array_column($datos['registros'], 'paciente_cedula')));
 
             $nombreGenerador = 'Médico de Guardia';
+            /*
             if (isset($_SESSION['cedula'])) {
-                $stmtUser = $this->db->prepare("SELECT nombre, apellido FROM usuarios WHERE cedula = :cedula");
+                $stmtUser = $this->db->prepare("SELECT nombre, apellido FROM usuarios WHERE cedula = :cedula"); # ARREGLAR 219
                 $stmtUser->execute([':cedula' => (int)$_SESSION['cedula']]);
                 $userLogged = $stmtUser->fetch(\PDO::FETCH_ASSOC);
                 if ($userLogged) {
                     $nombreGenerador = $userLogged['nombre'] . ' ' . $userLogged['apellido'];
                 }
-            }
+            }*/
 
             $fechaInicioFmt = date('d/m/Y', strtotime($fechaInicio));
             $fechaFinFmt = date('d/m/Y', strtotime($fechaFin));

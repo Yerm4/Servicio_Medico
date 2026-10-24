@@ -9,27 +9,22 @@ use app\controller\NucleoPNFController;
 use app\model\NucleoPNF;
 use app\model\Consulta;
 use app\model\Condicion;
-use app\config\Config;
 use app\model\Usuario;
 
 class ViewController {
-
-    private $pdo;
-    public function __construct($conexion){
-        $this->pdo = $conexion;
-    }
 
     private function auth() {
         
     }
 
     public function showLogin() {
-
+        
         if (!empty($_SESSION["cedula"])) header("Location: perfil");
-        $modeloOfertas = new NucleoPNF($this->pdo);
+        
+        $modeloOfertas = new NucleoPNF();
         $nucleos = $modeloOfertas->obtenerNucleos();
         $pnfs = $modeloOfertas->obtenerPNFS();
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $tipos = $userModel->obtenerTipos();
 
         if ($pnfs && $nucleos) {
@@ -41,7 +36,7 @@ class ViewController {
 
         global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta, $tieneGenerarReportes, $tieneRealizarConsulta;
         $this->auth();
-        $consultaModel = new Consulta($this->pdo);
+        $consultaModel = new Consulta();
         $stats = [];
         $consultasRecientesDashboard = [];
         $misConsultas = [];
@@ -55,7 +50,7 @@ class ViewController {
             $consultasRecientesDashboard = $consultaModel->obtenerConsultasRecientes(5);
         }
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $tipos = $userModel->obtenerTipos();
 
         $paginaActual = 'perfil';
@@ -67,8 +62,8 @@ class ViewController {
 
     public function showUsuario($userModel = null, $permisos = null) {
 
-        $pnfModel = new NucleoPNF($this->pdo);
-        $userModel = new Usuario($this->pdo);
+        $pnfModel = new NucleoPNF();
+        $userModel = new Usuario();
 
         $nucleos = $pnfModel->obtenerNucleos();
         $pnfs = $pnfModel->obtenerPNFS();
@@ -86,9 +81,9 @@ class ViewController {
 
     public function showConsultas($userModel = null, $permisos = null) {
         global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta, $tieneGenerarReportes, $tieneRealizarConsulta;
-        $pnfModel = new NucleoPNF($this->pdo);
-        $userModel = new Usuario($this->pdo);
-        $consultaModel = new Consulta($this->pdo);
+        $pnfModel = new NucleoPNF();
+        $userModel = new Usuario();
+        $consultaModel = new Consulta();
 
         $nucleos = $pnfModel->obtenerNucleos();
         $pnfs = $pnfModel->obtenerPNFS();
@@ -102,7 +97,7 @@ class ViewController {
 
     public function showConfiguracion($partesRuta = null) {
         global $tieneGestionarRolesPermisos, $tieneGestionarCondiciones, $tieneGestionarOferta;
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $roles = [];
         $permisos = [];
         $rolePermMap = [];
@@ -118,10 +113,10 @@ class ViewController {
         }
 
         if ($tieneGestionarCondiciones) {
-            $condicionesRegistradas = (new Condicion($this->pdo))->consultarCondiciones();
+            $condicionesRegistradas = (new Condicion())->consultarCondiciones();
         }
 
-        $modeloOfertas = new NucleoPNF($this->pdo);
+        $modeloOfertas = new NucleoPNF();
         $nucleos = $modeloOfertas->obtenerNucleos();
         $pnfs = $modeloOfertas->obtenerPNFS();
         $ofertas = $modeloOfertas->obtenerOfertasActivas();

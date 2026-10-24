@@ -7,11 +7,11 @@ use app\model\NucleoPNF;
 class NucleoPnfController {
     private $model;
 
-    public function __construct($conexion) {
-        $this->model = new NucleoPNF($conexion);
+    public function __construct() {
+        $this->model = new NucleoPNF();
     }
 
-   public function registrarNucleo() {
+    public function registrarNucleo() {
         header('Content-Type: application/json');
         $nombre = isset($_POST['nombre_nucleo']) ? trim($_POST['nombre_nucleo']) : '';
 

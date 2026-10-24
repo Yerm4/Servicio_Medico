@@ -4,13 +4,7 @@ namespace app\model;
 use PDO;
 use PDOException;
 
-class Condicion {
-
-    private $pdo;
-
-    public function __construct($conexion) {
-        $this->pdo = $conexion;
-    }
+class Condicion extends BaseModel {
 
     public function consultarCondiciones() {
         try {

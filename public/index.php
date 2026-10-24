@@ -12,7 +12,6 @@ require_once __DIR__."/../vendor/autoload.php";
 
 use app\controller\ViewController;
 use app\controller\ApiController;
-use app\config\Config;
 
 if (file_exists(__DIR__ . '/.env')) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -32,9 +31,8 @@ if ($appEnv === 'local') {
     error_reporting(0);
 }
 
-$pdo = Config::conexion(); 
-$viewController = new ViewController($pdo);  
-$apiController = new ApiController($pdo);
+$viewController = new ViewController();  
+$apiController = new ApiController();
 
 $method = !empty($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "";
 
@@ -46,11 +44,12 @@ if (!is_array($rutasApi)) {
 if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
     $ruta = trim($_GET["ruta"], "/");
 } else {
-    $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+    /*$uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
     $ruta = trim($uriPath, "/");
     if (empty($ruta)) {
         $ruta = "login";
-    }
+    }*/
+    $ruta = "login";
 }
 
 $partesRuta = explode("/", $ruta);
@@ -86,7 +85,7 @@ if (is_array($rutasApi) && isset($rutasApi[$method])) {
 
 if ($metodoEncontrado) {
     header("Content-Type: application/json; charset=UTF-8");
-    $apiController = new ApiController($pdo);
+    $apiController = new ApiController();
 
     if (method_exists($apiController, $metodoEncontrado)) {
         $apiController->$metodoEncontrado(...$parametros);
@@ -107,7 +106,6 @@ if (str_starts_with($rutaNormalizada, "api/") || str_starts_with($ruta, "api/"))
     ]); 
     exit(); 
 }
-
 $rutasVistas = [
     "login"          => "showLogin",
     "perfil"         => "showPerfil",
@@ -120,17 +118,17 @@ include_once __DIR__."/../app/permisos/permisos.php";
 
 $formAccion = $_POST["form"] ?? null;
 if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
-    $apiCtrl = new ApiController($pdo);
+    $apiCtrl = new ApiController();
     switch ($formAccion) {
         case "generar_reporte_morbilidad":
             $apiCtrl->generarReporteMorbilidad();
             exit();
         case "registro_consulta":
-            $cConsulta = new \app\controller\ConsultaController($pdo);
+            $cConsulta = new \app\controller\ConsultaController();
             $cConsulta->registrar();
             exit();
         case "actualizar_consulta":
-            $cConsulta = new \app\controller\ConsultaController($pdo);
+            $cConsulta = new \app\controller\ConsultaController();
             $cConsulta->actualizar();
             exit();
         case "guardar_roles_permisos":
@@ -170,9 +168,12 @@ if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 $paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
+#die($paginaMostrar."\n".$paginaActual);
+
 if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
     $metodoController = $rutasVistas[$paginaActual];
     $viewController->$metodoController($partesRuta);
+    
 } else {
     include __DIR__."/../app/views/404.php";
 }
@@ -180,4 +181,5 @@ if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
 $rawUri = $_SERVER['REQUEST_URI'];
 $cleanPath = parse_url($rawUri, PHP_URL_PATH);
 $currentPage = trim($cleanPath, '/');
+
 ?>

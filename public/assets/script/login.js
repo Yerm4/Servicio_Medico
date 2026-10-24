@@ -175,6 +175,9 @@ if (loginForm) {
             const result = await response.json().catch(() => null)
             
             if (!response.ok || !result || result.status !== "ok") {
+                if(!response.ok) alert("resp")
+                if (!result) alert("result")
+                if (result.status !== "ok") alert("ok")
                 const error = result?.message || "Usuario o contraseña incorrectos"
                 msgBox.textContent = error
                 msgBox.style.backgroundColor = "#fee2e2"

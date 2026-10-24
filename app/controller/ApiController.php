@@ -12,11 +12,6 @@ use app\controller\NucleoPNFController;
 use app\controller\ViewController;
 
 class ApiController {
-    private $pdo;
-
-    public function __construct($conexion) {
-        $this->pdo = $conexion;
-    }
 
     private function jsonResponse($status, $message = "", $data = null, $redirect = null) {
         header("Content-Type: application/json");
@@ -33,7 +28,7 @@ class ApiController {
         if (empty($_SESSION['cedula'])) {
             return false;
         }
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         return $userModel->tienePermiso($_SESSION['cedula'], $permiso);
     }
 
@@ -71,12 +66,12 @@ class ApiController {
             $this->jsonResponse("error", "Cédula inválida");
         }
 
-        $model = new Usuario($this->pdo);
+        $model = new Usuario();
         $result = $model->login($cedula);
         $data = $result["data"] ?? null;
         if ($result["status"] !== "ok" || !$data) {
             code(401);
-            $this->jsonResponse("error", $result["message"] ?? "Usuario o contraseña incorrectos");
+            $this->jsonResponse("error", "Usuario o contraseña incorrectos");
         }
 
         $passwordCoincide = password_verify($password, $data["contrasena"]) || ($data["contrasena"] === $password);
@@ -87,7 +82,7 @@ class ApiController {
             $this->jsonResponse("ok", "Logueado", null, "perfil");
         } else {
             code(401);
-            $this->jsonResponse("error", "Usuario o contraseña incorrectos");
+            $this->jsonResponse("error", "Usuario o contraseña incorssrectos");
         }
     }
 
@@ -117,7 +112,7 @@ class ApiController {
 
         $rol = null;
         if (isset($data['rol']) && !empty($_SESSION['cedula'])) {
-            $userModel = new Usuario($this->pdo);
+            $userModel = new Usuario();
             if ($userModel->tienePermiso($_SESSION['cedula'], 'gestionar_roles_permisos')) {
                 $rol = (int)$data['rol'];
             }
@@ -146,7 +141,7 @@ class ApiController {
             $this->jsonResponse("error", "El nombre y el apellido no pueden exceder los 30 caracteres");
         }
 
-        $modeloPaciente = new Usuario($this->pdo);
+        $modeloPaciente = new Usuario();
 
         $resultado = $modeloPaciente->registrarUsuario(
             $cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, 
@@ -185,7 +180,7 @@ class ApiController {
         $sexo                       = cleanValue($data, "sexo");
         $direccion                  = cleanValue($data, "direccion") ?? '';
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         if ((string)$_SESSION['cedula'] !== (string)$cedula && !$userModel->tienePermiso($_SESSION['cedula'], 'gestionar_usuarios')) {
             code(403);
             $this->jsonResponse("error", "No tiene permisos para actualizar este usuario");
@@ -245,7 +240,7 @@ class ApiController {
             $this->jsonResponse("error", "No tiene permisos para buscar usuarios");
         }
 
-        $model = new Usuario($this->pdo);
+        $model = new Usuario();
 
         if (empty($id) || $id === "0") {
             $resultados = $model->consultarUsuarios();
@@ -276,7 +271,7 @@ class ApiController {
             $this->jsonResponse("error", "Cédula no proporcionada");
         }
 
-        $model = new Usuario($this->pdo);
+        $model = new Usuario();
         $usuario = $model->login($cedula);
 
         if ($usuario && isset($usuario["status"]) && $usuario["status"] === "ok") {
@@ -306,7 +301,7 @@ class ApiController {
             $this->jsonResponse("error", "Cédula requerida para eliminar");
         }
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $result = $userModel->eliminarUsuario($id);
 
         if (is_array($result) && ($result["status"] === "ok" || $result["status"] === "success")) {
@@ -332,7 +327,7 @@ class ApiController {
             $this->jsonResponse("error", "No tiene permisos para ver consultas");
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $idConsulta = $id ?? (isset($_GET['id']) ? (int)$_GET['id'] : null);
         if ($idConsulta !== null && $idConsulta > 0) {
             $consulta = $modeloConsulta->obtenerConsultaPorId($idConsulta);
@@ -406,7 +401,7 @@ class ApiController {
             $this->jsonResponse("error", "La consulta no fue registrada, revisa que todos los campos requeridos estén llenos");
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultado = $modeloConsulta->registrarConsulta(
             $cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento
         );
@@ -458,7 +453,7 @@ class ApiController {
             $this->jsonResponse("error", "ID de consulta y motivo son obligatorios");
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultado = $modeloConsulta->actualizarConsulta(
             $idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento
         );
@@ -499,7 +494,7 @@ class ApiController {
 
         $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
         if (str_contains($accept, 'application/json') || isset($_GET['json'])) {
-            $modeloConsulta = new Consulta($this->pdo);
+            $modeloConsulta = new Consulta();
             $datos = $modeloConsulta->obtenerDatosReporteMorbilidad($fechaInicio, $fechaFin);
             code(200);
             $this->jsonResponse("ok", "Datos de reporte de morbilidad", $datos);
@@ -507,7 +502,7 @@ class ApiController {
 
         $_POST['fecha_inicio'] = $fechaInicio;
         $_POST['fecha_fin'] = $fechaFin;
-        $controllerConsulta = new ConsultaController($this->pdo);
+        $controllerConsulta = new ConsultaController();
         $controllerConsulta->generarReporteMorbilidad();
         exit();
     }
@@ -523,7 +518,7 @@ class ApiController {
             $this->jsonResponse("ok", "Resultados", []);
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->buscarPatologia($q);
         $this->jsonResponse("ok", "Resultados", $resultados ?: []);
     }
@@ -539,7 +534,7 @@ class ApiController {
             $this->jsonResponse("ok", "Resultados", []);
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->buscarUsuario($q);
         $this->jsonResponse("ok", "Resultados", $resultados ?: []);
     }
@@ -555,7 +550,7 @@ class ApiController {
             $this->jsonResponse("ok", "Resultados", []);
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->obtenerConsultasPorPaciente($ced);
         $this->jsonResponse("ok", "Resultados", $resultados ?: []);
     }
@@ -571,7 +566,7 @@ class ApiController {
             $this->jsonResponse("ok", "Resultados", []);
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->buscarCondicion($q);
         $this->jsonResponse("ok", "Resultados", $resultados ?: []);
     }
@@ -587,7 +582,7 @@ class ApiController {
             $this->jsonResponse("ok", "Resultados", []);
         }
 
-        $modeloConsulta = new Consulta($this->pdo);
+        $modeloConsulta = new Consulta();
         $resultados = $modeloConsulta->obtenerCondicionesPaciente($ced);
         $this->jsonResponse("ok", "Resultados", $resultados ?: []);
     }
@@ -607,7 +602,7 @@ class ApiController {
             $this->jsonResponse("error", "El nombre del rol es obligatorio");
         }
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $resultado = $userModel->crearRol($nombreRol, $descripcionRol);
 
         if ($resultado) {
@@ -635,7 +630,7 @@ class ApiController {
             $this->jsonResponse("error", "Datos del rol inválidos");
         }
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $resultado = $userModel->actualizarRol($idRol, $nombreRol, $descripcionRol);
 
         if ($resultado) {
@@ -661,7 +656,7 @@ class ApiController {
             $this->jsonResponse("error", "No se puede eliminar este rol");
         }
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $resultado = $userModel->eliminarRol($idRol);
 
         if ($resultado) {
@@ -682,7 +677,7 @@ class ApiController {
         $data = $this->getRequestData();
         $postedPermisos = $data['permisos'] ?? [];
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $roles = $userModel->obtenerRoles();
 
         foreach ($roles as $role) {
@@ -709,7 +704,7 @@ class ApiController {
             $this->jsonResponse("error", "Seleccione un rol válido");
         }
 
-        $userModel = new Usuario($this->pdo);
+        $userModel = new Usuario();
         $resultado = $userModel->actualizarRolDefecto($rolDefecto);
 
         if ($resultado) {
@@ -736,7 +731,7 @@ class ApiController {
             $this->jsonResponse("error", "El nombre de la condición es obligatorio");
         }
 
-        $model = new Condicion($this->pdo);
+        $model = new Condicion();
         $registrado = $model->registrarCondicion($nombre, $descripcion);
 
         if ($registrado) {
@@ -764,7 +759,7 @@ class ApiController {
             $this->jsonResponse("error", "Datos de condición inválidos");
         }
 
-        $model = new Condicion($this->pdo);
+        $model = new Condicion();
         $actualizado = $model->actualizarCondicion($id, $nombre, $descripcion);
 
         if ($actualizado) {
@@ -790,7 +785,7 @@ class ApiController {
             $this->jsonResponse("error", "ID de condición no válido");
         }
 
-        $model = new Condicion($this->pdo);
+        $model = new Condicion();
         $eliminado = $model->eliminarCondicion($id);
 
         if ($eliminado) {
@@ -807,14 +802,14 @@ class ApiController {
             code(400);
             $this->jsonResponse("error", "La id no es valida");
         }
-        $pnfModel = new NucleoPNF($this->pdo);
+        $pnfModel = new NucleoPNF();
         $pnfs = $pnfModel->obtenerPnfsPorNucleo((int)$id);
         code(200);
         $this->jsonResponse("ok", "Pnfs enviados", $pnfs ?: []);
     }
 
     public function buscarPnfs() {
-        $model = new Usuario($this->pdo);
+        $model = new Usuario();
         $pnfs = $model->buscarPnfs();
         code(200);
         $this->jsonResponse("ok", "Pnfs obtenidos", $pnfs ?: []);
@@ -844,7 +839,7 @@ class ApiController {
             $this->jsonResponse("error", "El nombre del núcleo solo puede contener letras y espacios");
         }
 
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         $resultado = $model->registrarNucleo($nombre);
 
         if ($resultado === "duplicado") {
@@ -884,7 +879,7 @@ class ApiController {
             $this->jsonResponse('error', 'El nombre del núcleo no puede contener números ni caracteres especiales.');
         }
 
-        $NucleoModelo = new NucleoPNF($this->pdo);
+        $NucleoModelo = new NucleoPNF();
         $resultado = $NucleoModelo->actualizarNucleo($id, $nombre);
 
         if ($resultado["message"] === "duplicado") {
@@ -911,7 +906,7 @@ class ApiController {
             $this->jsonResponse("error", "ID de núcleo inválido");
         }
 
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         if ($model->desactivarNucleo($id)) {
             code(200);
             $this->jsonResponse("ok", "¡Núcleo eliminado con éxito!");
@@ -945,7 +940,7 @@ class ApiController {
             $this->jsonResponse("error", "El nombre del PNF solo puede contener letras y espacios");
         }
 
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         $resultado = $model->registrarPnf($nombre);
 
         if ($resultado === "duplicado") {
@@ -985,7 +980,7 @@ class ApiController {
             $this->jsonResponse("error", "El nombre del PNF no puede contener números ni caracteres especiales");
         }
 
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         $resultado = $model->actualizarPnf($id, $nombre);
 
         if ($resultado === "duplicado") {
@@ -1011,7 +1006,7 @@ class ApiController {
             $this->jsonResponse("error", "ID de PNF inválido");
         }
 
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         if ($model->desactivarPnf($id)) {
             code(200);
             $this->jsonResponse("ok", "¡PNF eliminado con éxito!");
@@ -1037,7 +1032,7 @@ class ApiController {
             $this->jsonResponse("error", "Debe seleccionar un núcleo y una carrera válidos");
         }
     
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         $resultado = $model->registrarOferta($nucleoId, $pnfId);
     
         if ($resultado === "duplicado") {
@@ -1062,7 +1057,7 @@ class ApiController {
         $nucleoId = isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0;
         $pnfId    = isset($data['id_pnf']) ? (int)$data['id_pnf'] : 0;
     
-        $model = new NucleoPNF($this->pdo);
+        $model = new NucleoPNF();
         $resultado = false;
 
         if ($nucleoId > 0 && $pnfId > 0) {

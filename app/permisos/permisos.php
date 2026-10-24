@@ -7,13 +7,16 @@ use app\controller\ViewController;
 use app\controller\ApiController;
 use app\model\Consulta;
 use app\model\Usuario;
+use app\model\Permisos;
 use app\config\Config;
 
-$pdo = Config::conexion(); 
-$controllerConsulta = new ConsultaController($pdo);
-$controllerOferta = new NucleoPNFController($pdo);
 
-$userModel = new Usuario($pdo);
+$controllerConsulta = new ConsultaController();
+$controllerOferta = new NucleoPNFController();
+
+$userModel = new Usuario();
+$permisoModel = new Permisos();
+
 $userModel->sincronizarPermisos([
     "gestionar_usuarios" => "Permite registrar, actualizar y eliminar usuarios",
     "ver_consultas" => "Permite ver y buscar el historial de consultas médicas",
@@ -27,13 +30,11 @@ $userModel->sincronizarPermisos([
 
 try {
     $pIdsToRemove = [];
-    $stmtP = $pdo->prepare("SELECT id_permiso FROM lista_permisos WHERE nombre_permiso IN ('ver_consultas', 'realizar_consulta', 'modificar_consulta')");
-    $stmtP->execute();
-    $pIdsToRemove = $stmtP->fetchAll(PDO::FETCH_COLUMN);
+    
+    $pIdsToRemove = $permisoModel->id();
     if (!empty($pIdsToRemove)) {
         $inClause = implode(',', array_map('intval', $pIdsToRemove));
-        $stmtDel = $pdo->prepare("DELETE FROM roles_permisos WHERE id_rol = 4 AND id_permiso IN ($inClause)");
-        $stmtDel->execute();
+        $permisoModel->deleteId($inClause);
     }
 
     $insertMap = [
@@ -44,18 +45,7 @@ try {
 
     foreach ($insertMap as $roleId => $permNames) {
         foreach ($permNames as $pName) {
-            $stmtId = $pdo->prepare("SELECT id_permiso FROM lista_permisos WHERE nombre_permiso = :name");
-            $stmtId->execute([':name' => $pName]);
-            $idPerm = $stmtId->fetchColumn();
-            if ($idPerm) {
-                $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM roles_permisos WHERE id_rol = :role_id AND id_permiso = :id_perm");
-                $stmtCheck->execute([':role_id' => $roleId, ':id_perm' => $idPerm]);
-                $stmtCheck->fetchColumn();
-                if ($stmtCheck->fetchColumn() == 0) {
-                    $stmtIns = $pdo->prepare("INSERT INTO roles_permisos (id_rol, id_permiso) VALUES (:role_id, :id_perm)");
-                    $stmtIns->execute([':role_id' => $roleId, ':id_perm' => $idPerm]);
-                }
-            }
+            $permisoModel->asignarPermisoARol($roleId, $pName);
         }
     }
 } catch (Exception $e) {
@@ -194,6 +184,6 @@ if ($paginaActual === "buscar_condiciones_paciente") {
 
 $todosLosUsuarios = [];
 if (isset($_SESSION['cedula']) && $tieneGestionarUsuarios) {
-    $modeloConsulta = new Consulta($pdo);
+    $modeloConsulta = new Consulta();
     $todosLosUsuarios = $modeloConsulta->obtenerTodosLosUsuarios();
 }

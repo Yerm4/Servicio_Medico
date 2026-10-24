@@ -4,23 +4,18 @@ namespace app\model;
 
 use PDO;
 use PDOException;
+use app\model\BaseModel;
 
-class NucleoPNF {
-    private $pdo;
-
-    public function __construct($conexion) {
-        $this->pdo = $conexion;
-    }
+class NucleoPNF extends BaseModel {
     
-      private function response($status, $message = "", $data = null, $redirect = null) {
-        return    [
+    private function response($status, $message = "", $data = null, $redirect = null) {
+        return [
         "status" => $status,
         "message" => $message,
         "data" => $data,
         "redirect" => $redirect
         ];
     }
-
 
     private function existeNucleo($nombre) {
         $sql = "SELECT id_nucleo, estado FROM lista_nucleos
@@ -38,7 +33,6 @@ class NucleoPNF {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-
     private function existeNucleoParaActualizar($nombre, $id_actual) {
         $sql = "SELECT COUNT(*) FROM lista_nucleos
                 WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
@@ -51,7 +45,6 @@ class NucleoPNF {
         return $stmt->fetchColumn() > 0;
     }
 
-    
     private function existePnfParaActualizar($nombre, $id_actual) {
         // Corregido: Agregada la limpieza de espacios REPLACE y la cláusula id_pnf <> :id
         $sql = "SELECT COUNT(*) FROM lista_pnfs 
@@ -64,7 +57,6 @@ class NucleoPNF {
         ]);
         return $stmt->fetchColumn() > 0;
     }
-
 
     public function obtenerNucleos() {
         try {
@@ -113,7 +105,6 @@ class NucleoPNF {
         $stmt->execute([':id' => $id]);
         return $this->response('ok', 'Nucleo Eliminado');
     }
-
 
     public function obtenerPNFS() {
         try {
