@@ -32,11 +32,7 @@ $viewController = new ViewController();
 $apiController = new ApiController();
 
 $method = !empty($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "";
-
-$rutasApi = require __DIR__ . "/../app/api.php";
-if (!is_array($rutasApi)) {
-    global $rutasApi;
-}
+$rutasApi = require __DIR__."/../app/api.php";
 
 if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
     $ruta = trim($_GET["ruta"], "/");
@@ -46,7 +42,6 @@ if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
 
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
-$GLOBALS['paginaActual'] = $paginaActual;
 
 if ($paginaActual === "logout") {
     session_unset();
@@ -162,8 +157,7 @@ $paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
 if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
     $metodoController = $rutasVistas[$paginaActual];
-    $viewController->$metodoController($partesRuta);
-    
+    $viewController->$metodoController($partesRuta); 
 } else {
     include __DIR__."/../app/views/404.php";
 }

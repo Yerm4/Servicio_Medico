@@ -1,5 +1,4 @@
 <?php 
-$paginaActual = $paginaActual ?? ($GLOBALS['paginaActual'] ?? ''); 
 global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneGestionarCondiciones, $tieneGestionarOferta;
 $tGestionarUsuarios = $tieneGestionarUsuarios ?? ($GLOBALS['tieneGestionarUsuarios'] ?? false);
 $tVerConsultas = $tieneVerConsultas ?? ($GLOBALS['tieneVerConsultas'] ?? false);

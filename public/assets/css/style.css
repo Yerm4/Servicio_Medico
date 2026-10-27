@@ -162,10 +162,15 @@ main {
 
 .action-card__input {
     padding: 8px;
-    border-radius: 5px;
-    background-color: #eee;
-    border: 1px solid #999;
+    border-radius: 10px 5px 5px 5px;
+    background-color: #fff;
+    border: 1px solid #ccc;
     outline: none;
+    transition: border .2s ease
+}
+
+.action-card__input:focus, .action-card__input:hover {
+    border: 1px solid #999;
 }
 
 .action-card__select {
@@ -284,7 +289,7 @@ main.perfil {
 
 .section-1--perfil {
     background-color: #fff;
-    padding: 10px;
+    padding: 20px;
     outline: 2px solid var(--color-blue);
     border-radius: 20px 10px 10px 10px;
     display: flex;
@@ -1188,3 +1193,4 @@ tr, th, td {
 .bg-red {
     background-color: oklch(1 0.38 30) !important;
 }
+  

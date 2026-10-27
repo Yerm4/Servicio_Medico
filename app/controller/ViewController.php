@@ -53,10 +53,9 @@ class ViewController {
         $userModel = new Usuario();
         $tipos = $userModel->obtenerTipos();
 
-        $paginaActual = 'perfil';
         $inputs = isset($_SESSION['inputs']) ? $_SESSION['inputs'] : [];
         unset($_SESSION['inputs']);
-        
+        $paginaActual = 'perfil';
         include __DIR__ . "/../views/perfil.php";
     }
 
@@ -70,7 +69,7 @@ class ViewController {
         
         $tipos = $userModel->obtenerTipos();
         $data = $userModel->consultarUsuarios();
-
+        $paginaActual = 'usuarios';
         if ($data["status"] === "ok") {
             $usuariosEncontrados = $data["data"];
             include __DIR__ . "/../views/usuarios.php";
@@ -91,7 +90,7 @@ class ViewController {
         $tipos = $userModel->obtenerTipos();
         $data = $userModel->consultarUsuarios();
         $consultasRecientes = $consultaModel->obtenerConsultasRecientes(20);
-        
+        $paginaActual = 'consultas';
         include __DIR__ . "/../views/consultas.php";
     }
 
@@ -102,7 +101,7 @@ class ViewController {
         $permisos = [];
         $rolePermMap = [];
         $condicionesRegistradas = [];
-
+        
         if ($tieneGestionarRolesPermisos) {
             $roles = $userModel->obtenerRoles();
             $permisos = $userModel->obtenerPermisos();
