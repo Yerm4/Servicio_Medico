@@ -12,7 +12,7 @@ use app\controller\NucleoPNFController;
 use app\controller\ViewController;
 
 class ApiController {
-
+    private $hola;
     private function jsonResponse($status, $message = "", $data = null, $redirect = null) {
         header("Content-Type: application/json");
         echo json_encode([
@@ -842,7 +842,7 @@ class ApiController {
         $model = new NucleoPNF();
         $resultado = $model->registrarNucleo($nombre);
 
-        if ($resultado === "duplicado") {
+        if ($resultado["message"] === "duplicado") {
             code(400);
             $this->jsonResponse("error", "El núcleo ya se encuentra registrado");
         } elseif ($resultado) {
@@ -943,7 +943,7 @@ class ApiController {
         $model = new NucleoPNF();
         $resultado = $model->registrarPnf($nombre);
 
-        if ($resultado === "duplicado") {
+        if ($resultado['message'] === "duplicado") {
             code(400);
             $this->jsonResponse("error", "El PNF ya se encuentra registrado");
         } elseif ($resultado) {

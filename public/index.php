@@ -101,6 +101,8 @@ $rutasVistas = [
     "configuracion"  => "showConfiguracion"
 ];
 
+$objeto = new ApiController();
+
 include_once __DIR__."/../app/permisos/permisos.php";
 
 $formAccion = $_POST["form"] ?? null;
@@ -152,7 +154,6 @@ if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
     }
 }
-
 $paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
 if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {

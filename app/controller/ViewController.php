@@ -56,6 +56,7 @@ class ViewController {
         $inputs = isset($_SESSION['inputs']) ? $_SESSION['inputs'] : [];
         unset($_SESSION['inputs']);
         $paginaActual = 'perfil';
+        
         include __DIR__ . "/../views/perfil.php";
     }
 

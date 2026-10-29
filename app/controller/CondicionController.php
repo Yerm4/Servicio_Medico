@@ -28,7 +28,6 @@ class CondicionController {
         header("Location: configuracion");
         exit();
     }
-
     public function actualizar() {
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         $nombre = isset($_POST['nombre_condicion']) ? trim($_POST['nombre_condicion']) : '';

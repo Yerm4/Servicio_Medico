@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const nombrePnf = btnEditarPnf.getAttribute('data-nombre');
             const modalEditar = document.getElementById('modalActualizarPNF');
 
-            if (modalEditar) {
+            if (modalEditar) {  
                 document.getElementById('edit_id_pnf').value = idPnf;
                 document.getElementById('edit_nombre_pnf').value = nombrePnf || '';
                 modalEditar.showModal();
@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const datos = Object.fromEntries(new FormData(this).entries());
             const modal = document.getElementById(idModal);
-
             try {
                 const result = await apiFetch('api/pnfs', {
                     method: metodo,
