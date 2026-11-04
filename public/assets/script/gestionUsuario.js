@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputBuscar && cuerpoTabla) {
         inputBuscar.addEventListener('input', async () => {
             const buscar = inputBuscar.value.trim();
-
+            
             try {
                 const result = await apiFetch(`api/users/buscar/${buscar || 0}`);
                 const usuarios = result.data;

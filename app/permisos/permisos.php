@@ -2,7 +2,7 @@
 
 use app\controller\ConsultaController;
 use app\controller\CondicionController;
-use app\controller\NucleoPNFController;
+use app\controller\NucleoPnfController;
 use app\controller\ViewController;
 use app\controller\ApiController;
 use app\model\Consulta;
@@ -12,7 +12,7 @@ use app\config\Config;
 
 
 $controllerConsulta = new ConsultaController();
-$controllerOferta = new NucleoPNFController();
+$controllerOferta = new NucleoPnfController();
 
 $userModel = new Usuario();
 $permisoModel = new Permisos();

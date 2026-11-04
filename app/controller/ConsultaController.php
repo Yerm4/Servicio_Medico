@@ -2,10 +2,12 @@
 namespace app\controller;
 
 use app\model\Consulta;
+use app\interface\Inter;
 use Exception;
 
 class ConsultaController {
 
+    
     public function registrar() {
         try {
             $cedulaPaciente = isset($_POST['cedula_paciente']) ? trim($_POST['cedula_paciente']) : '';

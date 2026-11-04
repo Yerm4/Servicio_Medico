@@ -6,43 +6,15 @@ use app\model\NucleoPNF;
 use app\model\Usuario;
 use app\model\Consulta;
 use app\model\Condicion;
+use app\interface\Inter;
 use app\controller\ConsultaController;
 use app\controller\CondicionController;
-use app\controller\NucleoPNFController;
+use app\controller\NucleoPnfController;
 use app\controller\ViewController;
+use app\controller\BaseController;
 
-class ApiController {
-    private $hola;
-    private function jsonResponse($status, $message = "", $data = null, $redirect = null) {
-        header("Content-Type: application/json");
-        echo json_encode([
-            "status" => $status,
-            "message" => $message,
-            "data" => $data,
-            "redirect" => $redirect
-        ]); 
-        exit();
-    }
-
-    private function checkPerm(string $permiso): bool {
-        if (empty($_SESSION['cedula'])) {
-            return false;
-        }
-        $userModel = new Usuario();
-        return $userModel->tienePermiso($_SESSION['cedula'], $permiso);
-    }
-
-    private function getRequestData(): array {
-        $raw = file_get_contents("php://input");
-        $jsonData = json_decode($raw, true);
-        if (is_array($jsonData)) {
-            return $jsonData;
-        }
-        if (!empty($_POST)) {
-            return $_POST;
-        }
-        return [];
-    }
+class ApiController extends BaseController {
+    
 
     public function login() {
         $data = $this->getRequestData();

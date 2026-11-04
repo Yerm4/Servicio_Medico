@@ -1,6 +1,9 @@
+<?php
+
 namespace app\controller;
 
 use app\model\Usuario;
+use app\interface\ContInterface;
 
 class BaseController {
     
