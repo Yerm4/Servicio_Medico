@@ -3,9 +3,9 @@
 namespace app\controller;
 
 use app\model\Usuario;
-use app\interface\ContInterface;
+use app\face\ContFace;
 
-class BaseController {
+abstract class BaseController {
     
     protected function jsonResponse($status, $message = "", $data = null, $redirect = null) {
         header("Content-Type: application/json; charset=UTF-8");

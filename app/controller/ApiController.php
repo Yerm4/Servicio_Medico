@@ -6,7 +6,6 @@ use app\model\NucleoPNF;
 use app\model\Usuario;
 use app\model\Consulta;
 use app\model\Condicion;
-use app\interface\Inter;
 use app\controller\ConsultaController;
 use app\controller\CondicionController;
 use app\controller\NucleoPnfController;
@@ -14,7 +13,6 @@ use app\controller\ViewController;
 use app\controller\BaseController;
 
 class ApiController extends BaseController {
-    
 
     public function login() {
         $data = $this->getRequestData();

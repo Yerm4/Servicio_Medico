@@ -2,7 +2,6 @@
 namespace app\controller;
 
 use app\model\Consulta;
-use app\interface\Inter;
 use Exception;
 
 class ConsultaController {
