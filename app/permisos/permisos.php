@@ -108,8 +108,6 @@ if (!isset($_SESSION['cedula'])) {
     }
 }
 
-
-
 if (isset($_SESSION['cedula'])) {
     $currentUa = $_SERVER['HTTP_USER_AGENT'] ?? '';
     if (!isset($_SESSION['user_agent']) || $_SESSION['user_agent'] !== $currentUa) {
@@ -131,14 +129,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-
 if ($paginaActual === "buscar_patologia") {
     if (!checkPerm("ver_consultas", $userModel)) {
         header('Content-Type: application/json');
         echo json_encode([]);
         exit();
     }
-    $controllerConsulta->buscarPatologiaAjax();
+    $controllerConsulta->buscarPatologia();
     exit();
 }
 
@@ -148,7 +145,7 @@ if ($paginaActual === "buscar_paciente") {
         echo json_encode([]);
         exit();
     }
-    $controllerConsulta->buscarPacienteAjax();
+    $controllerConsulta->buscarPaciente();
     exit();
 }
 
@@ -158,7 +155,7 @@ if ($paginaActual === "buscar_consultas_paciente") {
         echo json_encode([]);
         exit();
     }
-    $controllerConsulta->obtenerConsultasPacienteAjax();
+    $controllerConsulta->obtenerConsultasPaciente();
     exit();
 }
 
@@ -168,7 +165,7 @@ if ($paginaActual === "buscar_condicion") {
         echo json_encode([]);
         exit();
     }
-    $controllerConsulta->buscarCondicionAjax();
+    $controllerConsulta->buscarCondicion();
     exit();
 }
 
@@ -178,7 +175,7 @@ if ($paginaActual === "buscar_condiciones_paciente") {
         echo json_encode([]);
         exit();
     }
-    $controllerConsulta->obtenerCondicionesPacienteAjax();
+    $controllerConsulta->obtenerCondicionesPaciente();
     exit();
 }
 

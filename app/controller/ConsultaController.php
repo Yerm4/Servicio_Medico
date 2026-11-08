@@ -1,492 +1,496 @@
 <?php
+
 namespace app\controller;
 
 use app\model\Consulta;
-use Exception;
+use app\controller\BaseController;
+use app\model\Usuario;
+use app\model\Condicion;
+use app\controller\CondicionController;
+use app\controller\NucleoPnfController;
+use app\controller\UserController;
 
-class ConsultaController {
+class ConsultaController extends BaseController {
 
-    
-    public function registrar() {
-        try {
-            $cedulaPaciente = isset($_POST['cedula_paciente']) ? trim($_POST['cedula_paciente']) : '';
-            $motivo         = isset($_POST['motivo_de_visita']) ? trim($_POST['motivo_de_visita']) : '';
-            $observaciones  = isset($_POST['observaciones']) ? trim($_POST['observaciones']) : '';
-            $medicamento    = isset($_POST['medicamento_suministrado']) ? trim($_POST['medicamento_suministrado']) : '';
-            
-            $sintomas       = isset($_POST['sintomas']) ? $_POST['sintomas'] : [];
-            if (!is_array($sintomas)) {
-                $sintomas = array_filter(array_map('trim', explode(',', $sintomas)));
-            }
+    public function getConsultas($id = null) {
+        if (empty($_SESSION['cedula'])) {
+            code(401);
+            $this->jsonResponse("error", "Debe iniciar sesión");
+        }
 
-            $diagnosticos   = isset($_POST['diagnosticos']) ? $_POST['diagnosticos'] : [];
-            if (!is_array($diagnosticos)) {
-                $diagnosticos = array_filter(array_map('trim', explode(',', $diagnosticos)));
-            }
+        if (!$this->checkPerm("ver_consultas")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para ver consultas");
+        }
 
-            $condiciones    = isset($_POST['condiciones']) ? $_POST['condiciones'] : [];
-            if (!is_array($condiciones)) {
-                $condiciones = array_filter(array_map('intval', explode(',', $condiciones)));
-            }
-
-            $cedulaMedico = isset($_SESSION['cedula']) ? $_SESSION['cedula'] : '';
-
-            if (empty($cedulaPaciente) || empty($motivo) || empty($cedulaMedico)) {
-                throw new Exception("La consulta no fue registrada, revisa que todos los campos estén llenos");
-            }
-
-            $modeloConsulta = new Consulta();
-            $resultado = $modeloConsulta->registrarConsulta($cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento);
-
-            if ($resultado === true) {
-                unset($_SESSION['inputs']);
-                $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "La consulta fue registrada exitosamente";
-                header("Location: perfil");
-                exit();
+        $modeloConsulta = new Consulta();
+        $idConsulta = $id ?? (isset($_GET['id']) ? (int)$_GET['id'] : null);
+        if ($idConsulta !== null && $idConsulta > 0) {
+            $consulta = $modeloConsulta->obtenerConsultaPorId($idConsulta);
+            if ($consulta) {
+                code(200);
+                $this->jsonResponse("ok", "Consulta obtenida con éxito", $consulta);
             } else {
-                throw new Exception("La consulta no fue registrada, revisa que todos los campos estén llenos");
+                code(404);
+                $this->jsonResponse("error", "No se encontró la consulta médica");
             }
-        } catch (Exception $e) {
-            $_SESSION['inputs'] = $_POST;
-            $_SESSION["registro_status"] = "error";
-            $_SESSION["registro_msg"] = $e->getMessage();
-            header("Location: perfil");
-            exit();
         }
-    }
 
-    public function buscarPatologiaAjax() {
-        header('Content-Type: application/json');
-        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-        if (strlen($q) < 2) {
-            echo json_encode([]);
-            exit();
-        }
-        $modeloConsulta = new Consulta();
-        $resultados = $modeloConsulta->buscarPatologia($q);
-        echo json_encode($resultados);
-        exit();
-    }
+        $query = isset($_GET['query']) ? trim($_GET['query']) : (isset($_GET['q']) ? trim($_GET['q']) : '');
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
 
-    public function buscarPacienteAjax() {
-        header('Content-Type: application/json');
-        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-        if (strlen($q) < 2) {
-            echo json_encode([]);
-            exit();
-        }
-        $modeloConsulta = new Consulta();
-        $resultados = $modeloConsulta->buscarUsuario($q);
-        echo json_encode($resultados);
-        exit();
-    }
-
-    public function actualizar() {
-        try {
-            $idConsulta    = isset($_POST['id_consulta']) ? (int)$_POST['id_consulta'] : 0;
-            $motivo        = isset($_POST['motivo_de_visita']) ? trim($_POST['motivo_de_visita']) : '';
-            $observaciones = isset($_POST['observaciones']) ? trim($_POST['observaciones']) : '';
-            $medicamento   = isset($_POST['medicamento_suministrado']) ? trim($_POST['medicamento_suministrado']) : '';
-
-            $sintomas      = isset($_POST['sintomas']) ? $_POST['sintomas'] : [];
-            if (!is_array($sintomas)) {
-                $sintomas = array_filter(array_map('trim', explode(',', $sintomas)));
-            }
-
-            $diagnosticos  = isset($_POST['diagnosticos']) ? $_POST['diagnosticos'] : [];
-            if (!is_array($diagnosticos)) {
-                $diagnosticos = array_filter(array_map('trim', explode(',', $diagnosticos)));
-            }
-
-            $condiciones   = isset($_POST['condiciones']) ? $_POST['condiciones'] : [];
-            if (!is_array($condiciones)) {
-                $condiciones = array_filter(array_map('intval', explode(',', $condiciones)));
-            }
-
-            if ($idConsulta <= 0 || empty($motivo)) {
-                throw new Exception("La consulta no fue actualizada, revisa que todos los campos estén llenos");
-            }
-
-            $modeloConsulta = new Consulta();
-            $resultado = $modeloConsulta->actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento);
-
-            if ($resultado === true) {
-                unset($_SESSION['inputs']);
-                $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "La consulta fue actualizada exitosamente";
-                header("Location: perfil");
-                exit();
-            } else {
-                throw new Exception("La consulta no fue actualizada, revisa que todos los campos estén llenos");
-            }
-        } catch (Exception $e) {
-            $_SESSION['inputs'] = $_POST;
-            $_SESSION["registro_status"] = "error";
-            $_SESSION["registro_msg"] = $e->getMessage();
-            header("Location: perfil");
-            exit();
-        }
-    }
-
-    public function obtenerConsultasPacienteAjax() {
-        header('Content-Type: application/json');
-        $cedula = isset($_GET['cedula']) ? trim($_GET['cedula']) : '';
-        if (empty($cedula)) {
-            echo json_encode([]);
-            exit();
-        }
-        $modeloConsulta = new Consulta();
-        $resultados = $modeloConsulta->obtenerConsultasPorPaciente($cedula);
-        echo json_encode($resultados);
-        exit();
-    }
-
-    public function buscarCondicionAjax() {
-        header('Content-Type: application/json');
-        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-        if (strlen($q) < 2) {
-            echo json_encode([]);
-            exit();
-        }
-        $modeloConsulta = new Consulta();
-        $resultados = $modeloConsulta->buscarCondicion($q);
-        echo json_encode($resultados);
-        exit();
-    }
-
-    public function obtenerCondicionesPacienteAjax() {
-        header('Content-Type: application/json');
-        $cedula = isset($_GET['cedula']) ? trim($_GET['cedula']) : '';
-        if (empty($cedula)) {
-            echo json_encode([]);
-            exit();
-        }
-        $modeloConsulta = new Consulta();
-        $resultados = $modeloConsulta->obtenerCondicionesPaciente($cedula);
-        echo json_encode($resultados);
-        exit();
-    }
-
-    public function buscarConsultasAjax() {
-        header('Content-Type: application/json');
-        $query = isset($_POST['query']) ? trim($_POST['query']) : '';
-        $modeloConsulta = new Consulta();
         if (empty($query)) {
-            $resultados = $modeloConsulta->obtenerConsultasRecientes(10);
+            $resultados = $modeloConsulta->obtenerConsultasRecientes($limit > 0 ? $limit : 10);
         } else {
-            $resultados = $modeloConsulta->buscarConsultas($query, 20);
+            $resultados = $modeloConsulta->buscarConsultas($query, $limit > 0 ? $limit : 20);
         }
-        echo json_encode($resultados);
-        exit();
+
+        code(200);
+        $this->jsonResponse("ok", "Consultas obtenidas con éxito", $resultados ?: []);
     }
 
-    public function obtenerConsultaPorIdAjax() {
-        header('Content-Type: application/json');
-        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-        if ($id <= 0) {
-            echo json_encode(['error' => 'ID de consulta inválido.']);
-            exit();
+    public function buscarConsultas($id = null) {
+        $this->getConsultas($id);
+    }
+
+    public function obtenerConsulta($id = null) {
+        $this->getConsultas($id);
+    }
+
+    public function registroConsulta() {
+        if (empty($_SESSION['cedula'])) {
+            code(401);
+            $this->jsonResponse("error", "Debe iniciar sesión");
         }
+
+        if (!$this->checkPerm("realizar_consulta")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para registrar consultas");
+        }
+
+        $data = $this->getRequestData();
+
+        $cedulaPaciente = cleanValue($data, 'cedula_paciente') ?? cleanValue($data, 'cedula');
+        $motivo         = cleanValue($data, 'motivo_de_visita') ?? cleanValue($data, 'motivo');
+        $observaciones  = cleanValue($data, 'observaciones') ?? '';
+        $medicamento    = cleanValue($data, 'medicamento_suministrado') ?? cleanValue($data, 'medicamento') ?? '';
+
+        $sintomas = $data['sintomas'] ?? [];
+        if (!is_array($sintomas)) {
+            $sintomas = array_filter(array_map('trim', explode(',', (string)$sintomas)));
+        }
+
+        $diagnosticos = $data['diagnosticos'] ?? [];
+        if (!is_array($diagnosticos)) {
+            $diagnosticos = array_filter(array_map('trim', explode(',', (string)$diagnosticos)));
+        }
+
+        $condiciones = $data['condiciones'] ?? [];
+        if (!is_array($condiciones)) {
+            $condiciones = array_filter(array_map('intval', explode(',', (string)$condiciones)));
+        }
+
+        $cedulaMedico = $_SESSION['cedula'] ?? '';
+
+        if (empty($cedulaPaciente) || empty($motivo) || empty($cedulaMedico)) {
+            code(400);
+            $this->jsonResponse("error", "La consulta no fue registrada, revisa que todos los campos requeridos estén llenos");
+        }
+
         $modeloConsulta = new Consulta();
-        $consulta = $modeloConsulta->obtenerConsultaPorId($id);
-        if ($consulta) {
-            echo json_encode($consulta);
+        $resultado = $modeloConsulta->registrarConsulta(
+            $cedulaPaciente, $cedulaMedico, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento
+        );
+
+        if ($resultado === true) {
+            code(201);
+            $this->jsonResponse("ok", "La consulta fue registrada exitosamente");
         } else {
-            echo json_encode(['error' => 'No se encontró la consulta médica.']);
+            code(400);
+            $this->jsonResponse("error", "La consulta no pudo ser registrada");
         }
-        exit();
+    }
+
+    public function actualizarConsulta() {
+        if (empty($_SESSION['cedula'])) {
+            code(401);
+            $this->jsonResponse("error", "Debe iniciar sesión");
+        }
+
+        if (!$this->checkPerm("modificar_consulta")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para actualizar consultas");
+        }
+
+        $data = $this->getRequestData();
+
+        $idConsulta    = isset($data['id_consulta']) ? (int)$data['id_consulta'] : (isset($data['id']) ? (int)$data['id'] : 0);
+        $motivo        = cleanValue($data, 'motivo_de_visita') ?? cleanValue($data, 'motivo');
+        $observaciones = cleanValue($data, 'observaciones') ?? '';
+        $medicamento   = cleanValue($data, 'medicamento_suministrado') ?? cleanValue($data, 'medicamento') ?? '';
+
+        $sintomas = $data['sintomas'] ?? [];
+        if (!is_array($sintomas)) {
+            $sintomas = array_filter(array_map('trim', explode(',', (string)$sintomas)));
+        }
+
+        $diagnosticos = $data['diagnosticos'] ?? [];
+        if (!is_array($diagnosticos)) {
+            $diagnosticos = array_filter(array_map('trim', explode(',', (string)$diagnosticos)));
+        }
+
+        $condiciones = $data['condiciones'] ?? [];
+        if (!is_array($condiciones)) {
+            $condiciones = array_filter(array_map('intval', explode(',', (string)$condiciones)));
+        }
+
+        if ($idConsulta <= 0 || empty($motivo)) {
+            code(400);
+            $this->jsonResponse("error", "ID de consulta y motivo son obligatorios");
+        }
+
+        $modeloConsulta = new Consulta();
+        $resultado = $modeloConsulta->actualizarConsulta(
+            $idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones, $medicamento
+        );
+
+        if ($resultado === true) {
+            code(200);
+            $this->jsonResponse("ok", "La consulta fue actualizada exitosamente");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "No se pudo actualizar la consulta");
+        }
     }
 
     public function generarReporteMorbilidad() {
-        try {
-            $fechaInicio = isset($_POST['fecha_inicio']) ? trim($_POST['fecha_inicio']) : '';
-            $fechaFin = isset($_POST['fecha_fin']) ? trim($_POST['fecha_fin']) : '';
+        if (empty($_SESSION['cedula'])) {
+            code(401);
+            $this->jsonResponse("error", "Debe iniciar sesión");
+        }
 
-            if (empty($fechaInicio) || empty($fechaFin)) {
-                throw new \Exception("Debe especificar la fecha de inicio y la fecha de fin.");
-            }
-            if (strtotime($fechaInicio) > strtotime($fechaFin)) {
-                throw new \Exception("La fecha de inicio no puede ser posterior a la fecha de fin.");
-            }
+        if (!$this->checkPerm("generar_reportes")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para generar reportes");
+        }
 
+        $data = $this->getRequestData();
+        $fechaInicio = cleanValue($data, 'fecha_inicio') ?? ($_GET['fecha_inicio'] ?? '');
+        $fechaFin    = cleanValue($data, 'fecha_fin') ?? ($_GET['fecha_fin'] ?? '');
+
+        if (empty($fechaInicio) || empty($fechaFin)) {
+            code(400);
+            $this->jsonResponse("error", "Debe especificar la fecha de inicio y la fecha de fin.");
+        }
+
+        if (strtotime($fechaInicio) > strtotime($fechaFin)) {
+            code(400);
+            $this->jsonResponse("error", "La fecha de inicio no puede ser posterior a la fecha de fin.");
+        }
+
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        if (str_contains($accept, 'application/json') || isset($_GET['json'])) {
             $modeloConsulta = new Consulta();
             $datos = $modeloConsulta->obtenerDatosReporteMorbilidad($fechaInicio, $fechaFin);
-            $pacientesUnicos = count(array_unique(array_column($datos['registros'], 'paciente_cedula')));
+            code(200);
+            $this->jsonResponse("ok", "Datos de reporte de morbilidad", $datos);
+        }
 
-            $nombreGenerador = 'Médico de Guardia';
-            
-            $userLogged = $modeloConsulta->userIsLogged();
-            if ($userLogged) {
-                $nombreGenerador = $userLogged['nombre'] . ' ' . $userLogged['apellido'];
-            }
+        $_POST['fecha_inicio'] = $fechaInicio;
+        $_POST['fecha_fin'] = $fechaFin;
+        
+        // Nota: Si necesitas renderizar una vista tradicional para el reporte, 
+        // puedes invocar al ViewController correspondiente aquí en lugar de llamarte a ti mismo.
+        exit();
+    }
 
-            $fechaInicioFmt = date('d/m/Y', strtotime($fechaInicio));
-            $fechaFinFmt = date('d/m/Y', strtotime($fechaFin));
-            $fechaEmision = date('d/m/Y H:i:s');
+    public function buscarPatologia() {
+        if (!$this->checkPerm("ver_consultas")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos");
+        }
 
-            $logoPath = __DIR__ . '/../../public/assets/media/img/uptaeb.jpg';
-            $logoHtml = '<div style="width:55px;height:55px;background:#1e3a8a;color:#fff;font-weight:bold;font-size:16px;line-height:55px;text-align:center;border-radius:4px;">UPTAEB</div>';
-            if (file_exists($logoPath)) {
-                $ld = base64_encode(file_get_contents($logoPath));
-                $logoHtml = '<img src="data:image/jpeg;base64,' . $ld . '" style="height:55px;width:auto;max-width:80px;">';
-            }
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        if (strlen($q) < 2) {
+            $this->jsonResponse("ok", "Resultados", []);
+        }
 
-            $rgbColores = [
-                [59,130,246], [16,185,129], [245,158,11],
-                [239,68,68], [139,92,246], [100,116,139],
-                [236,72,153], [20,184,166]
-            ];
-            $hexColores = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#64748b','#ec4899','#14b8a6'];
+        $modeloConsulta = new Consulta();
+        $resultados = $modeloConsulta->buscarPatologia($q);
+        $this->jsonResponse("ok", "Resultados", $resultados ?: []);
+    }
 
-            $prepararDatosPastel = function($datosAgrupados, $valKey, $labelKey, $maxSlices = 5) {
-                if (empty($datosAgrupados)) return [];
-                $totalVal = 0;
-                foreach ($datosAgrupados as $d) $totalVal += (int)$d[$valKey];
-                if ($totalVal === 0) return [];
+    public function buscarPaciente() {
+        if (!$this->checkPerm("ver_consultas")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos");
+        }
 
-                $sorted = $datosAgrupados;
-                usort($sorted, function($a, $b) use ($valKey) {
-                    return (int)$b[$valKey] <=> (int)$a[$valKey];
-                });
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        if (strlen($q) < 2) {
+            $this->jsonResponse("ok", "Resultados", []);
+        }
 
-                $result = [];
-                $otherSum = 0;
-                for ($i = 0; $i < count($sorted); $i++) {
-                    if ($i < $maxSlices) {
-                        $val = (int)$sorted[$i][$valKey];
-                        $result[] = [
-                            'label' => $sorted[$i][$labelKey],
-                            'value' => $val,
-                            'pct' => round(($val / $totalVal) * 100)
-                        ];
-                    } else {
-                        $otherSum += (int)$sorted[$i][$valKey];
-                    }
-                }
-                if ($otherSum > 0) {
-                    $result[] = [
-                        'label' => 'Otros',
-                        'value' => $otherSum,
-                        'pct' => round(($otherSum / $totalVal) * 100)
-                    ];
-                }
-                return $result;
-            };
+        $modeloConsulta = new Consulta();
+        $resultados = $modeloConsulta->buscarUsuario($q);
+        $this->jsonResponse("ok", "Resultados", $resultados ?: []);
+    }
 
-            $generarPastelPNG = function($chartData) use ($rgbColores) {
-                $size = 400;
-                $img = imagecreatetruecolor($size, $size);
-                $white = imagecolorallocate($img, 255, 255, 255);
-                imagefill($img, 0, 0, $white);
+    public function obtenerConsultasPaciente($cedula = null) {
+        if (!$this->checkPerm("ver_consultas")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos");
+        }
 
-                if (empty($chartData)) {
-                    $gris = imagecolorallocate($img, 148, 163, 184);
-                    imagestring($img, 5, (int)($size / 2 - 30), (int)($size / 2 - 7), 'Sin datos', $gris);
-                    ob_start();
-                    imagepng($img);
-                    $data = ob_get_clean();
-                    return base64_encode($data);
-                }
+        $ced = $cedula ?? (isset($_GET['cedula']) ? trim($_GET['cedula']) : '');
+        if (empty($ced)) {
+            $this->jsonResponse("ok", "Resultados", []);
+        }
 
-                $totalVal = 0;
-                foreach ($chartData as $item) $totalVal += $item['value'];
+        $modeloConsulta = new Consulta();
+        $resultados = $modeloConsulta->obtenerConsultasPorPaciente($ced);
+        $this->jsonResponse("ok", "Resultados", $resultados ?: []);
+    }
 
-                $cx = (int)($size / 2);
-                $cy = (int)($size / 2);
-                $d = $size - 40;
-                $startAngle = 270;
-                $accumulated = 0;
+    public function buscarCondicion() {
+        if (!$this->checkPerm("ver_consultas")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos");
+        }
 
-                foreach ($chartData as $idx => $item) {
-                    $c = $rgbColores[$idx % count($rgbColores)];
-                    $color = imagecolorallocate($img, $c[0], $c[1], $c[2]);
-                    $accumulated += $item['value'];
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        if (strlen($q) < 2) {
+            $this->jsonResponse("ok", "Resultados", []);
+        }
 
-                    if ($idx === count($chartData) - 1) {
-                        $endAngle = 270 + 360;
-                    } else {
-                        $endAngle = 270 + (int)round(($accumulated / $totalVal) * 360);
-                    }
+        $modeloConsulta = new Consulta();
+        $resultados = $modeloConsulta->buscarCondicion($q);
+        $this->jsonResponse("ok", "Resultados", $resultados ?: []);
+    }
 
-                    imagefilledarc($img, $cx, $cy, $d, $d, $startAngle, $endAngle, $color, IMG_ARC_PIE);
-                    $startAngle = $endAngle;
-                }
+    public function obtenerCondicionesPaciente($cedula = null) {
+        if (!$this->checkPerm("ver_consultas")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos");
+        }
 
-                $borde = imagecolorallocate($img, 203, 213, 225);
-                imagearc($img, $cx, $cy, $d, $d, 0, 360, $borde);
+        $ced = $cedula ?? (isset($_GET['cedula']) ? trim($_GET['cedula']) : '');
+        if (empty($ced)) {
+            $this->jsonResponse("ok", "Resultados", []);
+        }
 
-                ob_start();
-                imagepng($img);
-                $data = ob_get_clean();
-                return base64_encode($data);
-            };
+        $modeloConsulta = new Consulta();
+        $resultados = $modeloConsulta->obtenerCondicionesPaciente($ced);
+        $this->jsonResponse("ok", "Resultados", $resultados ?: []);
+    }
 
-            $htmlLeyenda = function($chartData) use ($hexColores) {
-                if (empty($chartData)) return '<div style="font-size:7px;color:#94a3b8;text-align:center;padding:4px;">Sin datos</div>';
-                $h = '<table style="width:100%;border-collapse:collapse;margin-top:4px;">';
-                foreach ($chartData as $idx => $item) {
-                    $color = $hexColores[$idx % count($hexColores)];
-                    $lbl = htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8');
-                    if (mb_strlen($item['label']) > 22) $lbl = htmlspecialchars(mb_substr($item['label'], 0, 20), ENT_QUOTES, 'UTF-8') . '..';
-                    $h .= '<tr>';
-                    $h .= '<td style="width:8px;padding:1px 3px 1px 0;vertical-align:middle;"><div style="width:6px;height:6px;background:' . $color . ';border-radius:2px;"></div></td>';
-                    $h .= '<td style="font-size:7px;color:#334155;font-weight:bold;padding:1px 2px;">' . $lbl . '</td>';
-                    $h .= '<td style="font-size:7px;color:#64748b;text-align:right;padding:1px 0;white-space:nowrap;">' . $item['value'] . ' (' . $item['pct'] . '%)</td>';
-                    $h .= '</tr>';
-                }
-                $h .= '</table>';
-                return $h;
-            };
+    public function guardarRolesPermisos() {
+        if (!$this->checkPerm("gestionar_roles_permisos")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar roles y permisos");
+        }
 
-            $datosBenef = $prepararDatosPastel($datos['tipos_beneficiario'], 'total', 'nombre_tipo');
-            $datosNucleo = $prepararDatosPastel($datos['nucleos'], 'total', 'nombre_nucleo');
-            $datosPnf = $prepararDatosPastel($datos['pnfs'], 'total', 'nombre_pnf');
+        $data = $this->getRequestData();
+        $postedPermisos = $data['permisos'] ?? [];
 
-            $imgBenef = $generarPastelPNG($datosBenef);
-            $imgNucleo = $generarPastelPNG($datosNucleo);
-            $imgPnf = $generarPastelPNG($datosPnf);
+        $userModel = new Usuario();
+        $roles = $userModel->obtenerRoles();
 
-            $topPatologias = array_slice($datos['patologias'], 0, 10);
-            $topCondiciones = array_slice($datos['condiciones_cronicas'], 0, 10);
+        foreach ($roles as $role) {
+            $idRol = $role['id_rol'];
+            $permisosIds = isset($postedPermisos[$idRol]) ? $postedPermisos[$idRol] : [];
+            $userModel->actualizarPermisosRol($idRol, $permisosIds);
+        }
 
-            $options = new \Dompdf\Options();
-            $options->set('isHtml5ParserEnabled', true);
-            $options->set('isPhpEnabled', true);
-            $dompdf = new \Dompdf\Dompdf($options);
+        code(200);
+        $this->jsonResponse("ok", "¡Roles y permisos actualizados con éxito!");
+    }
 
-            $html = '<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<style>
-    body { font-family: Helvetica, Arial, sans-serif; color: #1e293b; font-size: 10px; line-height: 1.3; margin: 0; padding: 0; }
-    .hdr { width: 100%; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px; margin-bottom: 8px; }
-    .hdr-t { width: 100%; border-collapse: collapse; }
-    .hdr-t td { vertical-align: middle; }
-    .hdr-logo { width: 80px; }
-    .hdr-info { text-align: left; padding-left: 10px; }
-    .hdr-info h1 { font-size: 12px; color: #1e3a8a; margin: 0 0 2px 0; text-transform: uppercase; letter-spacing: 0.3px; }
-    .hdr-info p { margin: 0; color: #64748b; font-size: 9.5px; font-weight: bold; }
-    .hdr-meta { text-align: right; font-size: 8.5px; color: #475569; line-height: 1.4; }
-    .kpi-t { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 5px; text-align: center; }
-    .kpi-num { font-size: 17px; font-weight: bold; color: #1e3a8a; }
-    .kpi-lbl { font-size: 7px; color: #64748b; text-transform: uppercase; font-weight: bold; }
-    .charts-t { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-    .chart-cell { width: 33.3%; text-align: center; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px; background: #fff; vertical-align: top; }
-    .chart-title { font-weight: bold; font-size: 8px; color: #1e3a8a; margin-bottom: 2px; text-transform: uppercase; }
-    .cols-t { width: 100%; border-collapse: collapse; }
-    .col-l { width: 50%; vertical-align: top; padding-right: 10px; }
-    .col-r { width: 50%; vertical-align: top; padding-left: 10px; }
-    .sec-title { font-size: 9px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-top: 6px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
-    .dt { width: 100%; border-collapse: collapse; }
-    .dt th { background: #1e3a8a; color: #fff; text-align: left; padding: 2px 4px; font-size: 7px; font-weight: bold; text-transform: uppercase; }
-    .dt th:last-child { text-align: right; }
-    .dt td { padding: 2px 4px; border-bottom: 1px solid #f1f5f9; font-size: 7.5px; }
-    .dt tr:nth-child(even) td { background: #f8fafc; }
-</style>
-</head>
-<body>
+    public function registrarRol() {
+        if (!$this->checkPerm("gestionar_roles_permisos")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar roles y permisos");
+        }
 
-<div class="hdr">
-    <table class="hdr-t">
-        <tr>
-            <td class="hdr-logo">' . $logoHtml . '</td>
-            <td class="hdr-info">
-                <h1>Universidad Polit&eacute;cnica Territorial Andr&eacute;s Eloy Blanco</h1>
-                <p>Servicio M&eacute;dico &mdash; Reporte de Morbilidad</p>
-            </td>
-            <td class="hdr-meta">
-                <strong>Periodo:</strong> ' . $fechaInicioFmt . ' al ' . $fechaFinFmt . '<br>
-                <strong>Emisi&oacute;n:</strong> ' . $fechaEmision . '<br>
-                <strong>Generado por:</strong> ' . htmlspecialchars($nombreGenerador, ENT_QUOTES, 'UTF-8') . '
-            </td>
-        </tr>
-    </table>
-</div>
+        $data = $this->getRequestData();
+        $nombreRol = cleanValue($data, 'nombre_rol');
+        $descripcionRol = cleanValue($data, 'descripcion_rol') ?? '';
 
-<table class="kpi-t">
-    <tr>
-        <td style="width:33%;padding-right:5px;"><div class="kpi-card"><div class="kpi-num">' . $datos['total_consultas'] . '</div><div class="kpi-lbl">Consultas M&eacute;dicas</div></div></td>
-        <td style="width:34%;padding:0 3px;"><div class="kpi-card"><div class="kpi-num">' . count($datos['patologias']) . '</div><div class="kpi-lbl">Patolog&iacute;as Identificadas</div></div></td>
-        <td style="width:33%;padding-left:5px;"><div class="kpi-card"><div class="kpi-num">' . $pacientesUnicos . '</div><div class="kpi-lbl">Pacientes Atendidos</div></div></td>
-    </tr>
-</table>
+        if (empty($nombreRol)) {
+            code(400);
+            $this->jsonResponse("error", "El nombre del rol es obligatorio");
+        }
 
-<table class="charts-t">
-    <tr>
-        <td class="chart-cell" style="padding-right:5px;">
-            <div class="chart-title">Beneficiarios</div>
-            <img src="data:image/png;base64,' . $imgBenef . '" style="width:90px;height:90px;">
-            ' . $htmlLeyenda($datosBenef) . '
-        </td>
-        <td class="chart-cell" style="padding:0 3px;">
-            <div class="chart-title">N&uacute;cleos / Sedes</div>
-            <img src="data:image/png;base64,' . $imgNucleo . '" style="width:90px;height:90px;">
-            ' . $htmlLeyenda($datosNucleo) . '
-        </td>
-        <td class="chart-cell" style="padding-left:5px;">
-            <div class="chart-title">Programas (PNF)</div>
-            <img src="data:image/png;base64,' . $imgPnf . '" style="width:90px;height:90px;">
-            ' . $htmlLeyenda($datosPnf) . '
-        </td>
-    </tr>
-</table>
+        $userModel = new Usuario();
+        $resultado = $userModel->crearRol($nombreRol, $descripcionRol);
 
-<table class="cols-t">
-    <tr>
-        <td class="col-l">
-            <div class="sec-title">Diagn&oacute;sticos CIE-10 m&aacute;s Comunes</div>
-            <table class="dt">
-                <thead><tr><th style="width:40px;">C&oacute;digo</th><th>Patolog&iacute;a</th><th style="width:35px;">Casos</th></tr></thead>
-                <tbody>';
-            if (empty($topPatologias)) {
-                $html .= '<tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:6px;">No hay diagn&oacute;sticos</td></tr>';
-            } else {
-                foreach ($topPatologias as $p) {
-                    $html .= '<tr>';
-                    $html .= '<td style="font-weight:bold;color:#1e3a8a;white-space:nowrap;">' . htmlspecialchars($p['codigo_icd'], ENT_QUOTES, 'UTF-8') . '</td>';
-                    $html .= '<td>' . htmlspecialchars($p['patologia'], ENT_QUOTES, 'UTF-8') . '</td>';
-                    $html .= '<td style="text-align:right;font-weight:bold;">' . $p['total'] . '</td>';
-                    $html .= '</tr>';
-                }
-            }
-            $html .= '</tbody></table>
-        </td>
-        <td class="col-r">
-            <div class="sec-title">Condiciones M&eacute;dicas m&aacute;s Comunes</div>
-            <table class="dt">
-                <thead><tr><th>Condici&oacute;n</th><th style="width:45px;">Pacientes</th></tr></thead>
-                <tbody>';
-            if (empty($topCondiciones)) {
-                $html .= '<tr><td colspan="2" style="text-align:center;color:#94a3b8;padding:6px;">No hay condiciones</td></tr>';
-            } else {
-                foreach ($topCondiciones as $c) {
-                    $html .= '<tr>';
-                    $html .= '<td style="font-weight:bold;">' . htmlspecialchars($c['nombre_condicion'], ENT_QUOTES, 'UTF-8') . '</td>';
-                    $html .= '<td style="text-align:right;font-weight:bold;">' . $c['total'] . '</td>';
-                    $html .= '</tr>';
-                }
-            }
-            $html .= '</tbody></table>
-        </td>
-    </tr>
-</table>
+        if ($resultado) {
+            code(201);
+            $this->jsonResponse("ok", "¡Rol creado exitosamente!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Hubo un error al crear el rol");
+        }
+    }
 
-</body>
-</html>';
+    public function actualizarRol() {
+        if (!$this->checkPerm("gestionar_roles_permisos")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar roles y permisos");
+        }
 
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            $dompdf->stream("Reporte_Morbilidad_" . $fechaInicio . "_a_" . $fechaFin . ".pdf", ["Attachment" => false]);
-            exit();
+        $data = $this->getRequestData();
+        $idRol = isset($data['id_rol']) ? (int)$data['id_rol'] : (isset($data['id']) ? (int)$data['id'] : 0);
+        $nombreRol = cleanValue($data, 'nombre_rol');
+        $descripcionRol = cleanValue($data, 'descripcion_rol') ?? '';
 
-        } catch (\Exception $e) {
-            http_response_code(400);
-            echo "Error al generar el reporte: " . $e->getMessage();
-            exit();
+        if ($idRol <= 0 || empty($nombreRol)) {
+            code(400);
+            $this->jsonResponse("error", "Datos del rol inválidos");
+        }
+
+        $userModel = new Usuario();
+        $resultado = $userModel->actualizarRol($idRol, $nombreRol, $descripcionRol);
+
+        if ($resultado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Rol actualizado con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "No se pudo actualizar el rol");
+        }
+    }
+
+    public function eliminarRol() {
+        if (!$this->checkPerm("gestionar_roles_permisos")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar roles y permisos");
+        }
+
+        $data = $this->getRequestData();
+        $idRol = isset($data['id_rol']) ? (int)$data['id_rol'] : (isset($data['id']) ? (int)$data['id'] : 0);
+
+        if ($idRol <= 0) {
+            code(400);
+            $this->jsonResponse("error", "No se puede eliminar este rol");
+        }
+
+        $userModel = new Usuario();
+        $resultado = $userModel->eliminarRol($idRol);
+
+        if ($resultado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Rol eliminado con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Hubo un error al intentar eliminar el rol");
+        }
+    }
+
+    public function guardarConfiguracion() {
+        if (!$this->checkPerm("gestionar_roles_permisos")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la configuración");
+        }
+
+        $data = $this->getRequestData();
+        $rolDefecto = isset($data['rol_defecto']) ? (int)$data['rol_defecto'] : 0;
+
+        if ($rolDefecto <= 0) {
+            code(400);
+            $this->jsonResponse("error", "Seleccione un rol válido");
+        }
+
+        $userModel = new Usuario();
+        $resultado = $userModel->actualizarRolDefecto($rolDefecto);
+
+        if ($resultado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Configuración general guardada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "No se pudo guardar la configuración");
+        }
+    }
+
+    public function registrarCondicion() {
+        if (!$this->checkPerm("gestionar_condiciones")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para gestionar condiciones");
+        }
+
+        $data = $this->getRequestData();
+        $nombre = cleanValue($data, 'nombre_condicion');
+        $descripcion = cleanValue($data, 'descripcion_condicion') ?? '';
+
+        if (empty($nombre)) {
+            code(400);
+            $this->jsonResponse("error", "El nombre de la condición es obligatorio");
+        }
+
+        $model = new Condicion();
+        $registrado = $model->registrarCondicion($nombre, $descripcion);
+
+        if ($registrado) {
+            code(201);
+            $this->jsonResponse("ok", "¡Condición registrada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Hubo un error al registrar la condición");
+        }
+    }
+
+    public function actualizarCondicion() {
+        if (!$this->checkPerm("gestionar_condiciones")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para gestionar condiciones");
+        }
+
+        $data = $this->getRequestData();
+        $id = isset($data['id']) ? (int)$data['id'] : (isset($data['id_condicion']) ? (int)$data['id_condicion'] : 0);
+        $nombre = cleanValue($data, 'nombre_condicion');
+        $descripcion = cleanValue($data, 'descripcion_condicion') ?? '';
+
+        if ($id <= 0 || empty($nombre)) {
+            code(400);
+            $this->jsonResponse("error", "Datos de condición inválidos");
+        }
+
+        $model = new Condicion();
+        $actualizado = $model->actualizarCondicion($id, $nombre, $descripcion);
+
+        if ($actualizado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Condición actualizada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "No se pudo actualizar la condición");
+        }
+    }
+
+    public function eliminarCondicion() {
+        if (!$this->checkPerm("gestionar_condiciones")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para gestionar condiciones");
+        }
+
+        $data = $this->getRequestData();
+        $id = isset($data['id']) ? (int)$data['id'] : (isset($data['id_condicion']) ? (int)$data['id_condicion'] : 0);
+
+        if ($id <= 0) {
+            code(400);
+            $this->jsonResponse("error", "ID de condición no válido");
+        }
+
+        $model = new Condicion();
+        $eliminado = $model->eliminarCondicion($id);
+
+        if ($eliminado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Condición eliminada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Error al intentar eliminar la condición");
         }
     }
 }

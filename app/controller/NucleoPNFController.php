@@ -3,224 +3,278 @@
 namespace app\controller;
 
 use app\model\NucleoPNF;
+use app\controller\BaseController;
 
-class NucleoPnfController {
-    private $model;
+class NucleoPnfController extends BaseController {
 
-    public function __construct() {
-        $this->model = new NucleoPNF();
+    public function obtenerPnfsPorNucleo($id) {
+        if ((int)$id <= 0) {
+            code(400);
+            $this->jsonResponse("error", "La id no es valida");
+        }
+        $pnfModel = new NucleoPNF();
+        $pnfs = $pnfModel->obtenerPnfsPorNucleo((int)$id);
+        code(200);
+        $this->jsonResponse("ok", "Pnfs enviados", $pnfs ?: []);
     }
 
     public function registrarNucleo() {
-        header('Content-Type: application/json');
-        $nombre = isset($_POST['nombre_nucleo']) ? trim($_POST['nombre_nucleo']) : '';
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
+        }
+
+        $data = $this->getRequestData();
+        $nombre = cleanValue($data, 'nombre_nucleo');
 
         if (empty($nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo es obligatorio.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "El nombre del núcleo es obligatorio");
         }
 
         if (strlen($nombre) < 4 || strlen($nombre) > 50) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo debe tener entre 4 y 50 caracteres.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "El nombre del núcleo debe tener entre 4 y 50 caracteres");
         }
 
         if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$/u', $nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo solo puede contener letras y espacios.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "El nombre del núcleo solo puede contener letras y espacios");
         }
 
-        $resultado = $this->model->registrarNucleo($nombre);
+        $model = new NucleoPNF();
+        $resultado = $model->registrarNucleo($nombre);
 
-        if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El núcleo ya se encuentra registrado.']);
+        if ($resultado["message"] === "duplicado") {
+            code(400);
+            $this->jsonResponse("error", "El núcleo ya se encuentra registrado");
         } elseif ($resultado) {
-            echo json_encode(['status' => 'success', 'message' => '¡Núcleo registrado con éxito!']);
+            code(201);
+            $this->jsonResponse("ok", "¡Núcleo registrado con éxito!");
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar registrar el núcleo.']);
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al intentar registrar el núcleo");
         }
-        exit();
     }
+
     public function actualizarNucleo() {
-        header('Content-Type: application/json');
-        $id = isset($_POST['id_nucleo']) ? (int)$_POST['id_nucleo'] : 0;
-        $nombre = isset($_POST['nombre_nucleo']) ? trim($_POST['nombre_nucleo']) : '';
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
+        }
+
+        $data = $this->getRequestData();
+        $id = isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : (isset($data['id']) ? (int)$data['id'] : 0);
+        $nombre = cleanValue($data, 'nombre_nucleo');
 
         if ($id <= 0 || empty($nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El campo no puede estar vacio.']);
-            exit();
+            code(400);
+            $this->jsonResponse('error', 'El campo no puede estar vacio.');
         }
 
-         if (strlen($nombre) < 4 || strlen($nombre) > 100) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo debe tener entre 4 y 100 caracteres.']);
-            exit();
+        if (strlen($nombre) < 4 || strlen($nombre) > 100) {
+            code(400);
+            $this->jsonResponse('error', 'El nombre del núcleo debe tener entre 4 y 100 caracteres.');
         }
 
         if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$/u', $nombre)) {
-        echo json_encode(['status' => 'error', 'message' => 'El nombre del núcleo no puede contener números ni caracteres especiales.']);
-            exit();
+            code(400);
+            $this->jsonResponse('error', 'El nombre del núcleo no puede contener números ni caracteres especiales.');
         }
 
-        $resultado = $this->model->actualizarNucleo($id, $nombre);
+        $NucleoModelo = new NucleoPNF();
+        $resultado = $NucleoModelo->actualizarNucleo($id, $nombre);
 
-        if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El nucleo ya se encuentra registrado.']);
+        if ($resultado["message"] === "duplicado") {
+            code(400);
+            $this->jsonResponse('error', 'El nucleo ya se encuentra registrado.');
         } elseif ($resultado) {
-            echo json_encode(['status' => 'success', 'message' => '¡Núcleo actualizado con éxito!']);
+            code(200);
+            $this->jsonResponse('ok', '¡Núcleo actualizado con éxito!');
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar actualizar el núcleo.']);
+            code(400);
+            $this->jsonResponse('error', 'Ocurrió un error al intentar actualizar el núcleo.');
         }
-        exit();
     }
 
-    public function eliminarNucleo() {
-        header('Content-Type: application/json');
-        $id = isset($_POST['id_nucleo']) ? (int)$_POST['id_nucleo'] : 0;
-
-
-        if ($this->model->desactivarNucleo($id)) {
-            echo json_encode(['status' => 'success', 'message' => '¡Núcleo eliminado con éxito!']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar eliminar el núcleo.']);
+    public function eliminarNucleo($id) {
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
-        exit();
-    }
+        $id = (int)$id;
 
-    // PNFS
+        if ($id <= 0) {
+            code(400);
+            $this->jsonResponse("error", "ID de núcleo inválido");
+        }
+
+        $model = new NucleoPNF();
+        if ($model->desactivarNucleo($id)) {
+            code(200);
+            $this->jsonResponse("ok", "¡Núcleo eliminado con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al intentar eliminar el núcleo");
+        }
+    }
 
     public function registrarPnf() {
-        header('Content-Type: application/json');
-        $nombre = isset($_POST['nombre_pnf']) ? trim($_POST['nombre_pnf']) : '';
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
+        }
+
+        $data = $this->getRequestData();
+        $nombre = cleanValue($data, 'nombre_pnf');
 
         if (empty($nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El campo no puede estar vacio.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "El campo no puede estar vacio");
         }
-           
+
         if (strlen($nombre) < 4 || strlen($nombre) > 100) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del PNF debe tener entre 4 y 100 caracteres.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "El nombre del PNF debe tener entre 4 y 100 caracteres");
         }
 
-        if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/u', $nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del PNF no puede contener números ni caracteres especiales.']);
-            exit();
+        if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$/u', $nombre)) {
+            code(400);
+            $this->jsonResponse("error", "El nombre del PNF solo puede contener letras y espacios");
         }
 
+        $model = new NucleoPNF();
+        $resultado = $model->registrarPnf($nombre);
 
-        $resultado = $this->model->registrarPNF($nombre);
-
-        if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El PNF ya se encuentra registrado.']);
+        if ($resultado['message'] === "duplicado") {
+            code(400);
+            $this->jsonResponse("error", "El PNF ya se encuentra registrado");
         } elseif ($resultado) {
-            echo json_encode(['status' => 'success', 'message' => '¡PNF registrado con éxito!']);
+            code(201);
+            $this->jsonResponse("ok", "¡PNF registrado con éxito!");
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar registrar el PNF.']);
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al intentar registrar el PNF");
         }
-        exit();
     }
 
     public function actualizarPnf() {
-        header('Content-Type: application/json');
-        $id = isset($_POST['id_pnf']) ? (int)$_POST['id_pnf'] : 0;
-        $nombre = isset($_POST['nombre_pnf']) ? trim($_POST['nombre_pnf']) : '';
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
+        }
+
+        $data = $this->getRequestData();
+        $id = isset($data['id_pnf']) ? (int)$data['id_pnf'] : (isset($data['id']) ? (int)$data['id'] : 0);
+        $nombre = cleanValue($data, 'nombre_pnf');
 
         if ($id <= 0 || empty($nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'Datos insuficientes para actualizar el PNF.']);
-            exit();
-        }
-          if (strlen($nombre) < 4 || strlen($nombre) > 100) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del PNF debe tener entre 4 y 100 caracteres.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "El campo no puede estar vacio");
         }
 
-        if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/u', $nombre)) {
-            echo json_encode(['status' => 'error', 'message' => 'El nombre del PNF no puede contener números ni caracteres especiales.']);
-            exit();
+        if (strlen($nombre) < 4 || strlen($nombre) > 100) {
+            code(400);
+            $this->jsonResponse("error", "El nombre del PNF debe tener entre 4 y 100 caracteres");
         }
 
+        if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$/u', $nombre)) {
+            code(400);
+            $this->jsonResponse("error", "El nombre del PNF no puede contener números ni caracteres especiales");
+        }
 
-        $resultado = $this->model->actualizarPNF($id, $nombre);
+        $model = new NucleoPNF();
+        $resultado = $model->actualizarPnf($id, $nombre);
 
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'El PNF ya se encuentra registrado.']);
+            code(400);
+            $this->jsonResponse("error", "El PNF ya se encuentra registrado");
         } elseif ($resultado) {
-            echo json_encode(['status' => 'success', 'message' => '¡PNF actualizado con éxito!']);
+            code(200);
+            $this->jsonResponse("ok", "¡PNF actualizado con éxito!");
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar actualizar el PNF.']);
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al intentar actualizar el PNF");
         }
-        exit();
     }
 
-    public function eliminarPnf() {
-        header('Content-Type: application/json');
-        $id = isset($_POST['id_pnf']) ? (int)$_POST['id_pnf'] : 0;
-
+    public function eliminarPnf($id) {
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
+        }
+        $id = (int)$id;
         if ($id <= 0) {
-            echo json_encode(['status' => 'error', 'message' => 'Identificador de PNF inválido.']);
-            exit();
+            code(400);
+            $this->jsonResponse("error", "ID de PNF inválido");
         }
 
-        if ($this->model->desactivarPNF($id)) {
-            echo json_encode(['status' => 'success', 'message' => '¡PNF eliminado con éxito!']);
+        $model = new NucleoPNF();
+        if ($model->desactivarPnf($id)) {
+            code(200);
+            $this->jsonResponse("ok", "¡PNF eliminado con éxito!");
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar eliminar el PNF.']);
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al intentar eliminar el PNF");
         }
-        exit();
     }
-
-    // OFERTAS ACADÉMICAS
 
     public function registrarOferta() {
-        header('Content-Type: application/json');
-        $id_nucleo = isset($_POST['id_nucleo']) ? (int)$_POST['id_nucleo'] : 0;
-        $id_pnf = isset($_POST['id_pnf']) ? (int)$_POST['id_pnf'] : 0;
-
-        if ($id_nucleo <= 0 || $id_pnf <= 0) {
-            echo json_encode(['status' => 'error', 'message' => 'Debe seleccionar un Núcleo y un PNF.']);
-            exit();
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
-
-        $resultado = $this->model->registrarOferta($id_nucleo, $id_pnf);
-
+    
+        $data = $this->getRequestData();
+        $nucleoId = isset($data['nucleo_id']) ? (int)$data['nucleo_id'] : (isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0);
+        $pnfId    = isset($data['pnf_id']) ? (int)$data['pnf_id'] : (isset($data['id_pnf']) ? (int)$data['id_pnf'] : 0);
+    
+        if ($nucleoId <= 0 || $pnfId <= 0) {
+            code(400);
+            $this->jsonResponse("error", "Debe seleccionar un núcleo y una carrera válidos");
+        }
+    
+        $model = new NucleoPNF();
+        $resultado = $model->registrarOferta($nucleoId, $pnfId);
+    
         if ($resultado === "duplicado") {
-            echo json_encode(['status' => 'error', 'message' => 'Esta oferta académica ya se encuentra registrada.']);
+            code(400);
+            $this->jsonResponse("error", "Esta carrera ya está ofertada en la sede seleccionada");
         } elseif ($resultado) {
-            echo json_encode(['status' => 'success', 'message' => '¡Oferta académica registrada con éxito!']);
+            code(201);
+            $this->jsonResponse("ok", "¡Oferta académica asignada con éxito!");
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al intentar registrar la oferta.']);
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al asignar la oferta");
         }
-        exit();
     }
-
-    public function eliminarOferta() {
-        header('Content-Type: application/json');
-        $id_nucleo = isset($_POST['id_nucleo']) ? (int)$_POST['id_nucleo'] : 0;
-        $id_pnf = isset($_POST['id_pnf']) ? (int)$_POST['id_pnf'] : 0;
-
-        if ($id_nucleo <= 0 || $id_pnf <= 0) {
-            echo json_encode(['status' => 'error', 'message' => 'Datos inválidos para desvincular la oferta.']);
-            exit();
+    
+    public function eliminarOferta($id = null) {
+        if (!$this->checkPerm("gestionar_oferta_academica")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
         }
+    
+        $data = $this->getRequestData();
+        $nucleoId = isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0;
+        $pnfId    = isset($data['id_pnf']) ? (int)$data['id_pnf'] : 0;
+    
+        $model = new NucleoPNF();
+        $resultado = false;
 
-        if ($this->model->desactivarOferta($id_nucleo, $id_pnf)) {
-            echo json_encode(['status' => 'success', 'message' => '¡Oferta académica eliminada con éxito!']);
+        if ($nucleoId > 0 && $pnfId > 0) {
+            $resultado = $model->desactivarOferta($nucleoId, $pnfId);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al eliminar la oferta.']);
+            code(400);
+            $this->jsonResponse("error", "Datos insuficientes para eliminar la oferta");
         }
-        exit();
-    }
-    public function obtenerPnfsPorNucleo() {
-        header('Content-Type: application/json');
-        $id_nucleo = isset($_POST['id_nucleo']) ? (int)$_POST['id_nucleo'] : 0;
-
-        if ($id_nucleo <= 0) {
-            echo json_encode([]);
-            exit();
+    
+        if ($resultado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Oferta académica eliminada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Ocurrió un error al intentar eliminar la oferta");
         }
-
-        $pnfs = $this->model->obtenerPnfsPorNucleo($id_nucleo);
-        echo json_encode($pnfs, JSON_UNESCAPED_UNICODE);
-        exit();
     }
 }

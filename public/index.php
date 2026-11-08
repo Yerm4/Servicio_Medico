@@ -7,11 +7,13 @@ if (php_sapi_name() === 'cli-server') {
     }
 }
 
+
 session_start();
 require_once __DIR__."/../vendor/autoload.php";
 
 use app\controller\ViewController;
 use app\controller\ApiController;
+use app\controller\ConsultaController;
 
 if (file_exists(__DIR__ . '/.env')) $dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
 else $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -28,21 +30,13 @@ if ($appEnv === 'local') {
     error_reporting(0);
 }
 
-$viewController = new ViewController();  
-$apiController = new ApiController();
+$viewController = new ViewController();
 
-$method = !empty($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "";
-$rutasApi = require __DIR__."/../app/api.php";
-
-if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
-    $ruta = trim($_GET["ruta"], "/");
-} else {
-    $ruta = "login";
-}
+if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') $ruta = trim($_GET["ruta"], "/");
+else $ruta = "login";
 
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
-
 if ($paginaActual === "logout") {
     session_unset();
     session_destroy();
@@ -50,49 +44,11 @@ if ($paginaActual === "logout") {
     exit();
 }
 
-$rutaNormalizada = $ruta;
 if (preg_match('#(api/.*)$#', $ruta, $coincidenciaApi)) {
-    $rutaNormalizada = $coincidenciaApi[1];
+    $endpoint = $coincidenciaApi[1];
+    $apiController = new ApiController($endpoint);
 }
 
-$metodoEncontrado = null;
-$parametros = [];
-
-if (is_array($rutasApi) && isset($rutasApi[$method])) {
-    foreach ($rutasApi[$method] as $patronRuta => $metodo) {
-        $patronRegex = "#^" . preg_replace('/\{[a-zA-Z0-9_]+\}/', '([^/]+)', $patronRuta) . "$#";
-        if (preg_match($patronRegex, $rutaNormalizada, $coincidencias) || preg_match($patronRegex, $ruta, $coincidencias)) {
-            $metodoEncontrado = $metodo;
-            array_shift($coincidencias);
-            $parametros = $coincidencias;
-            break;
-        }
-    }
-}
-
-if ($metodoEncontrado) {
-    header("Content-Type: application/json; charset=UTF-8");
-    $apiController = new ApiController();
-
-    if (method_exists($apiController, $metodoEncontrado)) {
-        $apiController->$metodoEncontrado(...$parametros);
-        exit();
-    } else {
-        http_response_code(500);
-        echo json_encode(["status" => "error", "message" => "El método del controlador no existe"]);
-        exit();
-    }
-}
-
-if (str_starts_with($rutaNormalizada, "api/") || str_starts_with($ruta, "api/")) { 
-    header("Content-Type: application/json; charset=UTF-8");
-    http_response_code(404); 
-    echo json_encode([ 
-        "status" => "error", 
-        "message" => "La ruta: " . $rutaNormalizada . " no existe" 
-    ]); 
-    exit(); 
-}
 $rutasVistas = [
     "login"          => "showLogin",
     "perfil"         => "showPerfil",
@@ -101,55 +57,51 @@ $rutasVistas = [
     "configuracion"  => "showConfiguracion"
 ];
 
-$objeto = new ApiController();
-
 include_once __DIR__."/../app/permisos/permisos.php";
 
 $formAccion = $_POST["form"] ?? null;
 if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
-    $apiCtrl = new ApiController();
+    $cConsulta = new ConsultaController();
     switch ($formAccion) {
-        case "generar_reporte_morbilidad":
-            $apiCtrl->generarReporteMorbilidad();
-            exit();
         case "registro_consulta":
-            $cConsulta = new \app\controller\ConsultaController();
-            $cConsulta->registrar();
+            $cConsulta->registroConsulta();
             exit();
         case "actualizar_consulta":
-            $cConsulta = new \app\controller\ConsultaController();
-            $cConsulta->actualizar();
+            $cConsulta->actualizarConsulta();
+            exit();
+        case "generar_reporte_morbilidad":
+            $cConsulta->generarReporteMorbilidad();
             exit();
         case "guardar_roles_permisos":
-            $apiCtrl->guardarRolesPermisos();
+            $cConsulta->guardarRolesPermisos();
             header("Location: configuracion");
             exit();
         case "registrar_rol":
-            $apiCtrl->registrarRol();
+            $cConsulta->registrarRol();
             header("Location: configuracion");
             exit();
         case "actualizar_rol":
-            $apiCtrl->actualizarRol();
+            $cConsulta->actualizarRol();
             header("Location: configuracion");
             exit();
         case "eliminar_rol":
-            $apiCtrl->eliminarRol();
+            $cConsulta->eliminarRol();
             header("Location: configuracion");
             exit();
         case "guardar_configuracion":
-            $apiCtrl->guardarConfiguracion();
+            $cConsulta->guardarConfiguracion();
             header("Location: configuracion");
             exit();
         case "registrar_condicion":
-            $apiCtrl->registrarCondicion();
+            $cConsulta->registrarCondicion();
             header("Location: configuracion");
             exit();
         case "actualizar_condicion":
-            $apiCtrl->actualizarCondicion();
+            $cConsulta->actualizarCondicion();
             header("Location: configuracion");
             exit();
         case "eliminar_condicion":
-            $apiCtrl->eliminarCondicion();
+            $cConsulta->eliminarCondicion();
             header("Location: configuracion");
             exit();
     }

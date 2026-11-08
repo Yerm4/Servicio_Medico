@@ -1,78 +1,90 @@
 <?php
+
 namespace app\controller;
 
 use app\model\Condicion;
+use app\controller\BaseController;
 
-class CondicionController {
+class CondicionController extends BaseController {
 
-    public function registrar() {
-        $nombre = isset($_POST['nombre_condicion']) ? trim($_POST['nombre_condicion']) : '';
-        $descripcion = isset($_POST['descripcion_condicion']) ? trim($_POST['descripcion_condicion']) : '';
-
-        if (!empty($nombre)) {
-            $model = new Condicion();
-            $registrado = $model->registrarCondicion($nombre, $descripcion);
-
-            if ($registrado) {
-                $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "¡Condición registrada con éxito!";
-            } else {
-                $_SESSION["registro_status"] = "error";
-                $_SESSION["registro_msg"] = "Hubo un error al registrar la condición.";
-            }
-        } else {
-            $_SESSION["registro_status"] = "error";
-            $_SESSION["registro_msg"] = "El nombre de la condición es obligatorio.";
-        }
-        
-        header("Location: configuracion");
-        exit();
-    }
-    public function actualizar() {
-        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-        $nombre = isset($_POST['nombre_condicion']) ? trim($_POST['nombre_condicion']) : '';
-        $descripcion = isset($_POST['descripcion_condicion']) ? trim($_POST['descripcion_condicion']) : '';
-
-        if ($id > 0 && !empty($nombre)) {
-            $model = new Condicion();
-            $actualizado = $model->actualizarCondicion($id, $nombre, $descripcion);
-
-            if ($actualizado) {
-                $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "¡Condición actualizada con éxito!";
-            } else {
-                $_SESSION["registro_status"] = "error";
-                $_SESSION["registro_msg"] = "No se pudo actualizar o no se realizaron cambios.";
-            }
-        } else {
-            $_SESSION["registro_status"] = "error";
-            $_SESSION["registro_msg"] = "Datos inválidos.";
+    public function registrarCondicion() {
+        if (!$this->checkPerm("gestionar_condiciones")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para gestionar condiciones");
         }
 
-        header("Location: configuracion");
-        exit();
+        $data = $this->getRequestData();
+        $nombre = cleanValue($data, 'nombre_condicion');
+        $descripcion = cleanValue($data, 'descripcion_condicion') ?? '';
+
+        if (empty($nombre)) {
+            code(400);
+            $this->jsonResponse("error", "El nombre de la condición es obligatorio");
+        }
+
+        $model = new Condicion();
+        $registrado = $model->registrarCondicion($nombre, $descripcion);
+
+        if ($registrado) {
+            code(201);
+            $this->jsonResponse("ok", "¡Condición registrada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Hubo un error al registrar la condición");
+        }
     }
 
-    public function eliminar() {
-        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-
-        if ($id > 0) {
-            $model = new Condicion();
-            $eliminado = $model->eliminarCondicion($id);
-
-            if ($eliminado) {
-                $_SESSION["registro_status"] = "success";
-                $_SESSION["registro_msg"] = "¡Condición eliminada con éxito!";
-            } else {
-                $_SESSION["registro_status"] = "error";
-                $_SESSION["registro_msg"] = "Error al intentar eliminar la condición.";
-            }
-        } else {
-            $_SESSION["registro_status"] = "error";
-            $_SESSION["registro_msg"] = "ID de condición no válido.";
+    public function actualizarCondicion() {
+        if (!$this->checkPerm("gestionar_condiciones")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para gestionar condiciones");
         }
-        
-        header("Location: configuracion");
-        exit();
+
+        $data = $this->getRequestData();
+        $id = isset($data['id']) ? (int)$data['id'] : (isset($data['id_condicion']) ? (int)$data['id_condicion'] : 0);
+        $nombre = cleanValue($data, 'nombre_condicion');
+        $descripcion = cleanValue($data, 'descripcion_condicion') ?? '';
+
+        if ($id <= 0 || empty($nombre)) {
+            code(400);
+            $this->jsonResponse("error", "Datos de condición inválidos");
+        }
+
+        $model = new Condicion();
+        $actualizado = $model->actualizarCondicion($id, $nombre, $descripcion);
+
+        if ($actualizado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Condición actualizada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "No se pudo actualizar la condición");
+        }
+    }
+
+    public function eliminarCondicion() {
+        if (!$this->checkPerm("gestionar_condiciones")) {
+            code(403);
+            $this->jsonResponse("error", "No tiene permisos para gestionar condiciones");
+        }
+
+        $data = $this->getRequestData();
+        $id = isset($data['id']) ? (int)$data['id'] : (isset($data['id_condicion']) ? (int)$data['id_condicion'] : 0);
+
+        if ($id <= 0) {
+            code(400);
+            $this->jsonResponse("error", "ID de condición no válido");
+        }
+
+        $model = new Condicion();
+        $eliminado = $model->eliminarCondicion($id);
+
+        if ($eliminado) {
+            code(200);
+            $this->jsonResponse("ok", "¡Condición eliminada con éxito!");
+        } else {
+            code(400);
+            $this->jsonResponse("error", "Error al intentar eliminar la condición");
+        }
     }
 }

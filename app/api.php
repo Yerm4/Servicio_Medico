@@ -1,6 +1,6 @@
 <?php
 
-$rutasApi = [
+/* $rutasApi = [
     "GET" => [
         "api/consulta"                      => "getConsultas",
         "api/consulta/{id}"                 => "getConsultas",
@@ -53,69 +53,60 @@ $rutasApi = [
         "api/pnfs/{id}"                          => "eliminarPnf",
         "api/ofertas"                       => "eliminarOferta"
     ]
-];
-
-/*
-<?php
-
+]; */
 $rutasApi = [
     "GET" => [
-        "api/consulta"                      => "ConsultaApiController@getConsultas",
-        "api/consulta/{id}"                 => "ConsultaApiController@getConsultas",
-        "api/consultas"                     => "ConsultaApiController@getConsultas",
-        "api/consultas/{id}"                => "ConsultaApiController@getConsultas",
-        "api/consultas/detalle"             => "ConsultaApiController@obtenerConsulta",
-        "api/consultas/detalle/{id}"        => "ConsultaApiController@obtenerConsulta",
-        "api/consultas/reporte-morbilidad"  => "ConsultaApiController@generarReporteMorbilidad",
-        "api/consultas/patologias"          => "ConsultaApiController@buscarPatologia",
-        "api/consultas/pacientes"           => "ConsultaApiController@buscarPaciente",
-        "api/consultas/paciente/{cedula}"   => "ConsultaApiController@obtenerConsultasPaciente",
-        
-        "api/users/buscar/{id}"             => "UserApiController@buscarUsuario",
-        "api/users/cedula"                  => "UserApiController@obtenerUsuario",
-        "api/users/{id}"                    => "UserApiController@obtenerUsuario",
-        
-        "api/condiciones/buscar"            => "CondicionApiController@buscarCondicion",
-        "api/condiciones/paciente/{cedula}" => "CondicionApiController@obtenerCondicionesPaciente",
-        
-        "api/pnfs"                          => "NucleoPnfApiController@buscarPnfs",
-        "api/nucleos/pnfs/{id}"             => "NucleoPnfApiController@obtenerPnfsPorNucleo"
+        "api/consulta"                     => "ConsultaController@getConsultas",
+        "api/consulta/{id}"                => "ConsultaController@getConsultas",
+        "api/consultas"                    => "ConsultaController@getConsultas",
+        "api/consultas/{id}"               => "ConsultaController@getConsultas",
+        "api/consultas/detalle"            => "ConsultaController@obtenerConsulta",
+        "api/consultas/detalle/{id}"       => "ConsultaController@obtenerConsulta",
+        "api/consultas/reporte-morbilidad" => "ConsultaController@generarReporteMorbilidad",
+        "api/consultas/patologias"         => "ConsultaController@buscarPatologia",
+        "api/consultas/pacientes"          => "ConsultaController@buscarPaciente",
+        "api/consultas/paciente/{cedula}"  => "ConsultaController@obtenerConsultasPaciente",
+        "api/users/buscar/{id}"            => "UserController@buscarUsuario",
+        "api/users/cedula"                 => "UserController@obtenerUsuario",
+        "api/users/{id}"                   => "UserController@obtenerUsuario",
+        "api/condiciones/buscar"           => "ConsultaController@buscarCondicion",
+        "api/condiciones/paciente/{cedula}"=> "ConsultaController@obtenerCondicionesPaciente",
+        "api/pnfs"                         => "UserController@buscarPnfs",
+        "api/nucleos/pnfs/{id}"            => "NucleoPnfController@obtenerPnfsPorNucleo"
     ],
     "POST" => [
-        "api/auth/login"                    => "AuthApiController@login",
-        "api/users"                         => "UserApiController@registrarUsuario",
-        "api/consulta"                      => "ConsultaApiController@registroConsulta",
-        "api/consultas"                     => "ConsultaApiController@registroConsulta",
-        "api/consultas/reporte-morbilidad"  => "ConsultaApiController@generarReporteMorbilidad",
-        "api/roles"                         => "RolePermissionApiController@registrarRol",
-        "api/condiciones"                   => "CondicionApiController@registrarCondicion",
-        "api/nucleos"                       => "NucleoPnfApiController@registrarNucleo",
-        "api/pnfs"                          => "NucleoPnfApiController@registrarPnf",
-        "api/ofertas"                       => "NucleoPnfApiController@registrarOferta"
+        "api/auth/login"                   => "UserController@login",
+        "api/users"                        => "UserController@registrarUsuario",
+        "api/consulta"                     => "ConsultaController@registroConsulta",
+        "api/consultas"                    => "ConsultaController@registroConsulta",
+        "api/consultas/reporte-morbilidad" => "ConsultaController@generarReporteMorbilidad",
+        "api/roles"                        => "UserController@registrarRol",
+        "api/condiciones"                  => "CondicionController@registrarCondicion",
+        "api/nucleos"                      => "NucleoPnfController@registrarNucleo",
+        "api/pnfs"                         => "NucleoPnfController@registrarPnf",
+        "api/ofertas"                      => "NucleoPnfController@registrarOferta"
     ],
     "PUT" => [
-        "api/users"                         => "UserApiController@actualizarUsuario",
-        "api/consulta"                      => "ConsultaApiController@actualizarConsulta",
-        "api/consultas"                     => "ConsultaApiController@actualizarConsulta",
-        "api/roles"                         => "RolePermissionApiController@actualizarRol",
-        "api/roles/permisos"                => "RolePermissionApiController@guardarRolesPermisos",
-        "api/configuracion"                 => "RolePermissionApiController@guardarConfiguracion",
-        "api/condiciones"                   => "CondicionApiController@actualizarCondicion",
-        "api/nucleos"                       => "NucleoPnfApiController@actualizarNucleo",
-        "api/pnfs"                          => "NucleoPnfApiController@actualizarPnf"
+        "api/users"                        => "UserController@actualizarUsuario",
+        "api/consulta"                     => "ConsultaController@actualizarConsulta",
+        "api/consultas"                    => "ConsultaController@actualizarConsulta",
+        "api/roles"                        => "UserController@actualizarRol",
+        "api/roles/permisos"               => "UserController@guardarRolesPermisos",
+        "api/configuracion"                => "UserController@guardarConfiguracion",
+        "api/condiciones"                  => "CondicionController@actualizarCondicion",
+        "api/nucleos"                      => "NucleoPnfController@actualizarNucleo",
+        "api/pnfs"                         => "NucleoPnfController@actualizarPnf"
     ],
-    "PATCH" => [],
+    "PATCH" => [
+    ],
     "DELETE" => [
-        "api/users/{id}"                    => "UserApiController@eliminarUsuario",
-        "api/roles"                         => "RolePermissionApiController@eliminarRol",
-        "api/condiciones"                   => "CondicionApiController@eliminarCondicion",
-        "api/nucleos/{id}"                  => "NucleoPnfApiController@eliminarNucleo",
-        "api/pnfs/{id}"                     => "NucleoPnfApiController@eliminarPnf",
-        "api/ofertas"                       => "NucleoPnfApiController@eliminarOferta"
+        "api/users/{id}"                   => "UserController@eliminarUsuario",
+        "api/roles"                        => "UserController@eliminarRol",
+        "api/condiciones"                  => "CondicionController@eliminarCondicion",
+        "api/nucleos/{id}"                 => "NucleoPnfController@eliminarNucleo",
+        "api/pnfs/{id}"                    => "NucleoPnfController@eliminarPnf",
+        "api/ofertas"                      => "NucleoPnfController@eliminarOferta"
     ]
 ];
-
-return $rutasApi;
-*/
 
 return $rutasApi;
