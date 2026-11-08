@@ -74,35 +74,35 @@ if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
         case "guardar_roles_permisos":
             $cConsulta->guardarRolesPermisos();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "registrar_rol":
             $cConsulta->registrarRol();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "actualizar_rol":
             $cConsulta->actualizarRol();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "eliminar_rol":
             $cConsulta->eliminarRol();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "guardar_configuracion":
             $cConsulta->guardarConfiguracion();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "registrar_condicion":
             $cConsulta->registrarCondicion();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "actualizar_condicion":
             $cConsulta->actualizarCondicion();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
         case "eliminar_condicion":
             $cConsulta->eliminarCondicion();
-            header("Location: configuracion");
+            #header("Location: configuracion");
             exit();
     }
 }
