@@ -351,6 +351,7 @@ include_once __DIR__."/layout/header.php";
     <?php include_once __DIR__."/modals/modalRegistrarPNF.php"; ?>
     <?php include_once __DIR__."/modals/modalActualizarPNF.php"; ?>
 
+    <script src="assets/script/jquery-4.0.0.min.js"></script>
     <script src="assets/script/gestionOferta.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
     <script src="assets/script/gestionpnfnucleo.js" defer></script>
