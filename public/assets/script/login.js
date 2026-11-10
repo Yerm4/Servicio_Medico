@@ -141,7 +141,169 @@ if (selectNucleoReg && selectPnfReg) {
 const loginForm = document.getElementById("loginForm")
 
 if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
+    const $inputCedula = $('#inputCedula');
+    const $submitBtn = $('#loginForm button[type="submit"]');
+
+    $inputCedula.on('blur', function() {
+        const cedula = $(this).val().trim();
+        let $cedulaAlert = $("#cedulaAlert");
+
+        if (cedula.length === 0) {
+            $inputCedula.css("border", "");
+            $submitBtn.prop("disabled", true);
+            $cedulaAlert.text("");
+            $cedulaAlert.remove();
+            return;
+        }
+
+        // Si tiene menos de 7 caracteres, no ha
+        if (cedula.length < 7) {
+            $submitBtn.prop("disabled", true);
+            $cedulaAlert.text("");
+            return;
+        }
+
+        // Si cumple con >= 7 caracteres, ejecutamos la petición AJAX
+        $.ajax({
+            url: `api/auth/${cedula}`,
+            type: "GET",
+            dataType: "json",
+            success: function(result) {
+                if ($cedulaAlert.length === 0) {
+                    $cedulaAlert = $("<div>", {
+                        id: "cedulaAlert",
+                        css: { 
+                            "font-size": "13px", 
+                            "font-weight": "500", 
+                            "opacity": "1"
+                        }
+                    });
+                    $inputCedula.after($cedulaAlert); // Colocación exacta entre cédula y contraseña
+                }
+
+                if (result && result.status === "ok") {
+                    // Éxito: Cédula encontrada
+                    $inputCedula.css("border", "2px solid #166534"); // Borde verde
+                    $submitBtn.prop("disabled", false);
+                    $cedulaAlert.text("Cédula registrada").css("color", "#166534");
+                } else {
+                    // Error: Cédula no registrada
+                    $inputCedula.css("border", "2px solid #991b1b"); // Borde rojo
+                    $submitBtn.prop("disabled", true);
+                    $cedulaAlert.text("Cédula no registrada.").css("color", "#991b1b");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al verificar la cédula:", error);
+                $inputCedula.css("border", "2px solid #991b1b");
+                if ($cedulaAlert.length === 0) {
+                    $cedulaAlert = $("<div>", {
+                        id: "cedulaAlert",
+                        css: { 
+                            "font-size": "13px", 
+                            "font-weight": "500", 
+                            "margin-top": "5px", 
+                            "margin-bottom": "8px",
+                            "color": "#991b1b"
+                        }
+                    });
+                    $inputCedula.after($cedulaAlert);
+                }
+                $cedulaAlert.text("⚠️ Error al conectar con el servidor.");
+                $submitBtn.prop("disabled", true);
+            }
+        });
+    });
+
+    $("#loginForm").on("submit", function(e) {
+        e.preventDefault();
+
+        const $submitBtn = $(this).find('button[type="submit"]');
+        const originalBtnText = $submitBtn.text() || 'Ingresar al sistema';
+        
+        // Buscar o crear la caja de alertas para mensajes
+        let $msgBox = $("#loginAlert");
+        if ($msgBox.length === 0) {
+            $msgBox = $("<div>", {
+                id: "loginAlert",
+                css: {
+                    "margin-bottom": "12px", 
+                    "padding": "10px", 
+                    "border-radius": "6px", 
+                    "font-size": "14px", 
+                    "font-weight": "500", 
+                    "text-align": "center"
+                }
+            });
+            $(this).prepend($msgBox);
+        }
+        $msgBox.hide();
+
+        // Convertir los datos del formulario a un objeto plano JSON
+        const formDataArray = $(this).serializeArray();
+        const datos = {};
+        $.each(formDataArray, function(i, field) {
+            datos[field.name] = field.value;
+        });
+
+        // Deshabilitar botón y mostrar estado de carga
+        $submitBtn.prop("disabled", true).text("Ingresando...");
+
+        // Petición AJAX con jQuery hacia tu API RESTful
+        $.ajax({
+            url: "api/auth/login",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(datos),
+            dataType: "json",
+            success: function(result) {
+                if (result && result.status === "ok") {
+                    $msgBox.text("¡Bienvenido! Redirigiendo...")
+                        .css({
+                            "background-color": "#dcfce7",
+                            "color": "#166534",
+                            "border": "1px solid #86efac"
+                        })
+                        .show();
+
+                    const destino = result.redirect || "perfil";
+                    setTimeout(function() {
+                        window.location.href = destino;
+                    }, 500);
+                } else {
+                    const errorMsg = result?.message || "Error al iniciar sesión";
+                    $msgBox.text(errorMsg)
+                        .css({
+                            "background-color": "#fee2e2",
+                            "color": "#991b1b",
+                            "border": "1px solid #f87171"
+                        })
+                        .show();
+                    $submitBtn.prop("disabled", false).text(originalBtnText);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error en login:", error);
+                let errorMsg = "Error al conectar con el servidor";
+                try {
+                    const resJson = JSON.parse(xhr.responseText);
+                    if (resJson && resJson.message) {
+                        errorMsg = resJson.message;
+                    }
+                } catch(e) {}
+
+                $msgBox.text(errorMsg)
+                    .css({
+                        "background-color": "#fee2e2",
+                        "color": "#991b1b",
+                        "border": "1px solid #f87171"
+                    })
+                    .show();
+                $submitBtn.prop("disabled", false).text(originalBtnText);
+            }
+        });
+    });
+    /* loginForm.addEventListener("submit", async (e) => {
         e.preventDefault()
         const submitBtn = loginForm.querySelector('button[type="submit"]')
         const originalBtnText = submitBtn ? submitBtn.textContent : 'Ingresar al sistema'
@@ -209,6 +371,7 @@ if (loginForm) {
             }
         }
     })
+    */
 }
 
 const signupForm = document.getElementById("registroUsuarioForm") 

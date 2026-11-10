@@ -69,6 +69,7 @@ $rutasApi = [
         "api/users/buscar/{id}"            => "UserController@buscarUsuario",
         "api/users/cedula"                 => "UserController@obtenerUsuario",
         "api/users/{id}"                   => "UserController@obtenerUsuario",
+        "api/auth/{id}"                    => "UserController@verificarCedula",
         "api/condiciones/buscar"           => "ConsultaController@buscarCondicion",
         "api/condiciones/paciente/{cedula}"=> "ConsultaController@obtenerCondicionesPaciente",
         "api/pnfs"                         => "UserController@buscarPnfs",

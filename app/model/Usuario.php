@@ -538,14 +538,29 @@ class Usuario extends BaseModel {
 
     public function buscarPnfs() {
         try {
-            $sql = "select * from lista_pnfs";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("select * from lista_pnfs");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         catch (PDOException $e) {
             return false;
+        }
+    }
+
+    public function verificarCedula($cedula) {
+        try {
+            $stmt = $this->pdo->prepare("SELECT cedula FROM usuarios WHERE cedula = :cedula AND activo = 1 LIMIT 1");
+            $stmt->execute([':cedula' => $cedula]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if ($usuario) {
+                return $this->response('ok', 'La cédula existe en el sistema');
+            } else {
+                return $this->response('error', 'La cédula no se encuentra registrada');
+            }
+        } catch (PDOException $e) {
+            return $this->response('error', 'Error en la base de datos: ' . $e->getMessage());
         }
     }
 }

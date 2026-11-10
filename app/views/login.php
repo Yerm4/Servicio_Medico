@@ -17,11 +17,10 @@ include __DIR__."/layout/header.php";
                     <label class="action-card__label"> Cédula de identidad
                         <input class="action-card__input" minlength="7" placeholder="Ej. 1532423" type="text" name="cedula" id="inputCedula">
                     </label>
-                    <label class="action-card__label"> Contraseña
+                    <label class="action-card__label" style="margin-bottom: 5px;"> Contraseña
                         <input class="action-card__input" placeholder="*********" type="password" name="password">
                     </label>
-                    <br>
-                    <button class="action-card__button" type="submit">Ingresar al sistema</button>
+                    <button class="action-card__button login-button" type="submit" disabled>Ingresar al sistema</button>
                 </form>
                     <p class="action-card__disclaimer">@ 2026 PNF Informatica - Universidad Politecnica Territorial de Lara Andres Eloy Blanco</p>
                     <a name="openModal" data-modal="modalRegistrarUsuario" class="action-card__button" href="#">No tienes una cuenta? Registrate!</a>
@@ -45,6 +44,7 @@ include __DIR__."/layout/header.php";
     <footer>
 
     </footer>
+    <script src="assets/script/jquery-3.7.1.min.js"></script>
     <script src="assets/script/login.js"></script>
 </body>
 </html>

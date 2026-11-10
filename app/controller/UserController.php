@@ -399,4 +399,18 @@ class UserController extends BaseController {
         code(200);
         $this->jsonResponse("ok", "Pnfs obtenidos", $pnfs ?: []);
     }
+
+    public function verificarCedula($cedula) {
+        $cedula = cleanString($cedula);
+
+        $model = new Usuario();
+        $resp = $model->verificarCedula($cedula);
+
+        code(200);
+        if ($resp["status"] === "ok") {    
+            $this->jsonResponse("ok", "El usuario existe");
+        } else {
+            $this->jsonResponse("error", "El usuario no existe");
+        }
+    }
 }

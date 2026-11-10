@@ -1193,4 +1193,12 @@ tr, th, td {
 .bg-red {
     background-color: oklch(1 0.38 30) !important;
 }
-  
+.login-button {
+    transition: background-color .5s ease, border .5s ease;
+}
+
+.login-button:disabled,
+.login-button[disabled] {
+    background-color: #33fd;
+    border: 1px solid #33fd;
+}
