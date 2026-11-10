@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // -------------------------------------------------------------------------
-    // FUNCIONES DE REFRESCO Y ALERTAS UNIFICADAS
-    // -------------------------------------------------------------------------
-    
+
     /**
      * Refresca dinámicamente un contenedor mediante la carga del HTML actual
      */
@@ -71,9 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return result;
     }
 
-    // -------------------------------------------------------------------------
+
     // CONTROL DE MODALES (APERTURA Y RELLENADO DE EDICIÓN)
-    // -------------------------------------------------------------------------
+
     document.addEventListener('click', (e) => {
         // Abrir Registrar PNF
         if (e.target.closest('[data-modal="modalRegistrarPNF"]')) {
@@ -133,86 +130,109 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // -------------------------------------------------------------------------
-    // LOGICA CRUD: PNF
-    // -------------------------------------------------------------------------
+        // FUNCION GLOBAL WRAPPER 
+function apiFetch(url, options = {}) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url,
+            type: options.method || 'GET',
+            data: options.data || null,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                resolve(response); 
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                reject({
+                    status: jqXHR.status,
+                    statusText: textStatus,
+                    responseJSON: jqXHR.responseJSON || null
+                });
+            }
+        });
+    });
+    }
 
+        // LOGICA CRUD: PNF
     // 1. REGISTRAR Y ACTUALIZAR PNF
-    const configurarFormularioPNF = (idForm, idModal, msgExito, metodo) => {
-        const form = document.getElementById(idForm);
-        if (!form) return;
+const configurarFormularioPNF = (idForm, idModal, msgExito, metodo) => { 
+    const $form = $(`#${idForm}`);
+    if ($form.length === 0) return; 
 
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const datos = Object.fromEntries(new FormData(this).entries());
-            const modal = document.getElementById(idModal);
-            try {
-                const result = await apiFetch('api/pnfs', {
-                    method: metodo,
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(datos)
-                });
+    $form.on('submit', async function (e) {
+        e.preventDefault();
 
-                if (result.status === 'ok') {
-                    form.reset();
-                    if (modal) {
-                        modal.style.opacity = '0';
-                        modal.close();
-                    }
-                    await refrescarContenedor('contenedor-tabla-dinamica');
-                    mostrarAlerta('alert-container-pnf', result.message || msgExito, 'success');
-                } else {
-                    mostrarErrorEnFormulario(this, result.message || "Ocurrió un error.");
+        const datos = Object.fromEntries(new FormData(this).entries());
+        const $modal = $(`#${idModal}`);
+
+        try {
+            const result = await apiFetch('api/pnfs', {
+                method: metodo,
+                data: JSON.stringify(datos)
+            });
+
+            if (result.status === 'ok') {
+                this.reset();
+
+                if ($modal.length > 0) { 
+                    $modal.css('opacity', '0');
+                    $modal.get(0).close();
                 }
-            } catch (error) {
-                console.error("Error en PNF:", error);
-                mostrarErrorEnFormulario(this, error.message || "Ocurrió un error procesando la solicitud.");
+                await refrescarContenedor('tabla-pnf-body'); 
+                mostrarAlerta('alert-container-pnf', result.message || msgExito, 'success');
+            } else {
+                mostrarErrorEnFormulario(this, result.message || "Ocurrió un error.");
             }
-        });
-    };
 
-    configurarFormularioPNF('formRegistrarPNF', 'modalRegistrarPNF', "¡PNF registrado con éxito!", 'POST');
-    configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actualizado con éxito!", 'PUT');
+        } catch (error) {
+            console.error("Error en PNF:", error);
+            const mensajeError = error.responseJSON?.message || "Ocurrió un error al procesar el PNF.";
+            mostrarErrorEnFormulario(this, mensajeError);
+        }
+    });
+};
 
-    // -------------------------------------------------------------------------
+configurarFormularioPNF('formRegistrarPNF', 'modalRegistrarPNF', "¡PNF registrado con éxito!", 'POST');
+configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actualizado con éxito!", 'PUT');
+
+
     // LOGICA CRUD: NÚCLEOS
-    // -------------------------------------------------------------------------
-
     // 1. REGISTRAR Y ACTUALIZAR NÚCLEOS
-    const configurarFormularioNucleo = (idForm, idModal, msgExito, metodo) => {
-        const form = document.getElementById(idForm);
-        if (!form) return;
+    const configurarFormularioNucleo = (idForm, idModal, msgExito, metodo) => { 
+    const $form = $(`#${idForm}`);
+    if ($form.length === 0) return; 
 
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const datos = Object.fromEntries(new FormData(this).entries());
-            const modal = document.getElementById(idModal);
+    $form.on('submit',  async function (e) {
+        e.preventDefault();
 
-            try {
-                const result = await apiFetch('api/nucleos', {
-                    method: metodo,
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(datos)
-                });
+        const datos = Object.fromEntries(new FormData(this).entries());
+        const $modal = $(`#${idModal}`);
+        
+        try {
+            const result = await apiFetch('api/nucleos', {
+                method: metodo,
+                data: JSON.stringify(datos)
+            });
 
-                if (result.status === 'ok') {
-                    form.reset();
-                    if (modal) {
-                        modal.style.opacity = '0';
-                        modal.close();
-                    }
-                    await refrescarContenedor('cuerpoTablaNucleos');
-                    mostrarAlerta('alert-container-nucleo', result.message || msgExito, 'success');
-                } else {
-                    mostrarErrorEnFormulario(this, result.message || "Ocurrió un error.");
+            if (result.status === 'ok') {
+                this.reset();
+
+                if ($modal.length > 0) {
+                    $modal.css('opacity', '0');
+                    $modal.get(0).close();
                 }
-            } catch (error) {
-                console.error("Error en Núcleo:", error);
-                mostrarErrorEnFormulario(this, error.message || "Ocurrió un error al procesar el núcleo.");
+                await refrescarContenedor('cuerpoTablaNucleos');
+                mostrarAlerta('alert-container-nucleo', result.message || msgExito, 'success');
+            } else {
+                mostrarErrorEnFormulario(this, result.message || "Ocurrio un error.")
             }
-        });
-    };
-
+        } catch (error) {
+            console.error("Error en Nucleo:", error);
+            const mensajeError = error.responseJSON?.message || "Ocurrio un error al procesar el nucleo.";
+            mostrarErrorEnFormulario(this, mensajeError);
+        }
+    });
+};
     configurarFormularioNucleo('formRegistrarNucleo', 'modalRegistrarNucleo', "¡Núcleo registrado con éxito!", 'POST');
     configurarFormularioNucleo('formActualizarNucleo', 'modalActualizarNucleo', "¡Núcleo actualizado con éxito!", 'PUT');
 
