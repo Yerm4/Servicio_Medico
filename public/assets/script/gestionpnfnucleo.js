@@ -1,9 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(() => {
 
-
-    /**
-     * Refresca dinámicamente un contenedor mediante la carga del HTML actual
-     */
     async function refrescarContenedor(idContenedor) {
         try {
             const response = await fetch(window.location.href);
@@ -23,9 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Pinta notificaciones temporales en la UI con formato correcto CSS
-     */
+
     function mostrarAlerta(contenedorId, mensaje, tipo = 'success') {
         const contenedor = typeof contenedorId === 'string' ? document.getElementById(contenedorId) : contenedorId;
         if (!contenedor) return;
@@ -69,10 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // CONTROL DE MODALES (APERTURA Y RELLENADO DE EDICIÓN)
-
+    // CONTROL DE MODALES 
     document.addEventListener('click', (e) => {
-        // Abrir Registrar PNF
         if (e.target.closest('[data-modal="modalRegistrarPNF"]')) {
             e.preventDefault();
             const modal = $(`#${modalRegistrarPNF}`);
@@ -80,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) modal.style.opacity = '1';
         }
 
-        // Abrir Registrar Núcleo
         if (e.target.closest('[data-modal="modalRegistrarNucleo"]')) {
             e.preventDefault();
             const modal = $(`#${modalRegistrarNucleo}`);
@@ -88,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) modal.style.opacity = '1';
         }
 
-        // Editar PNF
         const btnEditarPnf = e.target.closest('.editar-pnf');
         if (btnEditarPnf) {
             e.preventDefault();
@@ -104,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Editar Núcleo
         const btnEditarNucleo = e.target.closest('.editar-nucleo');
         if (btnEditarNucleo) {
             e.preventDefault();
@@ -121,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Resetear opacidad al cerrar cualquier dialog
     document.querySelectorAll('dialog').forEach(modal => {
         modal.addEventListener('close', () => {
             modal.style.opacity = '0';
@@ -130,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-        // FUNCION GLOBAL WRAPPER 
+
 function apiFetch(url, options = {}) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -237,47 +225,54 @@ configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actual
     configurarFormularioNucleo('formActualizarNucleo', 'modalActualizarNucleo', "¡Núcleo actualizado con éxito!", 'PUT');
 
     // ELIMINACIONES (PNF Y NÚCLEOS)
-    document.addEventListener('click', async (e) => {
-        const btnEliminarPnf = e.target.closest('[name="eliminarPnf"]');
-        const btnEliminarNucleo = e.target.closest('[name="eliminarNucleo"]');
 
-        // ELIMINAR PNF
-        if (btnEliminarPnf) {
-            e.preventDefault();
-            if (!confirm('¿Seguro que deseas eliminar este PNF?')) return;
+$(document).on('click', '[name="eliminarNucleo"]', async function (e) {
+    e.preventDefault();
 
-            const idPnf = btnEliminarPnf.dataset.id;
-            try {
-                const result = await apiFetch(`api/pnfs/${idPnf}`, { method: 'DELETE' });
-                if (result.status === 'ok') {
-                    await refrescarContenedor('contenedor-tabla-dinamica');
-                    mostrarAlerta('alert-container-pnf', result.message || "¡PNF eliminado con éxito!", 'success');
-                } else {
-                    mostrarAlerta('alert-container-pnf', result.message || "Error al eliminar PNF.", 'error');
-                }
-            } catch (error) {
-                console.error("Error al eliminar PNF:", error);
-                mostrarAlerta('alert-container-pnf', error.message || "Error en la solicitud.", 'error');
-            }
+    const $btn = $(this);
+    const idNucleo = $btn.data('id');
+
+    if (!confirm('¿Seguro que deseas eliminar este núcleo?')) return;
+
+    try {
+        const result = await apiFetch(`api/nucleos/${idNucleo}`, { method: 'DELETE' });
+
+        if (result.status === 'ok') {
+            await refrescarContenedor('cuerpoTablaNucleos');
+            mostrarAlerta('alert-container-nucleo', result.message || "¡Núcleo eliminado con éxito!", 'success');
+        } else {
+            mostrarAlerta('alert-container-nucleo', result.message || "Error al eliminar Núcleo.", 'error');
         }
 
-        if (btnEliminarNucleo) {
-            e.preventDefault();
-            if (!confirm('¿Seguro que deseas eliminar este núcleo?')) return;
+    } catch (error) {
+        console.error("Error al eliminar Núcleo:", error);
+        const mensajeError = error.responseJSON?.message || error.message || "Error en la solicitud.";
+        mostrarAlerta('alert-container-nucleo', mensajeError, 'error');
+    }
+});
 
-            const idNucleo = btnEliminarNucleo.dataset.id;
-            try {
-                const result = await apiFetch(`api/nucleos/${idNucleo}`, { method: 'DELETE' });
-                if (result.status === 'ok') {
-                    await refrescarContenedor('cuerpoTablaNucleos');
-                    mostrarAlerta('alert-container-nucleo', result.message || "¡Núcleo eliminado con éxito!", 'success');
-                } else {
-                    mostrarAlerta('alert-container-nucleo', result.message || "Error al eliminar Núcleo.", 'error');
-                }
-            } catch (error) {
-                console.error("Error al eliminar Núcleo:", error);
-                mostrarAlerta('alert-container-nucleo', error.message || "Error en la solicitud.", 'error');
-            }
+$(document).on('click', '[name="eliminarPnf"]', async function (e) {
+    e.preventDefault();
+
+    const $btn = $(this);
+    const idPnf = $btn.data('id');
+
+    if (!confirm('¿Seguro que deseas eliminar este PNF?')) return;
+
+    try {
+        const result = await apiFetch(`api/pnfs/${idPnf}`, { method: 'DELETE' });
+
+        if (result.status === 'ok') {
+            await refrescarContenedor('tabla-pnf-body');
+            mostrarAlerta('alert-container-pnf', result.message || "¡PNF eliminado con éxito!", 'success');
+        } else {
+            mostrarAlerta('alert-container-pnf', result.message || "Error al eliminar PNF.", 'error');
         }
-    });
+
+    } catch (error) {
+        console.error("Error al eliminar PNF:", error);
+        const mensajeError = error.responseJSON?.message || error.message || "Error en la solicitud.";
+        mostrarAlerta('alert-container-pnf', mensajeError, 'error');
+    }
+});
 });
