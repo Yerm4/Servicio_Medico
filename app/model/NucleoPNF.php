@@ -34,22 +34,24 @@ class NucleoPNF extends BaseModel {
     }
 
     private function existeNucleoParaActualizar($nombre, $id_actual) {
-        $sql = "SELECT COUNT(*) FROM lista_nucleos
-                WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
-                AND id_nucleo <> :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ':nombre' => trim($nombre), 
-            ':id'      => $id_actual
-        ]);
-        return $stmt->fetchColumn() > 0;
-    }
+    $sql = "SELECT COUNT(*) FROM lista_nucleos
+            WHERE REPLACE(LOWER(nombre_nucleo), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
+            AND id_nucleo <> :id 
+            AND estado = 1";
+            
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([
+        ':nombre' => trim($nombre), 
+        ':id'     => $id_actual
+    ]);
+    return $stmt->fetchColumn() > 0;
+}
 
     private function existePnfParaActualizar($nombre, $id_actual) {
-        // Corregido: Agregada la limpieza de espacios REPLACE y la cláusula id_pnf <> :id
-        $sql = "SELECT COUNT(*) FROM lista_pnfs 
-                WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
-                AND id_pnf <> :id";
+        $sql = "SELECT COUNT(*) FROM lista_pnfs
+            WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '') 
+            AND id_pnf <> :id 
+            AND estado = 1";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':nombre' => trim($nombre), 
@@ -71,22 +73,33 @@ class NucleoPNF extends BaseModel {
     }
 
     public function registrarNucleo($nombre) {
-        $existe = $this->existeNucleo($nombre);
+    $existe = $this->existeNucleo($nombre);
 
-        if ($existe) {
-            if ($existe['estado'] == 0) {
-                $sql = "UPDATE lista_nucleos SET estado = 1 WHERE id_nucleo = :id";
-                $stmt = $this->pdo->prepare($sql);
-                return $stmt->execute([':id' => $existe['id_nucleo']]);
+    if ($existe) {
+        if ($existe['estado'] == 0) {
+            $sql = "UPDATE lista_nucleos SET estado = 1 WHERE id_nucleo = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $reactivado = $stmt->execute([':id' => $existe['id_nucleo']]);
+            
+            if ($reactivado) {
+                return ['status' => 'ok', 'message' => '¡Núcleo registrado con éxito!'];
             }
-            return $this->response('error','duplicado'); 
+            return ['status' => 'error', 'message' => 'No se pudo reactivar el núcleo'];
         }
-
-        $sql = "INSERT INTO lista_nucleos (nombre_nucleo) VALUES (:nombre)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':nombre' => trim($nombre)]);
-        return $this->response('ok', 'Nucleo Registrado');
+        
+        return ['status' => 'error', 'message' => 'duplicado']; 
     }
+
+    $sql = "INSERT INTO lista_nucleos (nombre_nucleo, estado) VALUES (:nombre, 1)";
+    $stmt = $this->pdo->prepare($sql);
+    $insertado = $stmt->execute([':nombre' => trim($nombre)]);
+
+    if ($insertado) {
+        return ['status' => 'ok', 'message' => 'Núcleo Registrado'];
+    }
+    
+    return ['status' => 'error', 'message' => 'Ocurrió un error al registrar'];
+}
 
     public function actualizarNucleo($id, $nombre) {
         if ($this->existeNucleoParaActualizar($nombre, $id)) {
@@ -118,23 +131,34 @@ class NucleoPNF extends BaseModel {
         }
     }
 
-    public function registrarPNF($nombre) {
-        $existe = $this->existePNF($nombre);
+    public function registrarPnf($nombre) {
+    $existe = $this->existePNF($nombre);
 
-        if ($existe) {
-            if ($existe['estado'] == 0) {
-                $sql = "UPDATE lista_pnfs SET estado = 1 WHERE id_pnf = :id";
-                $stmt = $this->pdo->prepare($sql);
-                $stmt->execute([':id' => $existe['id_pnf']]);
+    if ($existe) {
+        if ($existe['estado'] == 0) {
+            $sql = "UPDATE lista_pnfs SET estado = 1 WHERE id_pnf = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $reactivado = $stmt->execute([':id' => $existe['id_pnf']]);
+            
+            if ($reactivado) {
+                return ['status' => 'ok', 'message' => '¡PNF registrado con éxito!'];
             }
-            return $this->response('error','duplicado');
+            return ['status' => 'error', 'message' => 'No se pudo reactivar el PNF'];
         }
-
-        $sql = "INSERT INTO lista_pnfs (nombre_pnf) VALUES (:nombre)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':nombre' => trim($nombre)]);
-        return $this->response('ok', 'PNF Registrado');
+        
+        return ['status' => 'error', 'message' => 'duplicado']; 
     }
+
+    $sql = "INSERT INTO lista_pnfs (nombre_pnf, estado) VALUES (:nombre, 1)";
+    $stmt = $this->pdo->prepare($sql);
+    $insertado = $stmt->execute([':nombre' => trim($nombre)]);
+
+    if ($insertado) {
+        return ['status' => 'ok', 'message' => 'PNF Registrado'];
+    }
+    
+    return ['status' => 'error', 'message' => 'Ocurrió un error al registrar'];
+}
 
     public function actualizarPNF($id, $nombre) {
         if ($this->existePnfParaActualizar($nombre, $id)) {

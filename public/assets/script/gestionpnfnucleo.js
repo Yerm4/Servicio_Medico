@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Abrir Registrar PNF
         if (e.target.closest('[data-modal="modalRegistrarPNF"]')) {
             e.preventDefault();
-            const modal = document.getElementById('modalRegistrarPNF');
+            const modal = $(`#${modalRegistrarPNF}`);
             modal?.showModal();
             if (modal) modal.style.opacity = '1';
         }
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Abrir Registrar Núcleo
         if (e.target.closest('[data-modal="modalRegistrarNucleo"]')) {
             e.preventDefault();
-            const modal = document.getElementById('modalRegistrarNucleo');
+            const modal = $(`#${modalRegistrarNucleo}`);
             modal?.showModal();
             if (modal) modal.style.opacity = '1';
         }
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const idPnf = btnEditarPnf.getAttribute('data-id');
             const nombrePnf = btnEditarPnf.getAttribute('data-nombre');
-            const modalEditar = document.getElementById('modalActualizarPNF');
+            const modalEditar = $(`#${modalActualizarPNF}`);
 
             if (modalEditar) {  
                 document.getElementById('edit_id_pnf').value = idPnf;
@@ -236,9 +236,7 @@ configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actual
     configurarFormularioNucleo('formRegistrarNucleo', 'modalRegistrarNucleo', "¡Núcleo registrado con éxito!", 'POST');
     configurarFormularioNucleo('formActualizarNucleo', 'modalActualizarNucleo', "¡Núcleo actualizado con éxito!", 'PUT');
 
-    // -------------------------------------------------------------------------
     // ELIMINACIONES (PNF Y NÚCLEOS)
-    // -------------------------------------------------------------------------
     document.addEventListener('click', async (e) => {
         const btnEliminarPnf = e.target.closest('[name="eliminarPnf"]');
         const btnEliminarNucleo = e.target.closest('[name="eliminarNucleo"]');
@@ -263,7 +261,6 @@ configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actual
             }
         }
 
-        // ELIMINAR NÚCLEO
         if (btnEliminarNucleo) {
             e.preventDefault();
             if (!confirm('¿Seguro que deseas eliminar este núcleo?')) return;
