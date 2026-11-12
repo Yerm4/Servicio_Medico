@@ -48,7 +48,7 @@ class UserController extends BaseController implements ContFace {
         }
     }
 
-    public function registrar() {
+    public function registrar($id = null) {
         if (isset($_SESSION['cedula'])) {
             if (!$this->checkPerm("gestionar_usuarios")) {
                 code(403);
@@ -126,7 +126,7 @@ class UserController extends BaseController implements ContFace {
         }
     }
 
-    public function actualizar() {
+    public function actualizar($id = null) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión para realizar esta acción");

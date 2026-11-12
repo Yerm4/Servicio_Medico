@@ -56,7 +56,7 @@ class ConsultaController extends BaseController implements ContFace {
         $this->consultar($id);
     }
 
-    public function registrar() {
+    public function registrar($id = null) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -110,7 +110,7 @@ class ConsultaController extends BaseController implements ContFace {
         }
     }
 
-    public function actualizar() {
+    public function actualizar($id = null) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
