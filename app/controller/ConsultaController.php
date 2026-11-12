@@ -162,7 +162,7 @@ class ConsultaController extends BaseController implements ContFace {
         }
     }
 
-    /*public function generarReporteMorbilidad() {
+    public function generarReporteMorbilidad() {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -351,7 +351,7 @@ class ConsultaController extends BaseController implements ContFace {
         header('Content-Length: ' . strlen($contenidoPdf));
         echo $contenidoPdf;
         exit();
-    }*/
+    }
 
     public function buscarPatologia() {
         if (!$this->checkPerm("ver_consultas")) {
