@@ -1,9 +1,8 @@
 <dialog id="modalEditarRol" class="modal-crud">
             <div class="action-card">
                 <h3 class="action-card__title">Editar Rol</h3>
-                <form id="formEditarRol" action="index.php" method="POST" class="form-configuracion-flex">
+                <form id="formEditarRol" class="form-configuracion-flex">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                    <input type="hidden" name="form" value="actualizar_rol">
                     <input type="hidden" name="id_rol" id="edit_id_rol">
                     
                     <label class="action-card__label col-nombre-rol">

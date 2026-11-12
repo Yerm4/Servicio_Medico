@@ -30,10 +30,20 @@ if ($appEnv === 'local') {
     error_reporting(0);
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $viewController = new ViewController();
 
-if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') $ruta = trim($_GET["ruta"], "/");
-else $ruta = "login";
+if (isset($_GET["ruta"]) && $_GET["ruta"] !== '') {
+    $ruta = trim($_GET["ruta"], "/");
+} elseif (php_sapi_name() === 'cli-server') {
+    $ruta = trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), "/");
+    $ruta = $ruta === '' || $ruta === 'index.php' ? 'login' : $ruta;
+} else {
+    $ruta = "login";
+}
 
 $partesRuta = explode("/", $ruta);
 $paginaActual = $partesRuta[0];
@@ -60,51 +70,10 @@ $rutasVistas = [
 include_once __DIR__."/../app/permisos/permisos.php";
 
 $formAccion = $_POST["form"] ?? null;
-if ($formAccion && $_SERVER["REQUEST_METHOD"] === "POST") {
+if ($formAccion === "generar_reporte_morbilidad" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $cConsulta = new ConsultaController();
-    switch ($formAccion) {
-        case "registro_consulta":
-            $cConsulta->registroConsulta();
-            exit();
-        case "actualizar_consulta":
-            $cConsulta->actualizarConsulta();
-            exit();
-        case "generar_reporte_morbilidad":
-            $cConsulta->generarReporteMorbilidad();
-            exit();
-        case "guardar_roles_permisos":
-            $cConsulta->guardarRolesPermisos();
-            #header("Location: configuracion");
-            exit();
-        case "registrar_rol":
-            $cConsulta->registrarRol();
-            #header("Location: configuracion");
-            exit();
-        case "actualizar_rol":
-            $cConsulta->actualizarRol();
-            #header("Location: configuracion");
-            exit();
-        case "eliminar_rol":
-            $cConsulta->eliminarRol();
-            #header("Location: configuracion");
-            exit();
-        case "guardar_configuracion":
-            $cConsulta->guardarConfiguracion();
-            #header("Location: configuracion");
-            exit();
-        case "registrar_condicion":
-            $cConsulta->registrarCondicion();
-            #header("Location: configuracion");
-            exit();
-        case "actualizar_condicion":
-            $cConsulta->actualizarCondicion();
-            #header("Location: configuracion");
-            exit();
-        case "eliminar_condicion":
-            $cConsulta->eliminarCondicion();
-            #header("Location: configuracion");
-            exit();
-    }
+    $cConsulta->generarReporteMorbilidad();
+    exit();
 }
 $paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 

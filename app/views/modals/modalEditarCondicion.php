@@ -1,9 +1,8 @@
 <dialog id="modalEditarCondicion" class="modal-crud">
             <div class="action-card">
                 <h3 class="action-card__title">Editar Condición</h3>
-                <form id="formEditarCondicion" action="index.php" method="POST" class="form-configuracion-flex">
+                <form id="formEditarCondicion" class="form-configuracion-flex">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                    <input type="hidden" name="form" value="actualizar_condicion">
                     <input type="hidden" name="id" id="edit_id_condicion">
                     
                     <label class="action-card__label col-nombre-rol">

@@ -20,12 +20,26 @@ class Consulta extends BaseModel {
 
     public function buscarUsuario($query) {
         try {
-            $sql = "SELECT cedula, nombre, apellido FROM usuarios 
-                    WHERE (cedula LIKE :query OR nombre LIKE :query OR apellido LIKE :query) 
+            $terminos = preg_split('/\s+/', trim((string)$query), -1, PREG_SPLIT_NO_EMPTY);
+            if (empty($terminos)) {
+                return [];
+            }
+
+            $condiciones = [];
+            $parametros = [];
+            foreach ($terminos as $indice => $termino) {
+                $placeholder = ':termino' . $indice;
+                $condiciones[] = "(cedula LIKE {$placeholder} OR nombre LIKE {$placeholder} OR apellido LIKE {$placeholder})";
+                $parametros[$placeholder] = '%' . $termino . '%';
+            }
+
+            $sql = "SELECT cedula, nombre, apellido FROM usuarios
+                    WHERE " . implode(' AND ', $condiciones) . "
                     AND activo = 1
+                    ORDER BY apellido, nombre
                     LIMIT 10";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([':query' => '%' . $query . '%']);
+            $stmt->execute($parametros);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
@@ -322,22 +336,37 @@ class Consulta extends BaseModel {
 
     public function buscarConsultas($query, $limit = 20, $offset = 0) {
         try {
+            $terminos = preg_split('/\s+/', trim((string)$query), -1, PREG_SPLIT_NO_EMPTY);
+            if (empty($terminos)) {
+                return [];
+            }
+
+            $condiciones = [];
+            $parametros = [];
+            foreach ($terminos as $indice => $termino) {
+                $placeholder = ':termino' . $indice;
+                $condiciones[] = "(c.id_usuario LIKE {$placeholder}
+                    OR u.nombre LIKE {$placeholder}
+                    OR u.apellido LIKE {$placeholder}
+                    OR m.nombre LIKE {$placeholder}
+                    OR m.apellido LIKE {$placeholder}
+                    OR c.motivo_de_visita LIKE {$placeholder})";
+                $parametros[$placeholder] = '%' . $termino . '%';
+            }
+
             $sql = "SELECT c.id, c.id_usuario, c.id_medico, c.motivo_de_visita, c.observaciones, c.medicamento_suministrado, c.fecha_consulta,
                            u.nombre AS paciente_nombre, u.apellido AS paciente_apellido,
                            m.nombre AS medico_nombre, m.apellido AS medico_apellido 
                     FROM consulta_medica c
                     LEFT JOIN usuarios u ON c.id_usuario = u.cedula
                     LEFT JOIN usuarios m ON c.id_medico = m.cedula
-                    WHERE (c.id_usuario LIKE :query 
-                       OR u.nombre LIKE :query 
-                       OR u.apellido LIKE :query 
-                       OR m.nombre LIKE :query 
-                       OR m.apellido LIKE :query
-                       OR c.motivo_de_visita LIKE :query)
+                    WHERE " . implode(' AND ', $condiciones) . "
                     ORDER BY c.fecha_consulta DESC
                     LIMIT :limit OFFSET :offset";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':query', '%' . $query . '%', PDO::PARAM_STR);
+            foreach ($parametros as $placeholder => $valor) {
+                $stmt->bindValue($placeholder, $valor, PDO::PARAM_STR);
+            }
             $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
             $stmt->execute();

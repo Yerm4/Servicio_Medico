@@ -1,9 +1,8 @@
 <dialog id="modalRegistrarCondicion" class="modal-crud">
             <div class="action-card">
                 <h3 class="action-card__title">Registrar Condición</h3>
-                <form id="formRegistrarCondicion" action="index.php" method="POST" class="form-configuracion-flex">
+                <form id="formRegistrarCondicion" class="form-configuracion-flex">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                    <input type="hidden" name="form" value="registrar_condicion">
                     
                     <label class="action-card__label col-nombre-rol">
                         <span class="texto-label-negrita">Nombre de la Condición</span>

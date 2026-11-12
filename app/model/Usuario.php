@@ -335,6 +335,44 @@ class Usuario extends BaseModel {
         }
     }
 
+    public function actualizarPermisosRoles(array $permisosPorRol): bool {
+        try {
+            $this->pdo->beginTransaction();
+            $roles = $this->pdo->query("SELECT id_rol FROM lista_roles")->fetchAll(PDO::FETCH_COLUMN);
+            $stmtDel = $this->pdo->prepare("DELETE FROM roles_permisos WHERE id_rol = :id_rol");
+            $stmtIns = $this->pdo->prepare(
+                "INSERT INTO roles_permisos (id_rol, id_permiso) VALUES (:id_rol, :id_permiso)"
+            );
+
+            foreach ($roles as $idRol) {
+                $stmtDel->execute([':id_rol' => (int)$idRol]);
+                $permisosIds = $permisosPorRol[$idRol] ?? [];
+
+                if (!is_array($permisosIds)) {
+                    $permisosIds = [$permisosIds];
+                }
+
+                foreach ($permisosIds as $idPermiso) {
+                    $idPermiso = (int)$idPermiso;
+                    if ($idPermiso > 0) {
+                        $stmtIns->execute([
+                            ':id_rol' => (int)$idRol,
+                            ':id_permiso' => $idPermiso
+                        ]);
+                    }
+                }
+            }
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            return false;
+        }
+    }
+
     public function crearRol($nombre, $descripcion) {
         try {
             $stmt = $this->pdo->prepare("INSERT INTO lista_roles (nombre_rol, descripcion_rol) VALUES (:nombre, :descripcion)");

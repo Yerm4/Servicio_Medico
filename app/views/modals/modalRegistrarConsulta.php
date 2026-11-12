@@ -1,9 +1,8 @@
 <dialog id="modalRegistrarConsulta" class="modal-crud">
     <div class="action-card">
         <h3 class="action-card__title">Registrar Consulta Médica</h3>
-        <form class="action-card__form--registrar-usuarios" action="" method="POST">
+        <form class="action-card__form--registrar-usuarios">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            <input type="hidden" name="form" value="registro_consulta">
 
             <div class="action-card__form--grid">    
                 <label class="action-card__label action-card__label--relative">Paciente (Buscar por Cédula o Nombre)

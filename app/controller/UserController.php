@@ -43,7 +43,7 @@ class UserController extends BaseController {
             $_SESSION["user_agent"] = $_SERVER['HTTP_USER_AGENT'] ?? '';$this->jsonResponse("ok", "Logueado", null, "perfil");
         } else {
             code(401);
-            $this->jsonResponse("error", "Usuario o contraseña incorssrectos");
+            $this->jsonResponse("error", "Usuario o contraseña incorrectos");
         }
     }
 
@@ -358,11 +358,9 @@ class UserController extends BaseController {
         $postedPermisos =$data['permisos'] ?? [];
 
         $userModel = new Usuario();
-        $roles =$userModel->obtenerRoles();
-
-        foreach ($roles as$role) {
-            $idRol =$role['id_rol'];
-            $permisosIds = isset($postedPermisos[$idRol]) ?$postedPermisos[$idRol] : [];$userModel->actualizarPermisosRol($idRol,$permisosIds);
+        if (!is_array($postedPermisos) || !$userModel->actualizarPermisosRoles($postedPermisos)) {
+            code(400);
+            $this->jsonResponse("error", "No se pudieron actualizar los permisos");
         }
 
         code(200);

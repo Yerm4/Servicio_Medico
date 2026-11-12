@@ -62,7 +62,7 @@ class NucleoPNF extends BaseModel {
 
     public function obtenerNucleos() {
         try {
-            $sql = "SELECT id_nucleo, nombre_nucleo FROM lista_nucleos WHERE estado = 1 ORDER BY nombre_nucleo ASC";
+            $sql = "SELECT id_nucleo, nombre_nucleo FROM lista_nucleos WHERE estado = 1 ORDER BY id_nucleo ASC";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -121,7 +121,7 @@ class NucleoPNF extends BaseModel {
 
     public function obtenerPNFS() {
         try {
-            $sql = "SELECT id_pnf, nombre_pnf FROM lista_pnfs WHERE estado = 1 ORDER BY nombre_pnf ASC";
+            $sql = "SELECT id_pnf, nombre_pnf FROM lista_pnfs WHERE estado = 1 ORDER BY id_pnf ASC";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -185,7 +185,7 @@ class NucleoPNF extends BaseModel {
                     INNER JOIN lista_nucleos n ON o.id_nucleo = n.id_nucleo
                     INNER JOIN lista_pnfs p ON o.id_pnf = p.id_pnf
                     WHERE o.estado = 1 AND n.estado = 1 AND p.estado = 1
-                    ORDER BY n.nombre_nucleo ASC, p.nombre_pnf ASC";
+                    ORDER BY o.id_nucleo ASC, o.id_pnf ASC";
             
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
@@ -227,7 +227,7 @@ class NucleoPNF extends BaseModel {
                     FROM nucleo_pnf o
                     INNER JOIN lista_pnfs p ON o.id_pnf = p.id_pnf
                     WHERE o.id_nucleo = :id_nucleo AND o.estado = 1 AND p.estado = 1
-                    ORDER BY p.nombre_pnf ASC";
+                    ORDER BY p.id_pnf ASC";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([':id_nucleo' => $id_nucleo]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

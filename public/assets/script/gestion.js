@@ -75,7 +75,7 @@ if (inputBuscarC && cuerpoTablaConsultas) {
     inputBuscarC.addEventListener('input', function() {
         const textoBusqueda = inputBuscarC.value.trim();
 
-        fetch(`api/consulta?query=${encodeURIComponent(textoBusqueda)}`)
+        fetch(`api/consultas?query=${encodeURIComponent(textoBusqueda)}`)
         .then(response => response.json())
         .then(res => {
             const consultas = Array.isArray(res) ? res : (res.data || []);
@@ -99,7 +99,7 @@ if (btnCargarMas && cuerpoTablaConsultas) {
         const query = inputBuscarC ? inputBuscarC.value.trim() : '';
         const offset = cuerpoTablaConsultas.querySelectorAll('tr:not(.no-registros)').length;
 
-        fetch(`api/consulta?query=${encodeURIComponent(query)}&offset=${offset}`)
+        fetch(`api/consultas?query=${encodeURIComponent(query)}&offset=${offset}`)
         .then(response => response.json())
         .then(res => {
             const consultas = Array.isArray(res) ? res : (res.data || []);
@@ -122,7 +122,7 @@ if (cuerpoTablaConsultas && modalActualizarConsulta) {
             const idConsulta = event.target.getAttribute('data-id');
             const modalVer = document.getElementById('modalVerDetallesConsulta');
 
-            fetch(`api/consulta/${idConsulta}`)
+            fetch(`api/consultas/${idConsulta}`)
             .then(response => response.json())
             .then(res => {
                 const consulta = res.data || res;
@@ -171,7 +171,7 @@ if (cuerpoTablaConsultas && modalActualizarConsulta) {
             event.preventDefault();
             const idConsulta = event.target.getAttribute('data-id');
 
-            fetch(`api/consulta/${idConsulta}`)
+            fetch(`api/consultas/${idConsulta}`)
             .then(response => response.json())
             .then(res => {
                 const consulta = res.data || res;
@@ -370,6 +370,67 @@ async function refrescarFragmento(idElemento) {
     }
 }
 
+function formDataToObject(formData) {
+    const data = {};
+
+    for (const [key, value] of formData.entries()) {
+        if (key.endsWith("[]")) {
+            const name = key.slice(0, -2);
+            if (!Array.isArray(data[name])) data[name] = [];
+            data[name].push(value);
+        } else {
+            data[key] = value;
+        }
+    }
+
+    return data;
+}
+
+async function enviarFormularioConsulta(form, method, url, modal) {
+    const formData = new FormData(form);
+    const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formDataToObject(formData))
+    });
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok || !data || (data.status !== "ok" && data.status !== "success")) {
+        throw new Error(data?.message || "No se pudo guardar la consulta");
+    }
+
+    modal?.close?.();
+    if (modal) modal.style.opacity = "0";
+    window.location.reload();
+}
+
+const formRegistrarConsulta = document.querySelector("#modalRegistrarConsulta form");
+const modalRegistrarConsulta = document.getElementById("modalRegistrarConsulta");
+if (formRegistrarConsulta) {
+    formRegistrarConsulta.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        try {
+            await enviarFormularioConsulta(formRegistrarConsulta, "POST", "api/consultas", modalRegistrarConsulta);
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+}
+
+const formActualizarConsulta = document.getElementById("formulario-edicion-consulta");
+if (formActualizarConsulta) {
+    formActualizarConsulta.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        try {
+            await enviarFormularioConsulta(formActualizarConsulta, "PUT", "api/consultas", modalActualizarConsulta);
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+}
+
 // -------------------------------------------------------------------------
 // CRUD ROLES (AJAX)
 // -------------------------------------------------------------------------
@@ -496,7 +557,10 @@ if (formRolesPermisos) {
             const res = await fetch("api/roles/permisos", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ permisos: permisosObj })
+                body: JSON.stringify({
+                    csrf_token: formData.get("csrf_token"),
+                    permisos: permisosObj
+                })
             });
             const data = await res.json().catch(() => null);
 
@@ -511,6 +575,52 @@ if (formRolesPermisos) {
         }
     });
 }
+
+function configurarOrdenamientoTablas() {
+    document.querySelectorAll("table").forEach((tabla) => {
+        const encabezados = tabla.querySelectorAll("thead th.sortable");
+        const cuerpo = tabla.tBodies[0];
+        if (!encabezados.length || !cuerpo) return;
+
+        encabezados.forEach((encabezado) => {
+            encabezado.style.cursor = "pointer";
+            encabezado.title = "Ordenar";
+            encabezado.addEventListener("click", () => {
+                const indice = encabezado.cellIndex;
+                const direccionActual = encabezado.dataset.sortDirection === "asc" ? "desc" : "asc";
+
+                encabezados.forEach((otro) => {
+                    delete otro.dataset.sortDirection;
+                    otro.textContent = otro.textContent.replace(/[▲▼]\s*$/, "").trim();
+                });
+
+                encabezado.dataset.sortDirection = direccionActual;
+                encabezado.textContent = `${encabezado.textContent.replace(/[▲▼]\s*$/, "").trim()} ${direccionActual === "asc" ? "▲" : "▼"}`;
+
+                const filas = Array.from(cuerpo.rows)
+                    .filter((fila) => !fila.querySelector(".td-tabla-vacia") && fila.cells.length > indice)
+                    .map((fila, posicion) => ({ fila, posicion }));
+
+                filas.sort((a, b) => {
+                    const valorA = a.fila.cells[indice].textContent.trim();
+                    const valorB = b.fila.cells[indice].textContent.trim();
+                    const numeroA = Number(valorA);
+                    const numeroB = Number(valorB);
+                    const ambosNumericos = valorA !== "" && valorB !== "" && Number.isFinite(numeroA) && Number.isFinite(numeroB);
+                    const comparacion = ambosNumericos
+                        ? numeroA - numeroB
+                        : valorA.localeCompare(valorB, undefined, { sensitivity: "base" });
+
+                    return (direccionActual === "asc" ? comparacion : -comparacion) || a.posicion - b.posicion;
+                });
+
+                filas.forEach(({ fila }) => cuerpo.appendChild(fila));
+            });
+        });
+    });
+}
+
+configurarOrdenamientoTablas();
 
 // -------------------------------------------------------------------------
 // CONFIGURACIÓN GENERAL (AJAX)

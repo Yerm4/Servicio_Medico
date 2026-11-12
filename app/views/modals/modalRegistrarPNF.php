@@ -6,7 +6,6 @@
         <form id="formRegistrarPNF" class="action-card__form--registrar-usuarios">
             <div class="action-card__form--grid">
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-                <input type="hidden" name="form" value="registrar_pnf">
                 <label for="nombre_pnf" class="action-card__label">Nombre del PNF
                     <input type="text" class="action-card__input" id="nombre_pnf" name="nombre_pnf" required minlength="4" maxlength="100" pattern="^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s\(\)]+$" title="Solo se permiten letras y espacios. Mínimo 4 caracteres."placeholder="Ej. Informática">
                 </label>

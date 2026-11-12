@@ -5,9 +5,8 @@
         
         <div id="alert-container-oferta" style="margin-bottom: 1rem; width: 100%;"></div>
 
-        <form class="action-card__form" action="index.php" method="POST" id="formRegistrarOferta">
+        <form class="action-card__form" id="formRegistrarOferta">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-            <input type="hidden" name="form" value="registrar_oferta" required>
             
             <div class="action-card__form--grid" style="display: block; margin-bottom: 1.5rem;">
                 

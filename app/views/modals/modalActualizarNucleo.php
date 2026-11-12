@@ -8,7 +8,6 @@
             <div class="action-card__form--grid">
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
                 
-                <input type="hidden" name="form" value="actualizar_nucleo">
                 
                 <input type="hidden" name="id_nucleo" id="edit_id_nucleo">
 

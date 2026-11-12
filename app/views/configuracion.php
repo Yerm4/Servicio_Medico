@@ -33,9 +33,8 @@ include_once __DIR__."/layout/header.php";
                 <div id="sub-content-general" class="sub-tab-content subcontent-general-box configuracion-bloque-formulario">
                     <h3 class="titulo-configuracion-interna">Configuración General</h3>
                     <div id="alert-container-general-config" class="alert-container"></div>
-                    <form id="formGuardarConfiguracion" action="index.php" method="POST" class="form-configuracion-flex">
+                    <form id="formGuardarConfiguracion" class="form-configuracion-flex">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                        <input type="hidden" name="form" value="guardar_configuracion">
                         
                         <label class="label-rol-defecto">
                             <span class="texto-label-negrita">Rol por defecto en registro</span>
@@ -58,9 +57,8 @@ include_once __DIR__."/layout/header.php";
                     <div id="alert-container-roles" class="alert-container"></div>
                     <div class="contenedor-form-nuevo-rol">
                         <h3 class="titulo-configuracion-interna">Crear Nuevo Rol</h3>
-                        <form id="formRegistrarRol" action="index.php" method="POST" class="form-configuracion-flex">
+                        <form id="formRegistrarRol" class="form-configuracion-flex">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <input type="hidden" name="form" value="registrar_rol">
                             <input type="text" name="nombre_rol" required class="action-card__input" placeholder="Ej. Enfermero">
                             <input type="text" name="descripcion_rol" class="action-card__input" placeholder="Ej. Personal médico">
                             <button type="submit" class="action-card__button btn-crear-rol">Crear Rol</button>
@@ -74,9 +72,9 @@ include_once __DIR__."/layout/header.php";
                         <table id="tablaRoles" class="tabla-consultas">
                             <thead>
                                 <tr class="tr-head-consultas">
-                                    <th>ID</th>
-                                    <th>Nombre del Rol</th>
-                                    <th>Descripción</th>
+                                    <th class="sortable">ID</th>
+                                    <th class="sortable">Nombre del Rol</th>
+                                    <th class="sortable">Descripción</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -88,9 +86,8 @@ include_once __DIR__."/layout/header.php";
                                         <td><?= e($role['descripcion_rol']) ?></td>
                                         <td>
                                             <button type="button" class="action-card__button editar-rol" data-id="<?= e($role['id_rol']) ?>" data-nombre="<?= e($role['nombre_rol']) ?>" data-descripcion="<?= e($role['descripcion_rol']) ?>">Editar</button>
-                                            <form action="index.php" method="POST" class="form-eliminar-inline form-eliminar-rol">
+                                            <form class="form-eliminar-inline form-eliminar-rol">
                                                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                                <input type="hidden" name="form" value="eliminar_rol">
                                                 <input type="hidden" name="id_rol" value="<?= e($role['id_rol']) ?>">
                                                 <button type="submit" class="action-card__button action-card__button--red">Eliminar</button>
                                             </form>
@@ -104,9 +101,8 @@ include_once __DIR__."/layout/header.php";
                     <hr class="separador-configuracion">
 
                     <h3 class="titulo-configuracion-interna">Matriz de Asignación de Permisos</h3>
-                    <form id="formRolesPermisos" action="index.php" method="POST">
+                    <form id="formRolesPermisos">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                        <input type="hidden" name="form" value="guardar_roles_permisos">
                         <div id="contenedorMatrizPermisos">
                             <table class="tabla-consultas">
                                 <thead>
@@ -152,9 +148,9 @@ include_once __DIR__."/layout/header.php";
                     <table class="tabla-consultas" id="tablaCondiciones">
                         <thead>
                             <tr class="tr-head-consultas">
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
+                                <th class="sortable">ID</th>
+                                <th class="sortable">Nombre</th>
+                                <th class="sortable">Descripción</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -168,9 +164,8 @@ include_once __DIR__."/layout/header.php";
                                     <td><?= e($cond['descripcion_condicion']) ?></td>
                                     <td>
                                         <button type="button" class="action-card__button editar-condicion" data-id="<?= e($cond['id']) ?>" data-nombre="<?= e($cond['nombre_condicion']) ?>" data-descripcion="<?= e($cond['descripcion_condicion']) ?>">Editar</button>
-                                        <form action="index.php" method="POST" class="form-eliminar-inline form-eliminar-condicion">
+                                        <form class="form-eliminar-inline form-eliminar-condicion">
                                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                            <input type="hidden" name="form" value="eliminar_condicion">
                                             <input type="hidden" name="id" value="<?= e($cond['id']) ?>">
                                             <button type="submit" class="action-card__button action-card__button--red">Eliminar</button>
                                         </form>
@@ -194,8 +189,8 @@ include_once __DIR__."/layout/header.php";
                         <table id="tablaRegistrosOfertas" class="tabla-consultas">
                             <thead>
                                 <tr class="tr-head-consultas">
-                                    <th class="th-consultas">Núcleo</th>
-                                    <th class="th-consultas">Programa de Formación Nacional (PNF)</th>
+                                    <th class="th-consultas sortable">Núcleo</th>
+                                    <th class="th-consultas sortable">Programa de Formación Nacional (PNF)</th>
                                     <th class="th-consultas">Acciones</th>
                                 </tr>
                             </thead>
@@ -205,7 +200,7 @@ include_once __DIR__."/layout/header.php";
                                         <td class="td-consultas"><strong><?= e($o['nombre_nucleo']) ?></strong></td>
                                         <td class="td-consultas"><?= e($o['nombre_pnf']) ?></td>
                                         <td class="td-acciones-btn">
-                                            <form id="eliminarOferta" method="POST" action="index.php" class="form-eliminar-inline">
+                                            <form id="eliminarOferta" class="form-eliminar-inline">
                                                 <input type="hidden" name="id_oferta" value="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>">
                                                 <input type="hidden" name="id_nucleo" value="<?= e($o['id_nucleo']) ?>">
                                                 <input type="hidden" name="id_pnf" value="<?= e($o['id_pnf']) ?>">
@@ -238,19 +233,18 @@ include_once __DIR__."/layout/header.php";
                             <table id="tablaNucleos" class="tabla-consultas">
                                 <thead>
                                     <tr class="tr-head-consultas">
-                                        <th class="th-consultas">ID</th>
-                                        <th class="th-consultas">Nombre del Núcleo</th>
+                                        <th class="th-consultas sortable">ID</th>
+                                        <th class="th-consultas sortable">Nombre del Núcleo</th>
                                         <th class="th-consultas">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="cuerpoTablaNucleos">
                                     <?php 
                                     if (!empty($nucleos)): 
-                                        $i = 1;
                                         foreach ($nucleos as $n): 
                                     ?>
                                             <tr class="tr-body-consultas">
-                                                <td class="td-consultas-nowrap"><?= $i++ ?></td>
+                                                <td class="td-consultas-nowrap"><?= e($n['id_nucleo']) ?></td>
                                                 <td class="td-consultas"><strong><?= e($n['nombre_nucleo']) ?></strong></td>
                                                 
                                                 <td class="td-acciones-btn">
@@ -296,19 +290,18 @@ include_once __DIR__."/layout/header.php";
                             <table id="tablaPnfs" class="tabla-consultas">
                                 <thead>
                                     <tr class="tr-head-consultas">
-                                        <th class="th-consultas">ID</th>
-                                        <th class="th-consultas">Nombre del PNF</th>
+                                        <th class="th-consultas sortable">ID</th>
+                                        <th class="th-consultas sortable">Nombre del PNF</th>
                                         <th class="th-consultas">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabla-pnf-body">
                                     <?php 
                                     if (!empty($pnfs)): 
-                                        $i = 1; 
                                         foreach ($pnfs as $p): 
                                     ?>
                                         <tr class="tr-body-consultas">
-                                            <td class="td-consultas-nowrap"><?= $i++ ?></td>
+                                            <td class="td-consultas-nowrap"><?= e($p['id_pnf']) ?></td>
                                             <td class="td-consultas"><strong><?= e($p['nombre_pnf']) ?></strong></td>
                                             <td class="td-acciones-btn">
                                                 <div class="acciones-flex">

@@ -1,6 +1,10 @@
 
     document.body.style.opacity = 1
 
+function unwrapApiData(response) {
+    return Array.isArray(response?.data) ? response.data : (Array.isArray(response) ? response : []);
+}
+
 // Add symptoms logic
 const btnAddSintoma = document.getElementById("btn-add-sintoma");
 const sintomaInput = document.getElementById("sintoma-input");
@@ -64,9 +68,10 @@ if (diagnosticoSearch && sugerenciasBox && diagnosticosSeleccionados) {
         }
 
         timeout = setTimeout(() => {
-            fetch(`index.php?ruta=buscar_patologia&q=${encodeURIComponent(query)}`)
+            fetch(`api/consultas/patologias?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
+                    data = unwrapApiData(data);
                     sugerenciasBox.innerHTML = "";
                     if (data.length > 0) {
                         data.forEach(item => {
@@ -187,9 +192,10 @@ function cargarCondicionesPaciente(cedula, listId, infoDivId = null) {
         return;
     }
 
-    fetch(`index.php?ruta=buscar_condiciones_paciente&cedula=${cedula}`)
+    fetch(`api/condiciones/paciente/${encodeURIComponent(cedula)}`)
         .then(res => res.json())
         .then(data => {
+            data = unwrapApiData(data);
             if (data.length > 0) {
                 const names = data.map(item => item.condicion).join(", ");
                 if (infoDiv) {
@@ -232,9 +238,10 @@ function setupCondicionesAutocomplete(inputId, suggestionsId, listId) {
         }
 
         timeout = setTimeout(() => {
-            fetch(`index.php?ruta=buscar_condicion&q=${encodeURIComponent(query)}`)
+            fetch(`api/condiciones/buscar?q=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
+                    data = unwrapApiData(data);
                     suggestionsBox.innerHTML = "";
                     if (data.length > 0) {
                         data.forEach(item => {
@@ -308,9 +315,10 @@ function setupPatientAutocomplete(inputId, suggestionsId, hiddenId, onSelectCall
         }
 
         timeout = setTimeout(() => {
-            fetch(`index.php?ruta=buscar_paciente&q=${encodeURIComponent(query)}`)
+            fetch(`api/consultas/pacientes?q=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
+                    data = unwrapApiData(data);
                     suggestionsBox.innerHTML = "";
                     if (data.length > 0) {
                         data.forEach(item => {
@@ -479,9 +487,10 @@ setupPatientAutocomplete("paciente-search-buscar", "pacientes-sugerencias-buscar
 
     if (!cedula) return;
 
-    fetch(`index.php?ruta=buscar_consultas_paciente&cedula=${cedula}`)
+    fetch(`api/consultas/paciente/${encodeURIComponent(cedula)}`)
         .then(res => res.json())
         .then(data => {
+            data = unwrapApiData(data);
             if (data.length === 0) {
                 listContainer.textContent = "No hay consultas registradas para este paciente.";
                 return;
@@ -526,9 +535,10 @@ setupPatientAutocomplete("paciente-search-actualizar", "pacientes-sugerencias-ac
 
     if (!cedula) return;
 
-    fetch(`index.php?ruta=buscar_consultas_paciente&cedula=${cedula}`)
+    fetch(`api/consultas/paciente/${encodeURIComponent(cedula)}`)
         .then(res => res.json())
         .then(data => {
+            data = unwrapApiData(data);
             if (data.length === 0) {
                 listContainer.textContent = "No hay consultas registradas para este paciente.";
                 return;
@@ -690,9 +700,10 @@ if (editDiagSearch && editDiagSugerencias) {
             return;
         }
         editTimeout = setTimeout(() => {
-            fetch(`index.php?ruta=buscar_patologia&q=${encodeURIComponent(query)}`)
+            fetch(`api/consultas/patologias?q=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
+                    data = unwrapApiData(data);
                     editDiagSugerencias.innerHTML = "";
                     if (data.length > 0) {
                         data.forEach(item => {

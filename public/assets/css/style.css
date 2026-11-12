@@ -9,6 +9,15 @@
     font-family: 'Montserrat';
     src: url('../font/Montserrat-Bold.woff2') format('woff2');
     font-weight: 700;
+}
+
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+th.sortable:hover {
+    text-decoration: underline;
     font-style: normal;
 }
 
@@ -85,9 +94,12 @@ a {
 
 .top-menu__links {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
-    width: 65%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
 }
 
 .top-menu__login {

@@ -16,9 +16,8 @@
 
         <div id="consultas-lista-actualizar" class="consultas-lista-scroll"></div>
 
-        <form id="formulario-edicion-consulta" class="action-card__form--registrar-usuarios formulario-edicion-seccion" action="index.php" method="POST" style="display: none;">
+        <form id="formulario-edicion-consulta" class="action-card__form--registrar-usuarios formulario-edicion-seccion" style="display: none;">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            <input type="hidden" name="form" value="actualizar_consulta">
             <input type="hidden" id="edit_id_consulta" name="id_consulta">
 
             <h4 class="subtitulo-modal">Editar Detalles de la Consulta</h4>

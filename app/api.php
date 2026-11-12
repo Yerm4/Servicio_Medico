@@ -2,8 +2,6 @@
 
 /* $rutasApi = [
     "GET" => [
-        "api/consulta"                      => "getConsultas",
-        "api/consulta/{id}"                 => "getConsultas",
         "api/consultas"                     => "getConsultas",
         "api/consultas/{id}"                => "getConsultas",
         "api/consultas/detalle"             => "obtenerConsulta",
@@ -23,7 +21,6 @@
     "POST" => [
         "api/auth/login"                    => "login",
         "api/users"                         => "registrarUsuario",
-        "api/consulta"                      => "registroConsulta",
         "api/consultas"                     => "registroConsulta",
         "api/consultas/reporte-morbilidad"  => "generarReporteMorbilidad",
         "api/roles"                         => "registrarRol",
@@ -34,7 +31,6 @@
     ],
     "PUT" => [
         "api/users"                         => "actualizarUsuario",
-        "api/consulta"                      => "actualizarConsulta",
         "api/consultas"                     => "actualizarConsulta",
         "api/roles"                         => "actualizarRol",
         "api/roles/permisos"                => "guardarRolesPermisos",
@@ -56,16 +52,14 @@
 ]; */
 $rutasApi = [
     "GET" => [
-        "api/consulta"                     => "ConsultaController@getConsultas",
-        "api/consulta/{id}"                => "ConsultaController@getConsultas",
         "api/consultas"                    => "ConsultaController@getConsultas",
-        "api/consultas/{id}"               => "ConsultaController@getConsultas",
         "api/consultas/detalle"            => "ConsultaController@obtenerConsulta",
         "api/consultas/detalle/{id}"       => "ConsultaController@obtenerConsulta",
         "api/consultas/reporte-morbilidad" => "ConsultaController@generarReporteMorbilidad",
         "api/consultas/patologias"         => "ConsultaController@buscarPatologia",
         "api/consultas/pacientes"          => "ConsultaController@buscarPaciente",
         "api/consultas/paciente/{cedula}"  => "ConsultaController@obtenerConsultasPaciente",
+        "api/consultas/{id}"               => "ConsultaController@getConsultas",
         "api/users/buscar/{id}"            => "UserController@buscarUsuario",
         "api/users/cedula"                 => "UserController@obtenerUsuario",
         "api/users/{id}"                   => "UserController@obtenerUsuario",
@@ -78,7 +72,6 @@ $rutasApi = [
     "POST" => [
         "api/auth/login"                   => "UserController@login",
         "api/users"                        => "UserController@registrarUsuario",
-        "api/consulta"                     => "ConsultaController@registroConsulta",
         "api/consultas"                    => "ConsultaController@registroConsulta",
         "api/consultas/reporte-morbilidad" => "ConsultaController@generarReporteMorbilidad",
         "api/roles"                        => "UserController@registrarRol",
@@ -89,7 +82,6 @@ $rutasApi = [
     ],
     "PUT" => [
         "api/users"                        => "UserController@actualizarUsuario",
-        "api/consulta"                     => "ConsultaController@actualizarConsulta",
         "api/consultas"                    => "ConsultaController@actualizarConsulta",
         "api/roles"                        => "UserController@actualizarRol",
         "api/roles/permisos"               => "UserController@guardarRolesPermisos",

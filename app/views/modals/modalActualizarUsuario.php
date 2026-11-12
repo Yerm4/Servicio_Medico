@@ -6,7 +6,6 @@
     <form id="formActualizarUsuario" class="action-card__form--registrar-usuarios">
         <div class="action-card__form--grid">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            <input type="hidden" name="form" value="actualizar_usuario">
             
             <label for="edit_cedula" class="action-card__label">Cédula de Identidad
                 <input type="tel" class="action-card__input" id="edit_cedula" name="cedula" readonly required>
