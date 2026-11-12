@@ -4,8 +4,9 @@ namespace app\controller;
 
 use app\model\Usuario;
 use app\controller\BaseController;
+use app\face\ContFace;
 
-class UserController extends BaseController {
+class UserController extends BaseController implements ContFace {
 
     public function login() {
         $data =$this->getRequestData();
@@ -47,7 +48,7 @@ class UserController extends BaseController {
         }
     }
 
-    public function registrarUsuario() {
+    public function registrar() {
         if (isset($_SESSION['cedula'])) {
             if (!$this->checkPerm("gestionar_usuarios")) {
                 code(403);
@@ -103,24 +104,29 @@ class UserController extends BaseController {
 
         $modeloPaciente = new Usuario();
 
-        $resultado = $modeloPaciente->registrarUsuario($cedula, $nombre,$apellido, $tipo,$fecha_nacimiento, 
+        $resultado = $modeloPaciente->registrar($cedula, $nombre,$apellido, $tipo,$fecha_nacimiento, 
             $tlfprincipal,$tlfemergencia, $nombre_contacto_emergencia,$sexo, 
             $direccion,$rol, $nucleo_id,$pnf_id
         );
 
         if ($resultado["status"] === "ok") {
-            session_regenerate_id(true);
-            $_SESSION["cedula"] = $cedula;
-            $_SESSION["user_agent"] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-            code(201);
-            $this->jsonResponse("ok", $resultado["message"] ?? $resultado["msg"] ?? "Usuario registrado con éxito");
+            if (isset($_SESSION["cedula"])) {
+                code(201);
+                $this->jsonResponse("ok", $resultado["message"] ?? "Usuario registrado con éxito");
+            } else {
+                session_regenerate_id(true);
+                $_SESSION["cedula"] = $cedula;
+                $_SESSION["user_agent"] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+                code(201);
+                $this->jsonResponse("ok", $resultado["message"] ?? "Usuario registrado con éxito");
+            }
         } else {
             code(400);
             $this->jsonResponse("error", $resultado["message"] ?? $resultado["msg"] ?? "Error al registrar el usuario");
         }
     }
 
-    public function actualizarUsuario() {
+    public function actualizar() {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión para realizar esta acción");
@@ -186,7 +192,7 @@ class UserController extends BaseController {
         }
     }
 
-    public function buscarUsuario($id = null) {
+    public function consultar($id = null) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -239,7 +245,7 @@ class UserController extends BaseController {
         }
     }
 
-    public function eliminarUsuario($id) {
+    public function eliminar($id) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");

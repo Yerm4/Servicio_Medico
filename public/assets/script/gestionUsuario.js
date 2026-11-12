@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 alert(result.message || "Usuario registrado con éxito");
                 signupForm.reset();
+                document.getElementById("modalRegistrarUsuario").close()
             } catch (error) {
                 alert("Error al registrar: " + error.message);
             }

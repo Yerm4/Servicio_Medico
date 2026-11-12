@@ -5,7 +5,7 @@ namespace app\controller;
 use app\model\Usuario;
 
 class BaseController {
-    private ?array $requestData = null;
+    private $requestData = null;
     
     protected function jsonResponse($status, $message = "", $data = null, $redirect = null) {
         header("Content-Type: application/json; charset=UTF-8");

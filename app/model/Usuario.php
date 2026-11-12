@@ -16,7 +16,7 @@ class Usuario extends BaseModel {
         ];
     }
 
-    public function registrarUsuario($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
+    public function registrar($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
         try {
             $stmtCheck = $this->pdo->prepare("SELECT activo FROM usuarios WHERE cedula = :cedula LIMIT 1");
             $stmtCheck->execute([':cedula' => $cedula]);

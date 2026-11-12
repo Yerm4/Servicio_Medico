@@ -7,10 +7,11 @@ use app\model\Usuario;
 use app\controller\BaseController;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use app\face\ContFace;
 
-class ConsultaController extends BaseController {
+class ConsultaController extends BaseController implements ContFace {
 
-    public function getConsultas($id = null) {
+    public function consultar($id = null) {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -48,14 +49,14 @@ class ConsultaController extends BaseController {
     }
 
     public function buscarConsultas($id = null) {
-        $this->getConsultas($id);
+        $this->consultar($id);
     }
 
     public function obtenerConsulta($id = null) {
-        $this->getConsultas($id);
+        $this->consultar($id);
     }
 
-    public function registroConsulta() {
+    public function registrar() {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -109,7 +110,7 @@ class ConsultaController extends BaseController {
         }
     }
 
-    public function actualizarConsulta() {
+    public function actualizar() {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -161,7 +162,7 @@ class ConsultaController extends BaseController {
         }
     }
 
-    public function generarReporteMorbilidad() {
+    /*public function generarReporteMorbilidad() {
         if (empty($_SESSION['cedula'])) {
             code(401);
             $this->jsonResponse("error", "Debe iniciar sesión");
@@ -350,7 +351,7 @@ class ConsultaController extends BaseController {
         header('Content-Length: ' . strlen($contenidoPdf));
         echo $contenidoPdf;
         exit();
-    }
+    }*/
 
     public function buscarPatologia() {
         if (!$this->checkPerm("ver_consultas")) {

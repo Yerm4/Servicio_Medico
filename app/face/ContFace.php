@@ -2,10 +2,8 @@
 
 namespace app\face;
 
-interface ContFace {
-    public function jsonResponse($status, $message = "", $data = null, $redirect = null);
-
-    public function checkPerm(string $permiso);
-
-    public function getRequestData();
+interface Contface {
+    public function registrar();
+    public function actualizar();
+    public function consultar($id = null);
 }
