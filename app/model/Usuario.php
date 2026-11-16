@@ -71,6 +71,7 @@ class Usuario extends BaseModel {
             }
     
             $this->pdo->commit();
+            
             return $this->response('ok', 'Usuario registrado exitosamente');
     
         } catch (PDOException $error) {

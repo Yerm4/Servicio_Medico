@@ -196,8 +196,11 @@ class NucleoPNF extends BaseModel {
         }
     }
 
-    public function registrarOferta($id_nucleo, $id_pnf) {
-        $sqlCheck = "SELECT estado FROM nucleo_pnf WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf";
+ public function registrarOferta($id_nucleo, $id_pnf) {
+    try {
+        $this->pdo->beginTransaction();
+
+        $sqlCheck = "SELECT estado FROM nucleo_pnf WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf FOR UPDATE";
         $stmtCheck = $this->pdo->prepare($sqlCheck);
         $stmtCheck->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
         $existe = $stmtCheck->fetch(PDO::FETCH_ASSOC);
@@ -206,15 +209,30 @@ class NucleoPNF extends BaseModel {
             if ($existe['estado'] == 0) {
                 $sqlAnclar = "UPDATE nucleo_pnf SET estado = 1 WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf";
                 $stmtAnclar = $this->pdo->prepare($sqlAnclar);
-                return $stmtAnclar->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+                $resultado = $stmtAnclar->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+
+                $this->pdo->commit();
+                return $resultado;
             }
-            return "duplicado"; 
+
+            $this->pdo->rollBack();
+            return $this->response('error', 'duplicado');
         }
 
         $sql = "INSERT INTO nucleo_pnf (id_nucleo, id_pnf) VALUES (:id_nucleo, :id_pnf)";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+        $resultado = $stmt->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+
+        $this->pdo->commit();
+        return $resultado;
+
+    } catch (PDOException $e) {
+        if ($this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
+        }
+        return $this->response('error', 'Error en la base de datos: ' . $e->getMessage());
     }
+}
 
     public function desactivarOferta($id_nucleo, $id_pnf) {
         $sql = "UPDATE nucleo_pnf SET estado = 0 WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf";

@@ -1,8 +1,15 @@
+
+$(document).ready(() => {
 function apiFetch(url, options = {}) {
+    const csrfToken = $('input[name="csrf_token"]').val() || $('meta[name="csrf-token"]').attr('content') || '';
     return new Promise((resolve, reject) => {
         $.ajax({
             url: url,
             type: options.method || 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                ...(options.headers || {})
+            },
             data: options.data ? JSON.stringify(options.data) : null,
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
@@ -19,9 +26,6 @@ function apiFetch(url, options = {}) {
         });
     });
 }
-
-$(document).ready(() => {
-
     const $formRegistrarOferta = $("#formRegistrarOferta");
     const $cuerpoTablaOfertas = $("#cuerpoTablaOfertas");
     const $alertContainerGeneral = $("#alert-container-oferta");

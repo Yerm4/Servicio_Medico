@@ -1,110 +1,115 @@
 $(document).ready(() => {
 
-    async function refrescarContenedor(idContenedor) {
+async function refrescarContenedor(idContenedor) {
         try {
-            const response = await fetch(window.location.href);
-            const html = await response.text();
-            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const html = await $.get(window.location.href);
+            const $doc = $(html);
 
-            const nuevoElem = doc.getElementById(idContenedor);
-            const actualElem = document.getElementById(idContenedor);
+            const $nuevoElem = $doc.find(`#${idContenedor}`);
+            const $actualElem = $(`#${idContenedor}`);
 
-            if (nuevoElem && actualElem) {
-                actualElem.innerHTML = nuevoElem.innerHTML;
-                const tabla = actualElem.closest('table') || actualElem;
-                tabla?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if ($nuevoElem.length && $actualElem.length) {
+                $actualElem.html($nuevoElem.html());
+                const $tabla = $actualElem.closest('table').length ? $actualElem.closest('table') : $actualElem;
+                $tabla[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } catch (err) {
             console.error(`Error al refrescar #${idContenedor}:`, err);
         }
     }
 
-
     function mostrarAlerta(contenedorId, mensaje, tipo = 'success') {
-        const contenedor = typeof contenedorId === 'string' ? document.getElementById(contenedorId) : contenedorId;
-        if (!contenedor) return;
+        const $contenedor = typeof contenedorId === 'string' ? $(`#${contenedorId}`) : $(contenedorId);
+        if (!$contenedor.length) return;
 
         const colorBorde = tipo === 'success' ? '#2ecc71' : '#e74c3c';
-        const alertaEl = document.createElement('div');
-        alertaEl.className = 'action-card';
-        alertaEl.style.cssText = `padding: 1rem; border-left: 5px solid ${colorBorde}; background: #fdfdfd; width: 100%; box-sizing: border-box; margin-bottom: 1rem;`;
 
-        alertaEl.innerHTML = `
-            <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <span>${mensaje}</span>
-                <span style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;" onclick="this.closest('.action-card').remove()">×</span>
-            </p>
-        `;
+        const $alertaEl = $('<div></div>')
+            .addClass('action-card')
+            .css({
+                'padding': '1rem',
+                'border-left': `5px solid ${colorBorde}`,
+                'background': '#fdfdfd',
+                'width': '100%',
+                'box-sizing': 'border-box',
+                'margin-bottom': '1rem'
+            })
+            .html(`
+                <p style="margin: 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <span>${mensaje}</span>
+                    <span class="btn-cerrar-alerta" style="cursor: pointer; font-size: 1.2rem; padding: 0 5px;">×</span>
+                </p>
+            `);
 
-        contenedor.appendChild(alertaEl);
-        setTimeout(() => alertaEl.remove(), 4000);
+        $alertaEl.find('.btn-cerrar-alerta').on('click', function () {
+            $alertaEl.remove();
+        });
+
+        $contenedor.append($alertaEl);
+        setTimeout(() => $alertaEl.remove(), 4000);
     }
 
     function mostrarErrorEnFormulario(formulario, mensaje) {
-        let contenedorModal = formulario.querySelector('.alert-container-modal');
-        if (!contenedorModal) {
-            contenedorModal = document.createElement('div');
-            contenedorModal.className = 'alert-container-modal';
-            formulario.insertBefore(contenedorModal, formulario.firstChild);
+        const $form = $(formulario);
+        let $contenedorModal = $form.find('.alert-container-modal');
+
+        if (!$contenedorModal.length) {
+            $contenedorModal = $('<div></div>').addClass('alert-container-modal');
+            $form.prepend($contenedorModal);
         }
-        contenedorModal.innerHTML = '';
-        mostrarAlerta(contenedorModal, mensaje, 'error');
+
+        $contenedorModal.empty();
+        mostrarAlerta($contenedorModal, mensaje, 'error');
     }
 
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('[data-modal="modalRegistrarPNF"]')) {
-            e.preventDefault();
-            const modal = $(`#${modalRegistrarPNF}`);
-            modal?.showModal();
-            if (modal) modal.style.opacity = '1';
-        }
-
-        if (e.target.closest('[data-modal="modalRegistrarNucleo"]')) {
-            e.preventDefault();
-            const modal = $(`#${modalRegistrarNucleo}`);
-            modal?.showModal();
-            if (modal) modal.style.opacity = '1';
-        }
-
-        const btnEditarPnf = e.target.closest('.editar-pnf');
-        if (btnEditarPnf) {
-            e.preventDefault();
-            const idPnf = btnEditarPnf.getAttribute('data-id');
-            const nombrePnf = btnEditarPnf.getAttribute('data-nombre');
-            const modalEditar = $(`#${modalActualizarPNF}`);
-
-            if (modalEditar) {  
-                document.getElementById('edit_id_pnf').value = idPnf;
-                document.getElementById('edit_nombre_pnf').value = nombrePnf || '';
-                modalEditar.showModal();
-                modalEditar.style.opacity = '1';
-            }
-        }
-
-        const btnEditarNucleo = e.target.closest('.editar-nucleo');
-        if (btnEditarNucleo) {
-            e.preventDefault();
-            const idNucleo = btnEditarNucleo.getAttribute('data-id');
-            const nombreNucleo = btnEditarNucleo.getAttribute('data-nombre');
-            const modalEditar = document.getElementById('modalActualizarNucleo');
-
-            if (modalEditar) {
-                document.getElementById('edit_id_nucleo').value = idNucleo;
-                document.getElementById('edit_nombre_nucleo').value = nombreNucleo || '';
-                modalEditar.showModal();
-                modalEditar.style.opacity = '1';
-            }
+    $(document).on('click', '[data-modal="modalRegistrarPNF"]', function (e) {
+        e.preventDefault();
+        const modal = $('#modalRegistrarPNF')[0];
+        if (modal) {
+            modal.showModal();
+            $(modal).css('opacity', '1');
         }
     });
 
-    document.querySelectorAll('dialog').forEach(modal => {
-        modal.addEventListener('close', () => {
-            modal.style.opacity = '0';
-            const alertModal = modal.querySelector('.alert-container-modal');
-            if (alertModal) alertModal.innerHTML = '';
-        });
+    $(document).on('click', '[data-modal="modalRegistrarNucleo"]', function (e) {
+        e.preventDefault();
+        const modal = $('#modalRegistrarNucleo')[0];
+        if (modal) {
+            modal.showModal();
+            $(modal).css('opacity', '1');
+        }
     });
 
+    $(document).on('click', '.editar-pnf', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+        const modalEditar = $('#modalActualizarPNF')[0];
+
+        if (modalEditar) {
+            $('#edit_id_pnf').val($btn.data('id'));
+            $('#edit_nombre_pnf').val($btn.data('nombre') || '');
+            modalEditar.showModal();
+            $(modalEditar).css('opacity', '1');
+        }
+    });
+
+    $(document).on('click', '.editar-nucleo', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+        const modalEditar = $('#modalActualizarNucleo')[0];
+
+        if (modalEditar) {
+            $('#edit_id_nucleo').val($btn.data('id'));
+            $('#edit_nombre_nucleo').val($btn.data('nombre') || '');
+            modalEditar.showModal();
+            $(modalEditar).css('opacity', '1');
+        }
+    });
+
+    $('dialog').on('close', function () {
+        $(this).css('opacity', '0');
+        $(this).find('.alert-container-modal').empty();
+    });
 
 function apiFetch(url, options = {}) {
     return new Promise((resolve, reject) => {
