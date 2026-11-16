@@ -17,7 +17,7 @@ class Config {
         $db = $_ENV["DB_NAME"] ?? "servicio_medico";
         $user = $_ENV["DB_USER"] ?? "root";
         $password = $_ENV["DB_PASS"] ?? "";
-
+        
         try {
             self::$pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $password); 
             self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 

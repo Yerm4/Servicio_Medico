@@ -90,12 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (inputBuscar && cuerpoTabla) {
-        inputBuscar.addEventListener('input', async () => {
+        inputBuscar.addEventListener('input', async (e) => {
             const buscar = inputBuscar.value.trim();
             
             try {
                 const result = await apiFetch(`api/users/buscar/${buscar || 0}`);
-                const usuarios = result.data;
+                const usuarios  = result.data;
                 cuerpoTabla.innerHTML = '';
 
                 if (!usuarios || usuarios.length === 0) {
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const datos = Object.fromEntries(new FormData(signupForm).entries());
-
+z       
             try {
                 const result = await apiFetch("api/users", {
                     method: "POST",
@@ -274,3 +274,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

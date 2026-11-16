@@ -50,5 +50,4 @@ $rutasApi = [
         "api/ofertas"                      => "NucleoPnfController@eliminarOferta"
     ]
 ];
-
 return $rutasApi;

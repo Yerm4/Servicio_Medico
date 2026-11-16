@@ -9,7 +9,7 @@ use app\face\ContFace;
 class UserController extends BaseController implements ContFace {
 
     public function login() {
-        $data =$this->getRequestData();
+        $data = $this->getRequestData();
 
         $cedula = cleanValue($data, "cedula");
         $password = cleanValue($data, "password");
@@ -56,7 +56,7 @@ class UserController extends BaseController implements ContFace {
             }
         }
 
-        $data =$this->getRequestData();
+        $data = $this->getRequestData();
 
         $cedula                     = cleanValue($data, "cedula");
         $nombre                     = cleanValue($data, "nombre");

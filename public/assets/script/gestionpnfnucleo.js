@@ -51,19 +51,6 @@ $(document).ready(() => {
         mostrarAlerta(contenedorModal, mensaje, 'error');
     }
 
-    async function apiFetch(url, options = {}) {
-        const response = await fetch(url, options);
-        const result = await response.json().catch(() => null);
-
-        if (!response.ok || !result) {
-            const errorMsg = result?.message || `${response.status}: ${response.statusText}`;
-            throw new Error(errorMsg);
-        }
-        return result;
-    }
-
-
-    // CONTROL DE MODALES 
     document.addEventListener('click', (e) => {
         if (e.target.closest('[data-modal="modalRegistrarPNF"]')) {
             e.preventDefault();
@@ -141,8 +128,6 @@ function apiFetch(url, options = {}) {
     });
     }
 
-        // LOGICA CRUD: PNF
-    // 1. REGISTRAR Y ACTUALIZAR PNF
 const configurarFormularioPNF = (idForm, idModal, msgExito, metodo) => { 
     const $form = $(`#${idForm}`);
     if ($form.length === 0) return; 
@@ -183,9 +168,6 @@ const configurarFormularioPNF = (idForm, idModal, msgExito, metodo) => {
 configurarFormularioPNF('formRegistrarPNF', 'modalRegistrarPNF', "¡PNF registrado con éxito!", 'POST');
 configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actualizado con éxito!", 'PUT');
 
-
-    // LOGICA CRUD: NÚCLEOS
-    // 1. REGISTRAR Y ACTUALIZAR NÚCLEOS
     const configurarFormularioNucleo = (idForm, idModal, msgExito, metodo) => { 
     const $form = $(`#${idForm}`);
     if ($form.length === 0) return; 
@@ -220,7 +202,8 @@ configurarFormularioPNF('formActualizarPNF', 'modalActualizarPNF', "¡PNF actual
             mostrarErrorEnFormulario(this, mensajeError);
         }
     });
-};
+    };
+    
     configurarFormularioNucleo('formRegistrarNucleo', 'modalRegistrarNucleo', "¡Núcleo registrado con éxito!", 'POST');
     configurarFormularioNucleo('formActualizarNucleo', 'modalActualizarNucleo', "¡Núcleo actualizado con éxito!", 'PUT');
 

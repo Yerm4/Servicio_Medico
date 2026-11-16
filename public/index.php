@@ -7,7 +7,6 @@ if (php_sapi_name() === 'cli-server') {
     }
 }
 
-
 session_start();
 require_once __DIR__."/../vendor/autoload.php";
 
@@ -81,5 +80,5 @@ if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
     $metodoController = $rutasVistas[$paginaActual];
     $viewController->$metodoController($partesRuta); 
 } else {
-    include __DIR__."/../app/views/404.php";
+    include __DIR__."/../app/views/404  .php";
 }

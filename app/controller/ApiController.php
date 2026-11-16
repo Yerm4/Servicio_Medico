@@ -35,7 +35,6 @@ class ApiController {
             $controllerName = "app\\controller\\".$controllerName;
             $controller = new $controllerName();
             if (method_exists($controller, $metodo)) {
-                
                 $controller->$metodo(...$parametros);
                 exit();
             } else {
