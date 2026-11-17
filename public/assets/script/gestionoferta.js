@@ -1,5 +1,11 @@
 
 $(document).ready(() => {
+
+    const $formRegistrarOferta = $("#formRegistrarOferta");
+    const $cuerpoTablaOfertas = $("#cuerpoTablaOfertas");
+    const $alertContainerGeneral = $("#alert-container-oferta");
+    const $modalRegistrarOferta = $("#modalRegistrarOferta");
+    
 function apiFetch(url, options = {}) {
     const csrfToken = $('input[name="csrf_token"]').val() || $('meta[name="csrf-token"]').attr('content') || '';
     return new Promise((resolve, reject) => {
@@ -26,11 +32,6 @@ function apiFetch(url, options = {}) {
         });
     });
 }
-    const $formRegistrarOferta = $("#formRegistrarOferta");
-    const $cuerpoTablaOfertas = $("#cuerpoTablaOfertas");
-    const $alertContainerGeneral = $("#alert-container-oferta");
-    const $modalRegistrarOferta = $("#modalRegistrarOferta");
-
     async function actualizarTablaOfertas() {
         try {
             const response = await $.get(window.location.href);

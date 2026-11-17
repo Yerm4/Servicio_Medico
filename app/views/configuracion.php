@@ -24,7 +24,7 @@ include_once __DIR__."/layout/header.php";
                 <?php if ($tieneGestionarOferta): ?>        
                     <a href="#" id="sub-tab-nucleos" class="sub-tab-link subtab-link-comun subtab-link-nucleos <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">Nucleos</a>
                     <a href="#" id="sub-tab-pnf" class="sub-tab-link subtab-link-comun subtab-link-pnf <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">PNFs</a>
-                    <a href="#" id="sub-tab-ofertas" class="sub-tab-link subtab-link-comun subtab-link-ofertas <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">Ofertas</a>
+                    <a href="#" id="sub-tab-ofertas" class="sub-tab-link subtab-link-comun subtab-link-ofertas <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">Ofertas Academicas</a>
                 <?php endif; ?>
             </div>
 
@@ -197,7 +197,6 @@ include_once __DIR__."/layout/header.php";
                     <tbody id="cuerpoTablaOfertas">
     <?php if (!empty($ofertas)): ?>
         <?php 
-        // Agrupamos las ofertas por núcleo
         $ofertasPorNucleo = [];
         foreach ($ofertas as $o) {
             $ofertasPorNucleo[$o['nombre_nucleo']][] = $o;
@@ -205,7 +204,6 @@ include_once __DIR__."/layout/header.php";
         ?>
 
         <?php foreach ($ofertasPorNucleo as $nombreNucleo => $listaOfertas): ?>
-            <!-- Cabecera del Núcleo (aparece una sola vez) -->
             <tr class="tr-grupo-nucleo" style="background-color: #f1f5f9;">
                 <td colspan="3" class="td-consultas" style="font-weight: 700; color: #1e293b; padding: 0.75rem 1rem;">
                     <?= e($nombreNucleo) ?> 
@@ -213,7 +211,6 @@ include_once __DIR__."/layout/header.php";
                 </td>
             </tr>
 
-            <!-- Filas de los PNFs de ese núcleo -->
             <?php foreach ($listaOfertas as $o): ?>
                 <tr class="tr-body-consultas" data-nucleo="<?= e($nombreNucleo) ?>">
                     <td class="td-consultas" style="color: #94a3b8; padding-left: 2rem;">↳</td>

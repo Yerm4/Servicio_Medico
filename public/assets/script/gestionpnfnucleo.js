@@ -111,7 +111,8 @@ async function refrescarContenedor(idContenedor) {
         $(this).find('.alert-container-modal').empty();
     });
 
-function apiFetch(url, options = {}) {
+    function apiFetch(url, options = {}) {
+
     return new Promise((resolve, reject) => {
         $.ajax({
             url: url,
