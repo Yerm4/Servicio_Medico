@@ -112,7 +112,6 @@ async function refrescarContenedor(idContenedor) {
     });
 
     function apiFetch(url, options = {}) {
-
     return new Promise((resolve, reject) => {
         $.ajax({
             url: url,
