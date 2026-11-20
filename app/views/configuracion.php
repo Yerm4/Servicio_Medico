@@ -189,8 +189,8 @@ include_once __DIR__."/layout/header.php";
                         <table id="tablaRegistrosOfertas" class="tabla-consultas">
                             <thead>
                                 <tr class="tr-head-consultas">
-                                    <th class="th-consultas sortable">Núcleo</th>
-                                    <th class="th-consultas sortable">Programa de Formación Nacional (PNF)</th>
+                                    <th class="th-consultas">Núcleo</th>
+                                    <th class="th-consultas">Programa de Formación Nacional (PNF)</th>
                                     <th class="th-consultas">Acciones</th>
                                 </tr>
                             </thead>
