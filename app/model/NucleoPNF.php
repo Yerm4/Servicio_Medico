@@ -25,13 +25,6 @@ class NucleoPNF extends BaseModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    private function existePNF($nombre) {
-        $sql = "SELECT id_pnf, estado FROM lista_pnfs 
-                WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '')";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':nombre' => trim($nombre)]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
 
     private function existeNucleoParaActualizar($nombre, $id_actual) {
     $sql = "SELECT COUNT(*) FROM lista_nucleos
@@ -60,17 +53,7 @@ class NucleoPNF extends BaseModel {
         return $stmt->fetchColumn() > 0;
     }
 
-    public function obtenerNucleos() {
-        try {
-            $sql = "SELECT id_nucleo, nombre_nucleo FROM lista_nucleos WHERE estado = 1 ORDER BY id_nucleo ASC";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en obtenerNucleos: " . $e->getMessage());
-            return [];
-        }
-    }
+
 
     public function registrarNucleo($nombre) {
     $existe = $this->existeNucleo($nombre);
@@ -119,17 +102,6 @@ class NucleoPNF extends BaseModel {
         return $this->response('ok', 'Nucleo Eliminado');
     }
 
-    public function obtenerPNFS() {
-        try {
-            $sql = "SELECT id_pnf, nombre_pnf FROM lista_pnfs WHERE estado = 1 ORDER BY id_pnf ASC";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en obtenerPNFS: " . $e->getMessage());
-            return [];
-        }
-    }
 
     public function registrarPnf($nombre) {
     $existe = $this->existePNF($nombre);
@@ -170,7 +142,13 @@ class NucleoPNF extends BaseModel {
         $stmt->execute([':nombre' => trim($nombre), ':id' => $id]);
         return $this->response('ok', 'PNF Actualizado');
     }
-
+    private function existePNF($nombre) {
+        $sql = "SELECT id_pnf, estado FROM lista_pnfs 
+                WHERE REPLACE(LOWER(nombre_pnf), ' ', '') = REPLACE(LOWER(:nombre), ' ', '')";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':nombre' => trim($nombre)]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     public function desactivarPNF($id) {
         $sql = "UPDATE lista_pnfs SET estado = 0 WHERE id_pnf = :id";
         $stmt = $this->pdo->prepare($sql);
@@ -178,25 +156,9 @@ class NucleoPNF extends BaseModel {
         return $this->response('ok', 'PNF Eliminado');
     }
 
-    public function obtenerOfertasActivas() {
-        try {
-            $sql = "SELECT o.id_nucleo, o.id_pnf, n.nombre_nucleo, p.nombre_pnf 
-                    FROM nucleo_pnf o
-                    INNER JOIN lista_nucleos n ON o.id_nucleo = n.id_nucleo
-                    INNER JOIN lista_pnfs p ON o.id_pnf = p.id_pnf
-                    WHERE o.estado = 1 AND n.estado = 1 AND p.estado = 1
-                    ORDER BY o.id_nucleo ASC, o.id_pnf ASC";
-            
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en obtenerOfertasActivas: " . $e->getMessage());
-            return [];
-        }
-    }
 
- public function registrarOferta($id_nucleo, $id_pnf) {
+
+public function registrarOferta($id_nucleo, $id_pnf) {
     try {
         $this->pdo->beginTransaction();
 
@@ -251,6 +213,45 @@ class NucleoPNF extends BaseModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en obtenerPnfsPorNucleo: " . $e->getMessage());
+            return [];
+        }
+    } 
+    public function obtenerOfertasActivas() {
+        try {
+            $sql = "SELECT o.id_nucleo, o.id_pnf, n.nombre_nucleo, p.nombre_pnf 
+                    FROM nucleo_pnf o
+                    INNER JOIN lista_nucleos n ON o.id_nucleo = n.id_nucleo
+                    INNER JOIN lista_pnfs p ON o.id_pnf = p.id_pnf
+                    WHERE o.estado = 1 AND n.estado = 1 AND p.estado = 1
+                    ORDER BY o.id_nucleo ASC, o.id_pnf ASC";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en obtenerOfertasActivas: " . $e->getMessage());
+            return [];
+        }
+    }
+    public function obtenerPNFS() {
+        try {
+            $sql = "SELECT id_pnf, nombre_pnf FROM lista_pnfs WHERE estado = 1 ORDER BY id_pnf ASC";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPNFS: " . $e->getMessage());
+            return [];
+        }
+    } 
+    public function obtenerNucleos() {
+        try {
+            $sql = "SELECT id_nucleo, nombre_nucleo FROM lista_nucleos WHERE estado = 1 ORDER BY id_nucleo ASC";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en obtenerNucleos: " . $e->getMessage());
             return [];
         }
     }

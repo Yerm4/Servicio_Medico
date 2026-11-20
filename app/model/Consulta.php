@@ -465,14 +465,14 @@ class Consulta extends BaseModel {
             $totalConsultas = (int)$stmtTotal->fetchColumn();
 
             $sqlRegistros = "SELECT c.id, c.fecha_consulta, c.motivo_de_visita, c.medicamento_suministrado,
-                                   p.cedula AS paciente_cedula, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
-                                   t.nombre_tipo AS paciente_tipo,
-                                   m.nombre AS medico_nombre, m.apellido AS medico_apellido,
-                                   (SELECT GROUP_CONCAT(CONCAT(dc.codigo_icd_diagnostico, ':', lp.patologia) SEPARATOR '||')
+                                p.cedula AS paciente_cedula, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                                t.nombre_tipo AS paciente_tipo,
+                                m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                                (SELECT GROUP_CONCAT(CONCAT(dc.codigo_icd_diagnostico, ':', lp.patologia) SEPARATOR '||')
                                     FROM diagnosticos_consulta dc
                                     JOIN lista_patologias lp ON dc.codigo_icd_diagnostico = lp.codigo_icd
                                     WHERE dc.id_consulta = c.id) AS diagnosticos_str,
-                                   (SELECT GROUP_CONCAT(ls.nombre_sintoma SEPARATOR ', ')
+                                (SELECT GROUP_CONCAT(ls.nombre_sintoma SEPARATOR ', ')
                                     FROM sintomas_consulta sc
                                     JOIN lista_sintomas ls ON sc.id_sintoma = ls.id_sintoma
                                     WHERE sc.id_consulta = c.id) AS sintomas_str
@@ -503,58 +503,58 @@ class Consulta extends BaseModel {
             }
 
             $sqlTipos = "SELECT t.nombre_tipo, COUNT(c.id) as total
-                         FROM consulta_medica c
-                         JOIN usuarios p ON c.id_usuario = p.cedula
-                         JOIN lista_tipos t ON p.tipo = t.id_tipo
-                         WHERE c.fecha_consulta BETWEEN :inicio AND :fin
-                         GROUP BY t.id_tipo, t.nombre_tipo
-                         ORDER BY total DESC";
+                    FROM consulta_medica c
+                    JOIN usuarios p ON c.id_usuario = p.cedula
+                    JOIN lista_tipos t ON p.tipo = t.id_tipo
+                    WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                    GROUP BY t.id_tipo, t.nombre_tipo
+                    ORDER BY total DESC";
             $stmtTipos = $this->pdo->prepare($sqlTipos);
             $stmtTipos->execute([':inicio' => $fInicio, ':fin' => $fFin]);
             $tiposBeneficiario = $stmtTipos->fetchAll(PDO::FETCH_ASSOC);
 
             $sqlPnfs = "SELECT pnf.nombre_pnf, COUNT(c.id) as total
-                        FROM consulta_medica c
-                        JOIN usuarios p ON c.id_usuario = p.cedula
-                        JOIN pnfs_usuarios pu ON p.cedula = pu.cedula_usuario
-                        JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
-                        WHERE c.fecha_consulta BETWEEN :inicio AND :fin
-                        GROUP BY pnf.id_pnf, pnf.nombre_pnf
-                        ORDER BY total DESC";
+                    FROM consulta_medica c
+                    JOIN usuarios p ON c.id_usuario = p.cedula
+                    JOIN pnfs_usuarios pu ON p.cedula = pu.cedula_usuario
+                    JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf
+                    WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                    GROUP BY pnf.id_pnf, pnf.nombre_pnf
+                    ORDER BY total DESC";
             $stmtPnfs = $this->pdo->prepare($sqlPnfs);
             $stmtPnfs->execute([':inicio' => $fInicio, ':fin' => $fFin]);
             $pnfs = $stmtPnfs->fetchAll(PDO::FETCH_ASSOC);
 
             $sqlNucleos = "SELECT n.nombre_nucleo, COUNT(c.id) as total
-                           FROM consulta_medica c
-                           JOIN usuarios p ON c.id_usuario = p.cedula
-                           JOIN pnfs_usuarios pu ON p.cedula = pu.cedula_usuario
-                           JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
-                           WHERE c.fecha_consulta BETWEEN :inicio AND :fin
-                           GROUP BY n.id_nucleo, n.nombre_nucleo
-                           ORDER BY total DESC";
+                    FROM consulta_medica c
+                    JOIN usuarios p ON c.id_usuario = p.cedula
+                    JOIN pnfs_usuarios pu ON p.cedula = pu.cedula_usuario
+                    JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+                    WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                    GROUP BY n.id_nucleo, n.nombre_nucleo
+                    ORDER BY total DESC";
             $stmtNucleos = $this->pdo->prepare($sqlNucleos);
             $stmtNucleos->execute([':inicio' => $fInicio, ':fin' => $fFin]);
             $nucleos = $stmtNucleos->fetchAll(PDO::FETCH_ASSOC);
 
             $sqlPatologias = "SELECT pat.codigo_icd, pat.patologia, COUNT(dc.id_consulta) as total
-                              FROM diagnosticos_consulta dc
-                              JOIN consulta_medica c ON dc.id_consulta = c.id
-                              JOIN lista_patologias pat ON dc.codigo_icd_diagnostico = pat.codigo_icd
-                              WHERE c.fecha_consulta BETWEEN :inicio AND :fin
-                              GROUP BY pat.codigo_icd, pat.patologia
-                              ORDER BY total DESC";
+                    FROM diagnosticos_consulta dc
+                    JOIN consulta_medica c ON dc.id_consulta = c.id
+                    JOIN lista_patologias pat ON dc.codigo_icd_diagnostico = pat.codigo_icd
+                    WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                    GROUP BY pat.codigo_icd, pat.patologia
+                    ORDER BY total DESC";
             $stmtPat = $this->pdo->prepare($sqlPatologias);
             $stmtPat->execute([':inicio' => $fInicio, ':fin' => $fFin]);
             $patologias = $stmtPat->fetchAll(PDO::FETCH_ASSOC);
 
             $sqlCondiciones = "SELECT lc.nombre_condicion, COUNT(DISTINCT c.id) as total
-                               FROM consulta_medica c
-                               JOIN condiciones_usuarios cu ON c.id_usuario = cu.cedula_usuario
-                               JOIN lista_condiciones lc ON cu.id_condicion = lc.id
-                               WHERE c.fecha_consulta BETWEEN :inicio AND :fin
-                               GROUP BY lc.id, lc.nombre_condicion
-                               ORDER BY total DESC";
+                    FROM consulta_medica c
+                    JOIN condiciones_usuarios cu ON c.id_usuario = cu.cedula_usuario
+                    JOIN lista_condiciones lc ON cu.id_condicion = lc.id
+                    WHERE c.fecha_consulta BETWEEN :inicio AND :fin
+                    GROUP BY lc.id, lc.nombre_condicion
+                    ORDER BY total DESC";
             $stmtCond = $this->pdo->prepare($sqlCondiciones);
             $stmtCond->execute([':inicio' => $fInicio, ':fin' => $fFin]);
             $condicionesCronicas = $stmtCond->fetchAll(PDO::FETCH_ASSOC);

@@ -22,7 +22,7 @@ include_once __DIR__."/layout/header.php";
                     <a href="#" id="sub-tab-condiciones" class="sub-tab-link subtab-link-comun subtab-link-condiciones <?= !$tieneGestionarRolesPermisos ? 'subtab-link-active' : '' ?>">Condiciones</a>
                 <?php endif; ?>
                 <?php if ($tieneGestionarOferta): ?>        
-                    <a href="#" id="sub-tab-nucleos" class="sub-tab-link subtab-link-comun subtab-link-nucleos <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">Nucleos</a>
+                    <a href="#" id="sub-tab-nucleos" class="sub-tab-link subtab-link-comun subtab-link-nucleos <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">Núcleos</a>
                     <a href="#" id="sub-tab-pnf" class="sub-tab-link subtab-link-comun subtab-link-pnf <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">PNFs</a>
                     <a href="#" id="sub-tab-ofertas" class="sub-tab-link subtab-link-comun subtab-link-ofertas <?= !$tieneGestionarOferta ? 'subtab-link-active' : '' ?>">Ofertas Academicas</a>
                 <?php endif; ?>
@@ -305,7 +305,7 @@ include_once __DIR__."/layout/header.php";
                     <div id="contenedor-tabla-dinamica">
                         <div class="contenedor-tabla-consultas">
                             <div class="cabecera-tabla-global">
-                                <h3 class="titulo-tabla-consultas">Programas de Formación Nacional (PNF)</h3>
+                                <h3 class="titulo-tabla-consultas">Programas Nacionales de Formación (PNF)</h3>
                                 <a name="openModal" data-modal="modalRegistrarPNF" class="action-card__button action-card__button--fit" href="#">Registrar PNF</a>
                             </div>
                             
@@ -371,7 +371,8 @@ include_once __DIR__."/layout/header.php";
     <?php include_once __DIR__."/modals/modalActualizarNucleo.php"; ?>
     <?php include_once __DIR__."/modals/modalRegistrarPNF.php"; ?>
     <?php include_once __DIR__."/modals/modalActualizarPNF.php"; ?>
-
+    
+    <script src="assets/script/datatables.min.js"></script>
     <script src="assets/script/jquery-4.0.0.min.js"></script>
     <script src="assets/script/gestionOferta.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>

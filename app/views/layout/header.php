@@ -6,10 +6,12 @@
     <link rel="shortcut icon" href="assets/media/img/uptaeb.png" type="image/x-icon">
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/datatables.min.css">
     <script src="assets/script/code.js" defer></script>
     <script src="assets/script/regex.js" defer></script>
     <script src="assets/script/modals.js" defer></script>
     <script src="assets/script/sidebar.js" defer></script>
+
     <title><?= e(!empty($titulo) ? $titulo : "UPTAEB") ?></title>
 </head>
 <body>

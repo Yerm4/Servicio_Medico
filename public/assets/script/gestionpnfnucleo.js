@@ -1,5 +1,41 @@
 $(document).ready(() => {
 
+    new DataTable('#tablaNucleos', {
+        autoFill: false,
+        searching: true,    
+        paging: false,     
+        info: false,        
+        lengthChange: false,
+        ordering: false,
+        layout: {
+            topStart: 'search',
+            topEnd: null
+        },
+        language: {
+        search: 'Buscar:',
+        searchPlaceholder: 'Escribe para filtrar...',
+        zeroRecords: 'No se encontraron núcleos'
+    }
+});
+    new DataTable('#tablaPnfs', {
+        autoFill: false,
+        searching: true,    
+        paging: false,     
+        info: false,        
+        lengthChange: false,
+        ordering: false,
+        layout: {
+            topStart: 'search',
+            topEnd: null
+        },
+        language: {
+        search: 'Buscar:',
+        searchPlaceholder: 'Escribe para filtrar...',
+        zeroRecords: 'No se encontraron pnfs'
+    }
+});
+
+    
 async function refrescarContenedor(idContenedor) {
         try {
             const html = await $.get(window.location.href);
