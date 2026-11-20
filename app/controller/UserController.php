@@ -41,7 +41,7 @@ class UserController extends BaseController implements ContFace {
         if ($passwordCoincide) {
             session_regenerate_id(true);
             $_SESSION["cedula"] = $data["cedula"];
-            $_SESSION["user_agent"] = $_SERVER['HTTP_USER_AGENT'] ?? '';$this->jsonResponse("ok", "Logueado", null, "perfil");
+            $this->jsonResponse("ok", "Logueado", null, "perfil");
         } else {
             code(401);
             $this->jsonResponse("error", "Usuario o contraseña incorrectos");
@@ -116,7 +116,6 @@ class UserController extends BaseController implements ContFace {
             } else {
                 session_regenerate_id(true);
                 $_SESSION["cedula"] = $cedula;
-                $_SESSION["user_agent"] = $_SERVER['HTTP_USER_AGENT'] ?? '';
                 code(201);
                 $this->jsonResponse("ok", $resultado["message"] ?? "Usuario registrado con éxito");
             }
@@ -214,6 +213,40 @@ class UserController extends BaseController implements ContFace {
         $datos = isset($resultados["data"]) ? $resultados["data"] : $resultados;
         code(200);
         $this->jsonResponse("ok", "Resultados enviados", $datos);
+    }
+
+    public function listado() {
+        if (empty($_SESSION['cedula'])) {
+            http_response_code(401);
+            echo json_encode(["error" => "Debe iniciar sesión"]);
+            exit();
+        }
+
+        if (!$this->checkPerm("gestionar_usuarios")) {
+            http_response_code(403);
+            echo json_encode(["error" => "No tiene permisos para gestionar usuarios"]);
+            exit();
+        }
+
+        $draw = max(1, (int)($_GET['draw'] ?? 1));
+        $start = max(0, (int)($_GET['start'] ?? 0));
+        $length = (int)($_GET['length'] ?? 25);
+        $length = $length < 0 ? -1 : max(1, min(250, $length));
+        $search = trim((string)($_GET['search']['value'] ?? ''));
+        $order = $_GET['order'][0] ?? null;
+        $columns = $_GET['columns'] ?? [];
+        $orderName = $order ? ($columns[(int)$order['column']]['data'] ?? '') : '';
+        $orderDirection = strtolower($order['dir'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
+
+        $result = (new Usuario())->obtenerUsuariosListado($start, $length, $search, $orderName, $orderDirection);
+
+        echo json_encode([
+            "draw" => $draw,
+            "recordsTotal" => $result["recordsTotal"],
+            "recordsFiltered" => $result["recordsFiltered"],
+            "data" => $result["data"]
+        ]);
+        exit();
     }
 
     public function obtenerUsuario($id = null) {

@@ -16,103 +16,75 @@ function calcularEdadJS(fechaNacimiento) {
     return edad;
 }
 
-const inputBuscarC = document.getElementById('inputBuscarConsulta');
+function escaparHtml(valor) {
+    return String(valor ?? '').replace(/[&<>"']/g, (caracter) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    })[caracter]);
+}
+
+const ICONO_VER = `<svg style="pointer-events:none" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="13" r="2" stroke="#000" stroke-linejoin="round"/><path d="M12 7.5C7.69517 7.5 4.47617 11.0833 3.39473 12.4653C3.14595 12.7832 3.14595 13.2168 3.39473 13.5347C4.47617 14.9167 7.69517 18.5 12 18.5C16.3048 18.5 19.5238 14.9167 20.6053 13.5347C20.8541 13.2168 20.8541 12.7832 20.6053 12.4653C19.5238 11.0833 16.3048 7.5 12 7.5Z" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ICONO_EDITAR = `<svg style="pointer-events:none" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.9087 3.87352C16.4681 3.31421 17.2266 3 18.0176 3C18.4093 3 18.7971 3.07714 19.1589 3.22702C19.5208 3.3769 19.8495 3.59658 20.1265 3.87352C20.4034 4.15046 20.6231 4.47924 20.773 4.84108C20.9229 5.20292 21 5.59074 21 5.98239C21 6.37404 20.9229 6.76186 20.773 7.1237C20.6231 7.48554 20.4034 7.81432 20.1265 8.09126L19.0231 9.19466C18.6326 9.58519 17.9994 9.58519 17.6089 9.19467L14.8053 6.39114C14.4148 6.00062 14.4148 5.36745 14.8053 4.97693L15.9087 3.87352ZM13.3911 7.80536C13.0006 7.41483 12.3674 7.41483 11.9769 7.80536L5.01084 14.7714C4.37004 15.4122 3.91545 16.2151 3.69566 17.0943L3.02986 19.7575C2.94467 20.0982 3.04452 20.4587 3.2929 20.7071C3.54128 20.9555 3.90177 21.0553 4.24254 20.9701L6.90572 20.3043C7.78488 20.0846 8.58778 19.63 9.22857 18.9892L16.1946 12.0231C16.5852 11.6326 16.5852 10.9994 16.1946 10.6089L13.3911 7.80536Z" fill="#000"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 20C12 19.4477 12.4477 19 13 19L20 19C20.5523 19 21 19.4477 21 20C21 20.5523 20.5523 21 20 21L13 21C12.4477 21 12 20.5523 12 20Z" fill="#000"/></svg>`;
+
 const cuerpoTablaConsultas = document.getElementById('cuerpoTablaConsultas');
 const modalActualizarConsulta = document.getElementById('modalActualizarConsulta');
-const btnCargarMas = document.getElementById('btnCargarMasConsultas');
+let tablaConsultas = null;
 
-function checkCargarMasVisibility() {
-    if (!btnCargarMas || !cuerpoTablaConsultas) return;
-    const rowsCount = cuerpoTablaConsultas.querySelectorAll('tr:not(.no-registros)').length;
-    btnCargarMas.style.display = (rowsCount > 0 && rowsCount % 20 === 0) ? 'block' : 'none';
-}
-
-checkCargarMasVisibility();
-
-function renderFilaConsulta(c) {
-    const fila = document.createElement('tr');
-    fila.className = 'tr-body-consultas';
-
-    const dateObj = new Date(c.fecha_consulta);
-    const formattedDate = !isNaN(dateObj) ? 
-        `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}` : 
-        c.fecha_consulta;
-
-    const pacienteNombre = `${c.paciente_nombre || ''} ${c.paciente_apellido || ''}`.trim();
-    const medicoNombre = `${c.medico_nombre || ''} ${c.medico_apellido || ''}`.trim();
-
-    let sintomasHtml = '<span class="sintomas-ninguno">Ninguno</span>';
-    if (c.sintomas && c.sintomas.length > 0) {
-        sintomasHtml = c.sintomas.join(', ');
-    }
-
-    let diagsHtml = '<span class="sintomas-ninguno">Sin diagnóstico</span>';
-    if (c.diagnosticos && c.diagnosticos.length > 0) {
-        diagsHtml = c.diagnosticos.map(d => 
-            `<div class="diagnostico-item-tabla"><strong class="diagnostico-codigo">${d.codigo_icd_diagnostico}</strong> - ${d.patologia || 'Sin detalle'}</div>`
-        ).join('');
-    }
-
-    fila.innerHTML = `
-        <td class="td-consultas-nowrap">${formattedDate}</td>
-        <td class="td-consultas">
-            <strong>${pacienteNombre}</strong>
-            <div class="td-paciente-sub">C.I. ${c.id_usuario}</div>
-        </td>
-        <td class="td-consultas">${medicoNombre}</td>
-        <td class="td-consultas">${c.motivo_de_visita}</td>
-        <td class="td-consultas">${sintomasHtml}</td>
-        <td class="td-consultas">${diagsHtml}</td>
-        <td class="td-acciones-btn">
-            <button class="ver-detalles-consulta action-card__button btn-detalles-consulta" data-id="${c.id}">Ver detalles</button>
-            ${ES_MEDICO_O_DIRECTOR ? `<button class="editar-consulta action-card__button" data-id="${c.id}">Actualizar</button>` : ''}
-        </td>
-    `;
-    return fila;
-}
-
-if (inputBuscarC && cuerpoTablaConsultas) {
-    inputBuscarC.addEventListener('input', function() {
-        const textoBusqueda = inputBuscarC.value.trim();
-
-        fetch(`api/consultas?query=${encodeURIComponent(textoBusqueda)}`)
-        .then(response => response.json())
-        .then(res => {
-            const consultas = Array.isArray(res) ? res : (res.data || []);
-            cuerpoTablaConsultas.innerHTML = '';
-
-            if (consultas.length === 0) {
-                cuerpoTablaConsultas.innerHTML = `<tr class="no-registros"><td colspan="7" class="td-tabla-vacia">No hay ninguna consulta asociada a ese usuario.</td></tr>`;
-                if (btnCargarMas) btnCargarMas.style.display = 'none';
-                return;
+if (cuerpoTablaConsultas && typeof DataTable === 'function') {
+    tablaConsultas = new DataTable('#tablaRegistrosConsultas', {
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: 'api/consultas/listado',
+            type: 'GET',
+            dataSrc: 'data'
+        },
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100],
+        order: [[0, 'desc']],
+        language: {
+            processing: 'Procesando...',
+            search: 'Buscar:',
+            searchPlaceholder: 'Buscar consulta por paciente, médico, cédula o motivo',
+            lengthMenu: 'Mostrar _MENU_ consultas',
+            info: 'Mostrando _START_-_END_ de _TOTAL_ consultas',
+            infoEmpty: 'No hay consultas',
+            zeroRecords: 'No se encontraron consultas',
+            paginate: {
+                first: 'Primero',
+                previous: 'Anterior',
+                next: 'Siguiente',
+                last: 'Último'
             }
-
-            consultas.forEach(c => cuerpoTablaConsultas.appendChild(renderFilaConsulta(c)));
-            checkCargarMasVisibility();
-        })
-        .catch(error => console.error("Error al buscar consultas:", error));
+        },
+        columns: [
+            { data: 'fecha_consulta', name: 'fecha_consulta', render: (value) => {
+                const date = new Date(value);
+                return isNaN(date) ? value : `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+            }},
+            { data: null, name: 'paciente', render: (value, type, row) => `<strong>${escaparHtml(row.paciente_nombre || '')} ${escaparHtml(row.paciente_apellido || '')}</strong><div class="td-paciente-sub">C.I. ${escaparHtml(row.id_usuario)}</div>` },
+            { data: null, name: 'medico', render: (value, type, row) => `${escaparHtml(row.medico_nombre || '')} ${escaparHtml(row.medico_apellido || '')}` },
+            { data: 'motivo_de_visita', name: 'motivo_de_visita', render: (value) => escaparHtml(value) },
+            { data: 'sintomas', name: 'sintomas', orderable: false, render: (value) => value && value.length ? value.map(escaparHtml).join(', ') : '<span class="sintomas-ninguno">Ninguno</span>' },
+            { data: 'diagnosticos', name: 'diagnosticos', orderable: false, render: (value) => value && value.length ? value.map(d => `<div class="diagnostico-item-tabla"><strong class="diagnostico-codigo">${escaparHtml(d.codigo_icd_diagnostico)}</strong> - ${escaparHtml(d.patologia || 'Sin detalle')}</div>`).join('') : '<span class="sintomas-ninguno">Sin diagnóstico</span>' },
+            { data: 'id', name: 'acciones', orderable: false, searchable: false, render: (value) => `<div class="acciones-flex"><button class="ver-detalles-consulta action-card__button btn-detalles-consulta btn-accion-tabla" title="Ver detalles" aria-label="Ver detalles" data-id="${value}">${ICONO_VER}</button>${ES_MEDICO_O_DIRECTOR ? `<button class="editar-consulta action-card__button btn-accion-tabla" title="Editar consulta" aria-label="Editar consulta" data-id="${value}">${ICONO_EDITAR}</button>` : ''}</div>` }
+        ]
     });
-}
 
-if (btnCargarMas && cuerpoTablaConsultas) {
-    btnCargarMas.addEventListener('click', function() {
-        const query = inputBuscarC ? inputBuscarC.value.trim() : '';
-        const offset = cuerpoTablaConsultas.querySelectorAll('tr:not(.no-registros)').length;
-
-        fetch(`api/consultas?query=${encodeURIComponent(query)}&offset=${offset}`)
-        .then(response => response.json())
-        .then(res => {
-            const consultas = Array.isArray(res) ? res : (res.data || []);
-            if (consultas.length === 0) {
-                btnCargarMas.style.display = 'none';
-                return;
-            }
-
-            consultas.forEach(c => cuerpoTablaConsultas.appendChild(renderFilaConsulta(c)));
-            checkCargarMasVisibility();
-        })
-        .catch(error => console.error("Error al cargar más consultas:", error));
-    });
+    const buscadorCaja = document.querySelector('.buscador-caja');
+    const buscador = tablaConsultas.table().container().querySelector('.dt-search');
+    if (buscadorCaja && buscador) {
+        buscadorCaja.appendChild(buscador);
+        const buscadorInput = buscador.querySelector('input');
+        if (buscadorInput) {
+            buscadorInput.placeholder = 'Buscar consulta por paciente, médico, cédula o motivo';
+            buscadorInput.style.width = '500px';
+            buscadorInput.style.maxWidth = 'calc(100vw - 40px)';
+        }
+    }
 }
 
 if (cuerpoTablaConsultas && modalActualizarConsulta) {
@@ -240,53 +212,6 @@ document.addEventListener('click', function(event) {
     }
 });
 
-const inputBuscarCondicion = document.getElementById('inputBuscarCondicion');
-const cuerpoTablaCondiciones = document.getElementById('cuerpoTablaCondiciones');
-
-if (inputBuscarCondicion && cuerpoTablaCondiciones) {
-    const filas = Array.from(cuerpoTablaCondiciones.querySelectorAll('tr'));
-    const esVacia = filas.length === 1 && filas[0].querySelector('.td-tabla-vacia') && !filas[0].classList.contains('fila-vacia-sugerida');
-    
-    if (!esVacia) {
-        function filtrarCondiciones() {
-            const query = inputBuscarCondicion.value.toLowerCase().trim();
-            let mostrados = 0;
-            
-            filas.forEach(fila => {
-                if (fila.classList.contains('fila-vacia-sugerida')) return;
-                
-                const nombre = fila.children[1]?.textContent.toLowerCase() || "";
-                const descripcion = fila.children[2]?.textContent.toLowerCase() || "";
-                const coincide = nombre.includes(query) || descripcion.includes(query);
-                
-                if (coincide && mostrados < 10) {
-                    fila.style.display = "";
-                    mostrados++;
-                } else {
-                    fila.style.display = "none";
-                }
-            });
-            
-            let rowVacio = cuerpoTablaCondiciones.querySelector('.fila-vacia-sugerida');
-            if (mostrados === 0 && query !== "") {
-                if (!rowVacio) {
-                    rowVacio = document.createElement('tr');
-                    rowVacio.className = 'fila-vacia-sugerida';
-                    rowVacio.innerHTML = '<td colspan="4" class="td-tabla-vacia">No se encontraron condiciones que coincidan.</td>';
-                    cuerpoTablaCondiciones.appendChild(rowVacio);
-                } else {
-                    rowVacio.style.display = "";
-                }
-            } else if (rowVacio) {
-                rowVacio.style.display = "none";
-            }
-        }
-        
-        inputBuscarCondicion.addEventListener('input', filtrarCondiciones);
-        filtrarCondiciones();
-    }
-}
-
 function cargarPnfsPorNucleo(idNucleo, selectPnfElement, pnfSeleccionado = null) {
     if (!selectPnfElement) return;
 
@@ -401,7 +326,7 @@ async function enviarFormularioConsulta(form, method, url, modal) {
 
     modal?.close?.();
     if (modal) modal.style.opacity = "0";
-    window.location.reload();
+    tablaConsultas?.ajax.reload(null, false);
 }
 
 const formRegistrarConsulta = document.querySelector("#modalRegistrarConsulta form");
@@ -456,6 +381,11 @@ if (formRegistrarRol) {
                 await refrescarFragmento("cuerpoTablaRoles");
                 await refrescarFragmento("contenedorMatrizPermisos");
                 await refrescarFragmento("selectRolDefecto");
+                const modalRegistrarRol = document.getElementById("modalRegistrarRol");
+                if (modalRegistrarRol?.open) modalRegistrarRol.close();
+                if (DataTable.isDataTable('#tablaRoles')) {
+                    new DataTable.Api('#tablaRoles').rows().invalidate('dom').draw(false);
+                }
                 mostrarAlertaGestion(alertContainerRoles, data.message || "¡Rol creado exitosamente!", "success");
             } else {
                 mostrarAlertaGestion(alertContainerRoles, data?.message || "Error al crear el rol", "error");
@@ -578,6 +508,7 @@ if (formRolesPermisos) {
 
 function configurarOrdenamientoTablas() {
     document.querySelectorAll("table").forEach((tabla) => {
+        if (tabla.id === "tablaRoles" || tabla.id === "tablaCondiciones" || tabla.id === "tablaRegistrosOfertas" || tabla.id === "tablaRegistros" || tabla.id === "tablaRegistrosConsultas") return;
         const encabezados = tabla.querySelectorAll("thead th.sortable");
         const cuerpo = tabla.tBodies[0];
         if (!encabezados.length || !cuerpo) return;
@@ -621,6 +552,53 @@ function configurarOrdenamientoTablas() {
 }
 
 configurarOrdenamientoTablas();
+
+if (typeof DataTable === 'function') {
+    const placeholders = {
+        tablaRoles: 'Buscar roles',
+        tablaRolesPermisos: 'Buscar permisos',
+        tablaCondiciones: 'Buscar condiciones',
+        tablaRegistrosOfertas: 'Buscar ofertas académicas'
+    };
+
+    ['tablaRoles', 'tablaRolesPermisos', 'tablaCondiciones', 'tablaRegistrosOfertas'].forEach((id) => {
+        const tabla = document.getElementById(id);
+        if (!tabla || DataTable.isDataTable(tabla)) return;
+
+        const instancia = new DataTable(tabla, {
+            paging: false,
+            info: false,
+            lengthChange: false,
+            language: {
+                search: 'Buscar:',
+                searchPlaceholder: placeholders[id],
+                zeroRecords: 'No se encontraron registros',
+                emptyTable: 'No hay registros'
+            },
+            layout: {
+                topStart: 'search',
+                topEnd: null
+            }
+        });
+
+        const buscador = instancia.table().container().querySelector('.dt-search');
+        const contenedorRoles = id === 'tablaRoles' ? tabla.closest('.contenedor-roles-registrados') : null;
+        const contenedorPermisos = id === 'tablaRolesPermisos' ? tabla.closest('#formRolesPermisos') : null;
+        const cabeceraObjetivo = contenedorRoles?.querySelector('.cabecera-tabla-global')
+            || contenedorPermisos?.querySelector('.cabecera-tabla-global')
+            || tabla.closest('.sub-tab-content')?.querySelector('.cabecera-tabla-global');
+        const buscadorInput = buscador?.querySelector('input');
+
+        if (cabeceraObjetivo && buscador) {
+            cabeceraObjetivo.appendChild(buscador);
+            if (buscadorInput) {
+                buscadorInput.placeholder = placeholders[id];
+                buscadorInput.style.width = '360px';
+                buscadorInput.style.maxWidth = 'calc(100vw - 40px)';
+            }
+        }
+    });
+}
 
 // -------------------------------------------------------------------------
 // CONFIGURACIÓN GENERAL (AJAX)

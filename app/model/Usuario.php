@@ -181,6 +181,70 @@ class Usuario extends BaseModel {
         }
     }
 
+    public function obtenerUsuariosListado($start, $length, $search, $orderName, $orderDirection) {
+        $where = "u.activo = 1";
+        $params = [];
+
+        if ($search !== "") {
+            $where .= " AND (CAST(u.cedula AS CHAR) LIKE :search
+                OR u.nombre LIKE :search
+                OR u.apellido LIKE :search
+                OR t.nombre_tipo LIKE :search
+                OR r.nombre_rol LIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $sortColumns = [
+            'cedula' => 'u.cedula',
+            'nombre' => 'u.nombre',
+            'apellido' => 'u.apellido',
+            'nombre_tipo' => 't.nombre_tipo',
+            'fecha_nacimiento' => 'u.fecha_nacimiento',
+            'tlfprincipal' => 'u.tlfprincipal'
+        ];
+        $orderBy = $sortColumns[$orderName] ?? 'u.fecha_creacion';
+        $direction = $orderDirection === 'asc' ? 'ASC' : 'DESC';
+
+        $join = "LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
+            LEFT JOIN lista_roles r ON u.rol = r.id_rol
+            LEFT JOIN pnfs_usuarios pu ON u.cedula = pu.cedula_usuario
+            LEFT JOIN lista_nucleos n ON pu.nucleo_id = n.id_nucleo
+            LEFT JOIN lista_pnfs pnf ON pu.pnf_id = pnf.id_pnf";
+
+        $total = (int)$this->pdo->query("SELECT COUNT(*) FROM usuarios WHERE activo = 1")->fetchColumn();
+
+        $filteredSql = "SELECT COUNT(*) FROM usuarios u
+            LEFT JOIN lista_tipos t ON u.tipo = t.id_tipo
+            LEFT JOIN lista_roles r ON u.rol = r.id_rol
+            WHERE " . $where;
+        $filteredStmt = $this->pdo->prepare($filteredSql);
+        $filteredStmt->execute($params);
+        $filtered = (int)$filteredStmt->fetchColumn();
+
+        $sql = "SELECT u.cedula, u.nombre, u.apellido, u.tipo, u.fecha_nacimiento,
+            u.tlfprincipal, u.tlfemergencia, u.nombre_contacto_emergencia,
+            u.direccion, u.activo, u.rol, u.sexo, u.fecha_creacion,
+            t.nombre_tipo, r.nombre_rol, pu.nucleo_id, pu.pnf_id,
+            n.nombre_nucleo, pnf.nombre_pnf
+            FROM usuarios u " . $join . "
+            WHERE " . $where . "
+            ORDER BY " . $orderBy . " " . $direction . "
+            LIMIT :limit OFFSET :offset";
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':limit', $length < 0 ? $filtered : $length, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $start, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filtered,
+            'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+        ];
+    }
+
     public function actualizarUsuarioCompleto($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $nombre_contacto_emergencia, $tlfemergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
         try {
             $this->pdo->beginTransaction();

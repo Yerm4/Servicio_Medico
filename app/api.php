@@ -2,6 +2,7 @@
 $rutasApi = [
     "GET" => [
         "api/consultas"                    => "ConsultaController@consultar",
+        "api/consultas/listado"            => "ConsultaController@listado",
         "api/consultas/detalle"            => "ConsultaController@obtenerConsulta",
         "api/consultas/detalle/{id}"       => "ConsultaController@obtenerConsulta",
         "api/consultas/reporte-morbilidad" => "ConsultaController@generarReporteMorbilidad",
@@ -10,6 +11,7 @@ $rutasApi = [
         "api/consultas/paciente/{cedula}"  => "ConsultaController@obtenerConsultasPaciente",
         "api/consultas/{id}"               => "ConsultaController@consultar",
         "api/users/buscar/{id}"            => "UserController@consultar",
+        "api/users/listado"                => "UserController@listado",
         "api/users/cedula"                 => "UserController@obtenerUsuario",
         "api/users/{id}"                   => "UserController@obtenerUsuario",
         "api/auth/{id}"                    => "UserController@verificarCedula",

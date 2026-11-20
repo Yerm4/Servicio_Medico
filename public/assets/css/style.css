@@ -524,6 +524,85 @@ tr, th, td {
     flex-direction: column;
 }
 
+.section-1--perfil .buscador-caja {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+}
+
+.section-1--perfil .buscador-caja .dt-search {
+    grid-column: 2;
+    justify-self: center;
+}
+
+.section-1--perfil .buscador-caja .section-1__box {
+    grid-column: 3;
+    justify-self: end;
+}
+
+#tablaRegistros_wrapper .dt-layout-row:first-child,
+#tablaRegistrosConsultas_wrapper .dt-layout-row:first-child {
+    display: none;
+}
+
+.section-1--perfil .buscador-caja .dt-search label {
+    font-size: 0;
+    margin: 0;
+}
+
+.section-1--perfil .buscador-caja .dt-search input {
+    box-sizing: border-box;
+    padding: 8px;
+    border-radius: 10px 5px 5px 5px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: border .2s ease;
+}
+
+.section-1--perfil .buscador-caja .dt-search input:focus,
+.section-1--perfil .buscador-caja .dt-search input:hover {
+    border: 1px solid #999;
+}
+
+#tablaRegistros_wrapper .dt-search input {
+    width: 500px !important;
+    max-width: calc(100vw - 40px) !important;
+}
+
+#tablaRegistrosConsultas_wrapper .dt-search input {
+    width: 500px !important;
+    max-width: calc(100vw - 40px) !important;
+}
+
+@media (max-width: 700px) {
+    .section-1--perfil .buscador-caja {
+        grid-template-columns: 1fr;
+        grid-template-rows: 38px auto;
+        gap: 10px;
+    }
+
+    .section-1--perfil .buscador-caja .dt-search {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: center;
+        width: 100%;
+    }
+
+    .section-1--perfil .buscador-caja .section-1__box {
+        grid-column: 1;
+        grid-row: 2;
+        justify-self: center;
+    }
+
+    .section-1--perfil .buscador-caja .dt-search input {
+        width: min(500px, calc(100vw - 80px)) !important;
+        max-width: 100% !important;
+    }
+}
+
 .section-1__box--boton {
     margin: 10px;
     gap: 10px;
@@ -706,8 +785,6 @@ tr, th, td {
 .td-acciones-btn {
     padding: 10px; 
     font-size: 0.9em; 
-    display: flex; 
-    gap: 5px;
 }
 
 .btn-detalles-consulta {
@@ -800,15 +877,31 @@ tr, th, td {
 }
 
 .configuracion-bloque-formulario {
-    background: #fdfdfd; 
-    border: 1px solid #eee; 
-    padding: 20px; 
-    border-radius: 8px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    border-radius: 0;
 }
 
 .titulo-configuracion-interna {
     margin-top: 0; 
     margin-bottom: 15px;
+}
+
+.sub-tab-content {
+    padding-top: 0;
+}
+
+.sub-tab-content > .cabecera-tabla-global,
+.sub-tab-content > .contenedor-tabla-consultas,
+.sub-tab-content > .contenedor-roles-registrados,
+.sub-tab-content > #formRolesPermisos,
+.sub-tab-content > .contenedor-form-nuevo-rol {
+    margin-top: 0;
+}
+
+#formRolesPermisos {
+    margin-top: 30px;
 }
 
 .form-configuracion-flex {
@@ -1138,6 +1231,337 @@ tr, th, td {
 
 .cabecera-tabla-global {
     padding-bottom: 15px;
+}
+
+.cabecera-tabla-global {
+    min-height: 38px;
+}
+
+.cabecera-tabla-global > h3,
+.cabecera-tabla-global > .titulo-configuracion-interna,
+.cabecera-tabla-global > .titulo-tabla-consultas {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.cabecera-tabla-global {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: 38px;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.cabecera-tabla-global > h3,
+.cabecera-tabla-global > .titulo-configuracion-interna,
+.cabecera-tabla-global > .titulo-tabla-consultas {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    margin-bottom: 0;
+}
+
+.cabecera-tabla-global > .dt-search {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.cabecera-tabla-global > .action-card__button,
+.cabecera-tabla-global > a.action-card__button {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+}
+
+.cabecera-tabla-global .action-card__button--fit {
+    width: fit-content;
+    min-width: 150px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.cabecera-tabla-global .dt-search label {
+    font-size: 0;
+    margin: 0;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.cabecera-tabla-global .dt-search input {
+    box-sizing: border-box;
+    width: 360px;
+    max-width: 100%;
+    height: 38px;
+    padding: 8px;
+    border-radius: 10px 5px 5px 5px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+}
+
+.cabecera-tabla-global .dt-search input:focus,
+.cabecera-tabla-global .dt-search input:hover {
+    border: 1px solid #999;
+}
+
+.btn-accion-tabla {
+    width: 38px !important;
+    min-width: 38px;
+    height: 38px;
+    padding: 6px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.btn-accion-tabla:not(.bg-red):not(.action-card__button--red):not(.action-card__button--danger) svg,
+.btn-accion-tabla:not(.bg-red):not(.action-card__button--red):not(.action-card__button--danger) svg path,
+.btn-accion-tabla:not(.bg-red):not(.action-card__button--red):not(.action-card__button--danger) svg circle {
+    color: #fff;
+}
+
+.btn-accion-tabla:not(.bg-red):not(.action-card__button--red):not(.action-card__button--danger) svg path {
+    fill: #fff;
+}
+
+.btn-accion-tabla:not(.bg-red):not(.action-card__button--red):not(.action-card__button--danger) svg path[stroke],
+.btn-accion-tabla:not(.bg-red):not(.action-card__button--red):not(.action-card__button--danger) svg circle {
+    fill: none;
+    stroke: #fff;
+}
+
+.btn-accion-tabla.bg-red svg,
+.btn-accion-tabla.bg-red svg path,
+.btn-accion-tabla.action-card__button--red svg,
+.btn-accion-tabla.action-card__button--red svg path,
+.btn-accion-tabla.action-card__button--danger svg,
+.btn-accion-tabla.action-card__button--danger svg path,
+.btn-eliminar svg,
+.btn-eliminar svg path {
+    fill: #000;
+}
+
+.btn-eliminar svg path[stroke],
+.btn-accion-tabla.bg-red svg path[stroke],
+.btn-accion-tabla.action-card__button--red svg path[stroke],
+.btn-accion-tabla.action-card__button--danger svg path[stroke] {
+    fill: none;
+    stroke: #000;
+}
+
+.btn-eliminar {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    padding: 6px;
+    border: 0;
+    border-radius: 10px;
+    background-color: #b22;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.acciones-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.form-eliminar-inline {
+    display: inline-flex;
+    align-items: center;
+}
+
+.dt-container table.dataTable th,
+.dt-container table.dataTable td,
+.dt-container table.tabla-consultas th,
+.dt-container table.tabla-consultas td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.dt-container table.dataTable th.dt-type-numeric,
+.dt-container table.dataTable td.dt-type-numeric {
+    text-align: center;
+}
+
+.dt-container table.dataTable,
+.dt-container table.tabla-consultas {
+    border-collapse: collapse;
+}
+
+.dt-container table.dataTable thead th,
+.dt-container table.tabla-consultas thead th {
+    border-bottom: 2px solid #ddd;
+}
+
+.dt-container table.dataTable tbody td,
+.dt-container table.tabla-consultas tbody td {
+    border-bottom: 1px solid #eee;
+}
+
+.dt-container table.dataTable tbody tr:last-child td,
+.dt-container table.tabla-consultas tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    table {
+        outline: none !important;
+    }
+
+    .dt-container table.dataTable,
+    .dt-container table.tabla-consultas {
+        table-layout: auto;
+        width: 100%;
+        border-radius: 0;
+        overflow: visible;
+        box-shadow: none;
+    }
+
+    .dt-container table.dataTable td,
+    .dt-container table.tabla-consultas td {
+        white-space: nowrap;
+    }
+
+    .dt-container .dt-layout-table {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    #tablaRoles,
+    #tablaCondiciones,
+    #tablaRolesPermisos,
+    #tablaRegistrosOfertas {
+        min-width: 600px;
+    }
+
+    #tablaNucleos,
+    #tablaPnfs,
+    #tablaRegistros,
+    #tablaRegistrosConsultas {
+        min-width: 700px;
+    }
+
+    .nested-tabs-menu {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        scrollbar-width: none;
+    }
+
+    .nested-tabs-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nested-tabs-menu .sub-tab-link {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 8px 10px;
+    }
+
+    .cabecera-tabla-global {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .cabecera-tabla-global .dt-search,
+    .cabecera-tabla-global .dt-search label,
+    .cabecera-tabla-global .dt-search input {
+        max-width: 100%;
+    }
+
+    .cabecera-tabla-global > .dt-search {
+        justify-self: center !important;
+        text-align: center;
+    }
+
+    .cabecera-tabla-global .dt-search label {
+        justify-content: center;
+        width: auto;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .cabecera-tabla-global .dt-search input {
+        display: block;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        transform: translateX(-8px);
+    }
+
+    .cabecera-tabla-global .dt-search input {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+#tablaRoles_wrapper .dt-layout-row:first-child,
+#tablaRolesPermisos_wrapper .dt-layout-row:first-child,
+#tablaCondiciones_wrapper .dt-layout-row:first-child,
+#tablaRegistrosOfertas_wrapper .dt-layout-row:first-child,
+#tablaNucleos_wrapper .dt-layout-row:first-child,
+#tablaPnfs_wrapper .dt-layout-row:first-child {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .cabecera-tabla-global {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 38px 38px;
+        gap: 10px;
+        justify-items: center;
+    }
+
+    .cabecera-tabla-global > h3,
+    .cabecera-tabla-global > .titulo-configuracion-interna,
+    .cabecera-tabla-global > .titulo-tabla-consultas,
+    .cabecera-tabla-global > .dt-search,
+    .cabecera-tabla-global > .action-card__button,
+    .cabecera-tabla-global > a.action-card__button {
+        grid-column: 1;
+        justify-self: center;
+    }
+
+    .cabecera-tabla-global > h3,
+    .cabecera-tabla-global > .titulo-configuracion-interna,
+    .cabecera-tabla-global > .titulo-tabla-consultas {
+        grid-row: 1;
+    }
+
+    .cabecera-tabla-global > .dt-search {
+        grid-row: 2;
+        width: 100%;
+    }
+
+    .cabecera-tabla-global > .action-card__button,
+    .cabecera-tabla-global > a.action-card__button {
+        grid-row: 3;
+        justify-self: center !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .cabecera-tabla-global .dt-search input {
+        width: min(360px, calc(100vw - 80px)) !important;
+        max-width: 100% !important;
+    }
 }
 
 /* AUTOCOMPLETE Y SUGERENCIAS FLOTANTES (OVERLAY) */

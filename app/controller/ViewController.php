@@ -61,36 +61,12 @@ class ViewController {
     }
 
     public function showUsuario($userModel = null, $permisos = null) {
-
-        $pnfModel = new NucleoPNF();
-        $userModel = new Usuario();
-
-        $nucleos = $pnfModel->obtenerNucleos();
-        $pnfs = $pnfModel->obtenerPNFS();
-        
-        $tipos = $userModel->obtenerTipos();
-        $data = $userModel->consultarUsuarios();
         $paginaActual = 'usuarios';
-        if ($data["status"] === "ok") {
-            $usuariosEncontrados = $data["data"];
-            include __DIR__ . "/../views/usuarios.php";
-        } else {
-            include __DIR__ . "/../views/404.php";
-        }
+        include __DIR__ . "/../views/usuarios.php";
     }
 
     public function showConsultas($userModel = null, $permisos = null) {
         global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta, $tieneGenerarReportes, $tieneRealizarConsulta;
-        $pnfModel = new NucleoPNF();
-        $userModel = new Usuario();
-        $consultaModel = new Consulta();
-
-        $nucleos = $pnfModel->obtenerNucleos();
-        $pnfs = $pnfModel->obtenerPNFS();
-        
-        $tipos = $userModel->obtenerTipos();
-        $data = $userModel->consultarUsuarios();
-        $consultasRecientes = $consultaModel->obtenerConsultasRecientes(20);
         $paginaActual = 'consultas';
         include __DIR__ . "/../views/consultas.php";
     }

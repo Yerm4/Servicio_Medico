@@ -38,6 +38,7 @@ try {
     }
 
     $insertMap = [
+        5 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'generar_reportes', 'gestionar_roles_permisos', 'gestionar_condiciones', 'gestionar_oferta_academica'],
         2 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'gestionar_condiciones'],
         3 => ['gestionar_usuarios', 'ver_consultas', 'realizar_consulta', 'modificar_consulta', 'generar_reportes', 'gestionar_condiciones'],
         4 => ['gestionar_usuarios', 'generar_reportes', 'gestionar_roles_permisos', 'gestionar_condiciones', 'gestionar_oferta_academica']
@@ -104,16 +105,6 @@ if (!isset($_SESSION['cedula'])) {
     }
     if (($paginaActual === "oferta" || $paginaActual === "sedes" || $paginaActual === "sedes-carreras") && !$tieneGestionarOferta) { 
         header("Location: perfil");
-        exit();
-    }
-}
-
-if (isset($_SESSION['cedula'])) {
-    $currentUa = $_SERVER['HTTP_USER_AGENT'] ?? '';
-    if (!isset($_SESSION['user_agent']) || $_SESSION['user_agent'] !== $currentUa) {
-        session_unset();
-        session_destroy();
-        header("Location: login");
         exit();
     }
 }

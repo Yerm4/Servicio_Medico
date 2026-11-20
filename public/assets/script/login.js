@@ -183,9 +183,9 @@ if (loginForm) {
 
                 if (result && result.status === "ok") {
                     // Éxito: Cédula encontrada
-                    $inputCedula.css("border", "2px solid #166534"); // Borde verde
+                    $inputCedula.css("border", "3px solid #15803d");
                     $submitBtn.prop("disabled", false);
-                    $cedulaAlert.text("Cédula registrada").css("color", "#166534");
+                    $cedulaAlert.text("").remove();
                 } else {
                     // Error: Cédula no registrada
                     $inputCedula.css("border", "2px solid #991b1b"); // Borde rojo

@@ -8,14 +8,14 @@ $tOferta = $tieneGestionarOferta ?? ($GLOBALS['tieneGestionarOferta'] ?? false);
 <aside class="side-menu">
     <h1>Menu</h1>
     <hr>
-    <a href="perfil" id="inicio" class="<?= $paginaActual === 'perfil' ? 'focus' : '' ?>">Inicio</a>
+    <a href="./perfil" id="inicio" class="<?= $paginaActual === 'perfil' ? 'focus' : '' ?>">Inicio</a>
     <?php if ($tGestionarUsuarios): ?>
-    <a href="usuarios" id="usuario" class="<?= $paginaActual === 'usuarios' ? 'focus' : '' ?>">Usuarios</a>
+    <a href="./usuarios" id="usuario" class="<?= $paginaActual === 'usuarios' ? 'focus' : '' ?>">Usuarios</a>
     <?php endif; ?>
     <?php if ($tVerConsultas): ?>
-    <a href="consultas" id="consulta" class="<?= $paginaActual === 'consultas' ? 'focus' : '' ?>">Consultas</a>
+    <a href="./consultas" id="consulta" class="<?= $paginaActual === 'consultas' ? 'focus' : '' ?>">Consultas</a>
     <?php endif; ?>
     <?php if ($tConfiguracion): ?>
-    <a href="configuracion" id="configuracion" class="<?= $paginaActual === 'configuracion' ? 'focus' : '' ?>">Configuración</a>
+    <a href="./configuracion" id="configuracion" class="<?= $paginaActual === 'configuracion' ? 'focus' : '' ?>">Configuración</a>
     <?php endif; ?>
 </aside>

@@ -1,6 +1,6 @@
 $(document).ready(() => {
 
-    new DataTable('#tablaNucleos', {
+    const tablaNucleos = new DataTable('#tablaNucleos', {
         autoFill: false,
         searching: true,    
         paging: false,     
@@ -13,11 +13,11 @@ $(document).ready(() => {
         },
         language: {
         search: 'Buscar:',
-        searchPlaceholder: 'Escribe para filtrar...',
+        searchPlaceholder: 'Buscar núcleos',
         zeroRecords: 'No se encontraron núcleos'
     }
 });
-    new DataTable('#tablaPnfs', {
+    const tablaPnfs = new DataTable('#tablaPnfs', {
         autoFill: false,
         searching: true,    
         paging: false,     
@@ -30,10 +30,28 @@ $(document).ready(() => {
         },
         language: {
         search: 'Buscar:',
-        searchPlaceholder: 'Escribe para filtrar...',
+        searchPlaceholder: 'Buscar PNFs',
         zeroRecords: 'No se encontraron pnfs'
     }
 });
+
+    [
+        [tablaNucleos, 'Buscar núcleos'],
+        [tablaPnfs, 'Buscar PNFs']
+    ].forEach(([tabla, placeholder]) => {
+        const tablaElemento = tabla.table().node();
+        const buscador = tabla.table().container().querySelector('.dt-search');
+        const cabecera = tablaElemento.closest('.contenedor-tabla-consultas')?.querySelector('.cabecera-tabla-global');
+        const buscadorInput = buscador?.querySelector('input');
+        if (cabecera && buscador) {
+            cabecera.appendChild(buscador);
+            if (buscadorInput) {
+                buscadorInput.placeholder = placeholder;
+                buscadorInput.style.width = '360px';
+                buscadorInput.style.maxWidth = 'calc(100vw - 40px)';
+            }
+        }
+    });
 
     
 async function refrescarContenedor(idContenedor) {

@@ -55,20 +55,12 @@ include_once __DIR__."/layout/header.php";
                 <!-- Pestaña Roles y Permisos -->
                 <div id="sub-content-roles" class="sub-tab-content subcontent-roles-box">
                     <div id="alert-container-roles" class="alert-container"></div>
-                    <div class="contenedor-form-nuevo-rol">
-                        <h3 class="titulo-configuracion-interna">Crear Nuevo Rol</h3>
-                        <form id="formRegistrarRol" class="form-configuracion-flex">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <input type="text" name="nombre_rol" required class="action-card__input" placeholder="Ej. Enfermero">
-                            <input type="text" name="descripcion_rol" class="action-card__input" placeholder="Ej. Personal médico">
-                            <button type="submit" class="action-card__button btn-crear-rol">Crear Rol</button>
-                        </form>
-                    </div>
-
-                    <hr class="separador-configuracion">
 
                     <div class="contenedor-roles-registrados">
-                        <h3 class="titulo-configuracion-interna">Roles Registrados</h3>
+                        <div class="cabecera-tabla-global">
+                            <h3 class="titulo-configuracion-interna">Roles Registrados</h3>
+                            <a name="openModal" data-modal="modalRegistrarRol" class="action-card__button action-card__button--fit" href="#">Crear Rol</a>
+                        </div>
                         <table id="tablaRoles" class="tabla-consultas">
                             <thead>
                                 <tr class="tr-head-consultas">
@@ -85,12 +77,16 @@ include_once __DIR__."/layout/header.php";
                                         <td><strong><?= e($role['nombre_rol']) ?></strong></td>
                                         <td><?= e($role['descripcion_rol']) ?></td>
                                         <td>
-                                            <button type="button" class="action-card__button editar-rol" data-id="<?= e($role['id_rol']) ?>" data-nombre="<?= e($role['nombre_rol']) ?>" data-descripcion="<?= e($role['descripcion_rol']) ?>">Editar</button>
+                                            <div class="acciones-flex">
+                                            <button type="button" class="action-card__button editar-rol btn-accion-tabla" title="Editar rol" aria-label="Editar rol" data-id="<?= e($role['id_rol']) ?>" data-nombre="<?= e($role['nombre_rol']) ?>" data-descripcion="<?= e($role['descripcion_rol']) ?>">
+                                                <svg class="svg-icon-no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.9087 3.87352C16.4681 3.31421 17.2266 3 18.0176 3C18.4093 3 18.7971 3.07714 19.1589 3.22702C19.5208 3.3769 19.8495 3.59658 20.1265 3.87352C20.4034 4.15046 20.6231 4.47924 20.773 4.84108C20.9229 5.20292 21 5.59074 21 5.98239C21 6.37404 20.9229 6.76186 20.773 7.1237C20.6231 7.48554 20.4034 7.81432 20.1265 8.09126L19.0231 9.19466C18.6326 9.58519 17.9994 9.58519 17.6089 9.19467L14.8053 6.39114C14.4148 6.00062 14.4148 5.36745 14.8053 4.97693L15.9087 3.87352ZM13.3911 7.80536C13.0006 7.41483 12.3674 7.41483 11.9769 7.80536L5.01084 14.7714C4.37004 15.4122 3.91545 16.2151 3.69566 17.0943L3.02986 19.7575C2.94467 20.0982 3.04452 20.4587 3.2929 20.7071C3.54128 20.9555 3.90177 21.0553 4.24254 20.9701L6.90572 20.3043C7.78488 20.0846 8.58778 19.63 9.22857 18.9892L16.1946 12.0231C16.5852 11.6326 16.5852 10.9994 16.1946 10.6089L13.3911 7.80536Z" fill="#000"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 20C12 19.4477 12.4477 19 13 19L20 19C20.5523 19 21 19.4477 21 20C21 20.5523 20.5523 21 20 21L13 21C12.4477 21 12 20.5523 12 20Z" fill="#000"/></svg>
+                                            </button>
                                             <form class="form-eliminar-inline form-eliminar-rol">
                                                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                 <input type="hidden" name="id_rol" value="<?= e($role['id_rol']) ?>">
-                                                <button type="submit" class="action-card__button action-card__button--red">Eliminar</button>
+                                                <button type="submit" class="action-card__button action-card__button--red btn-accion-tabla" title="Eliminar rol" aria-label="Eliminar rol"><svg class="svg-icon-no-pointer" width="24" height="24" viewBox="0 0 512 512" fill="#000" aria-hidden="true"><path d="M316.325 44.522V0H195.68l-.003 44.522H61.217v87.982h21.616c3.975 75.409 20.548 350.983 21.319 363.803L105.097 512h301.806l.944-15.694c.771-12.821 17.345-288.394 21.319-363.803h21.616V44.522H316.325zM229.069 33.391h53.866v11.13h-53.866V33.391zM375.458 478.609H136.542c-3.633-60.548-16.681-278.597-20.27-346.105h279.456c-3.588 67.503-16.637 285.551-20.27 346.105zM417.391 99.112H94.609V77.913h322.783v21.199z"/><path d="M239.304 167.947h33.391v280.031h-33.391z"/></svg></button>
                                             </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -98,13 +94,14 @@ include_once __DIR__."/layout/header.php";
                         </table>
                     </div>
 
-                    <hr class="separador-configuracion">
-
-                    <h3 class="titulo-configuracion-interna">Matriz de Asignación de Permisos</h3>
                     <form id="formRolesPermisos">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                        <div class="cabecera-tabla-global">
+                            <h3 class="titulo-configuracion-interna">Matriz de Asignación de Permisos</h3>
+                            <button type="submit" class="action-card__button action-card__button--fit">Guardar Matriz</button>
+                        </div>
                         <div id="contenedorMatrizPermisos">
-                            <table class="tabla-consultas">
+                            <table id="tablaRolesPermisos" class="tabla-consultas">
                                 <thead>
                                     <tr class="tr-head-consultas">
                                         <th>Permiso / Descripción</th>
@@ -132,7 +129,6 @@ include_once __DIR__."/layout/header.php";
                                 </tbody>
                             </table>
                         </div>
-                        <button type="submit" class="action-card__button">Guardar Matriz de Permisos</button>
                     </form>
                 </div>
             <?php endif; ?>
@@ -163,12 +159,14 @@ include_once __DIR__."/layout/header.php";
                                     <td><strong><?= e($cond['nombre_condicion']) ?></strong></td>
                                     <td><?= e($cond['descripcion_condicion']) ?></td>
                                     <td>
-                                        <button type="button" class="action-card__button editar-condicion" data-id="<?= e($cond['id']) ?>" data-nombre="<?= e($cond['nombre_condicion']) ?>" data-descripcion="<?= e($cond['descripcion_condicion']) ?>">Editar</button>
+                                        <div class="acciones-flex">
+                                        <button type="button" class="action-card__button editar-condicion btn-accion-tabla" title="Editar condición" aria-label="Editar condición" data-id="<?= e($cond['id']) ?>" data-nombre="<?= e($cond['nombre_condicion']) ?>" data-descripcion="<?= e($cond['descripcion_condicion']) ?>"><svg class="svg-icon-no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.9087 3.87352C16.4681 3.31421 17.2266 3 18.0176 3C18.4093 3 18.7971 3.07714 19.1589 3.22702C19.5208 3.3769 19.8495 3.59658 20.1265 3.87352C20.4034 4.15046 20.6231 4.47924 20.773 4.84108C20.9229 5.20292 21 5.59074 21 5.98239C21 6.37404 20.9229 6.76186 20.773 7.1237C20.6231 7.48554 20.4034 7.81432 20.1265 8.09126L19.0231 9.19466C18.6326 9.58519 17.9994 9.58519 17.6089 9.19467L14.8053 6.39114C14.4148 6.00062 14.4148 5.36745 14.8053 4.97693L15.9087 3.87352ZM13.3911 7.80536C13.0006 7.41483 12.3674 7.41483 11.9769 7.80536L5.01084 14.7714C4.37004 15.4122 3.91545 16.2151 3.69566 17.0943L3.02986 19.7575C2.94467 20.0982 3.04452 20.4587 3.2929 20.7071C3.54128 20.9555 3.90177 21.0553 4.24254 20.9701L6.90572 20.3043C7.78488 20.0846 8.58778 19.63 9.22857 18.9892L16.1946 12.0231C16.5852 11.6326 16.5852 10.9994 16.1946 10.6089L13.3911 7.80536Z" fill="#000"/></svg></button>
                                         <form class="form-eliminar-inline form-eliminar-condicion">
                                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                             <input type="hidden" name="id" value="<?= e($cond['id']) ?>">
-                                            <button type="submit" class="action-card__button action-card__button--red">Eliminar</button>
+                                            <button type="submit" class="action-card__button action-card__button--red btn-accion-tabla" title="Eliminar condición" aria-label="Eliminar condición"><svg class="svg-icon-no-pointer" width="24" height="24" viewBox="0 0 512 512" fill="#000" aria-hidden="true"><path d="M316.325 44.522V0H195.68l-.003 44.522H61.217v87.982h21.616c3.975 75.409 20.548 350.983 21.319 363.803L105.097 512h301.806l.944-15.694c.771-12.821 17.345-288.394 21.319-363.803h21.616V44.522H316.325zM229.069 33.391h53.866v11.13h-53.866V33.391zM375.458 478.609H136.542c-3.633-60.548-16.681-278.597-20.27-346.105h279.456c-3.588 67.503-16.637 285.551-20.27 346.105zM417.391 99.112H94.609V77.913h322.783v21.199z"/><path d="M239.304 167.947h33.391v280.031h-33.391z"/></svg></button>
                                         </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; endif; ?>
@@ -204,30 +202,25 @@ include_once __DIR__."/layout/header.php";
         ?>
 
         <?php foreach ($ofertasPorNucleo as $nombreNucleo => $listaOfertas): ?>
-            <tr class="tr-grupo-nucleo" style="background-color: #f1f5f9;">
-                <td colspan="3" class="td-consultas" style="font-weight: 700; color: #1e293b; padding: 0.75rem 1rem;">
-                    <?= e($nombreNucleo) ?> 
-                    <span style="font-weight: 400; font-size: 0.85em; color: #64748b;">(<?= count($listaOfertas) ?> PNFs)</span>
-                </td>
-            </tr>
-
             <?php foreach ($listaOfertas as $o): ?>
                 <tr class="tr-body-consultas" data-nucleo="<?= e($nombreNucleo) ?>">
-                    <td class="td-consultas" style="color: #94a3b8; padding-left: 2rem;">↳</td>
+                    <td class="td-consultas"><strong><?= e($nombreNucleo) ?></strong></td>
                     <td class="td-consultas"><strong><?= e($o['nombre_pnf']) ?></strong></td>
                     <td class="td-acciones-btn">
+                        <div class="acciones-flex">
                         <form class="form-eliminar-inline">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
                             <input type="hidden" name="id_oferta" value="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>">
                             <input type="hidden" name="id_nucleo" value="<?= e($o['id_nucleo']) ?>">
                             <input type="hidden" name="id_pnf" value="<?= e($o['id_pnf']) ?>">
-                            <button type="submit" data-id="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>" class="action-card__button action-card__button--danger bg-red">
-                                <svg style="pointer-events:none" width="30" height="30" viewBox="0 0 512 512" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+                            <button type="submit" data-id="<?= e($o['id_oferta'] ?? $o['id'] ?? '') ?>" class="action-card__button action-card__button--danger bg-red btn-accion-tabla" title="Eliminar oferta académica" aria-label="Eliminar oferta académica">
+                                <svg style="pointer-events:none" width="24" height="24" viewBox="0 0 512 512" fill="#000000" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M316.325 44.522V0H195.68l-.003 44.522H61.217v87.982h21.616c3.975 75.409 20.548 350.983 21.319 363.803L105.097 512h301.806l.944-15.694c.771-12.821 17.345-288.394 21.319-363.803h21.616V44.522H316.325zM229.069 33.391h53.866v11.13h-53.866V33.391zM375.458 478.609H136.542c-3.633-60.548-16.681-278.597-20.27-346.105h279.456c-3.588 67.503-16.637 285.551-20.27 346.105zM417.391 99.112H94.609V77.913h322.783v21.199z"/>
                                     <path d="M239.304 167.947h33.391v280.031h-33.391z"/>
                                 </svg>
                             </button>
                         </form>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -273,13 +266,13 @@ include_once __DIR__."/layout/header.php";
                 
                 <td class="td-acciones-btn">
                     <div class="acciones-flex">
-                        <button class="action-card__button editar-nucleo btn-add" name="openModal" data-modal="modalActualizarNucleo" data-id="<?= e($n['id_nucleo']) ?>" data-nombre="<?= e($n['nombre_nucleo']) ?>">
+                        <button class="action-card__button editar-nucleo btn-add btn-accion-tabla" title="Editar núcleo" aria-label="Editar núcleo" name="openModal" data-modal="modalActualizarNucleo" data-id="<?= e($n['id_nucleo']) ?>" data-nombre="<?= e($n['nombre_nucleo']) ?>">
                             <svg class="svg-icon-no-pointer" width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9087 3.87352C16.4681 3.31421 17.2266 3 18.0176 3C18.4093 3 18.7971 3.07714 19.1589 3.22702C19.5208 3.3769 19.8495 3.59658 20.1265 3.87352C20.4034 4.15046 20.6231 4.47924 20.773 4.84108C20.9229 5.20292 21 5.59074 21 5.98239C21 6.37404 20.9229 6.76186 20.773 7.1237C20.6231 7.48554 20.4034 7.81432 20.1265 8.09126L19.0231 9.19466C18.6326 9.58519 17.9994 9.58519 17.6089 9.19467L14.8053 6.39114C14.4148 6.00062 14.4148 5.36745 14.8053 4.97693L15.9087 3.87352ZM13.3911 7.80536C13.0006 7.41483 12.3674 7.41483 11.9769 7.80536L5.01084 14.7714C4.37004 15.4122 3.91545 16.2151 3.69566 17.0943L3.02986 19.7575C2.94467 20.0982 3.04452 20.4587 3.2929 20.7071C3.54128 20.9555 3.90177 21.0553 4.24254 20.9701L6.90572 20.3043C7.78488 20.0846 8.58778 19.63 9.22857 18.9892L16.1946 12.0231C16.5852 11.6326 16.5852 10.9994 16.1946 10.6089L13.3911 7.80536Z" fill="#000000"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 20C12 19.4477 12.4477 19 13 19L20 19C20.5523 19 21 19.4477 21 20C21 20.5523 20.5523 21 20 21L13 21C12.4477 21 12 20.5523 12 20Z" fill="#000000"/>
                             </svg>
                         </button>
-                        <button class="btn-eliminar" name="eliminarNucleo" type="submit" data-id="<?= e($n['id_nucleo']) ?>">
+                        <button class="btn-eliminar btn-accion-tabla" title="Eliminar núcleo" aria-label="Eliminar núcleo" name="eliminarNucleo" type="submit" data-id="<?= e($n['id_nucleo']) ?>">
                             <svg class="svg-icon-no-pointer" width="30" height="30" viewBox="0 0 512 512" fill="#000000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M316.325 44.522V0H195.68l-.003 44.522H61.217v87.982h21.616c3.975 75.409 20.548 350.983 21.319 363.803L105.097 512h301.806l.944-15.694c.771-12.821 17.345-288.394 21.319-363.803h21.616V44.522H316.325zM229.069 33.391h53.866v11.13h-53.866V33.391zM375.458 478.609H136.542c-3.633-60.548-16.681-278.597-20.27-346.105h279.456c-3.588 67.503-16.637 285.551-20.27 346.105zM417.391 99.112H94.609V77.913h322.783v21.199z"/>
                                 <path d="M239.304 167.947h33.391v280.031h-33.391z"/>
@@ -333,13 +326,13 @@ include_once __DIR__."/layout/header.php";
                 <td class="td-consultas"><strong><?= e($p['nombre_pnf']) ?></strong></td>
                 <td class="td-acciones-btn">
                     <div class="acciones-flex">
-                        <button class="action-card__button btn-add editar-pnf" name="openModal" data-modal="modalActualizarPNF" data-id="<?= e($p['id_pnf']) ?>" data-nombre="<?= e($p['nombre_pnf']) ?>">
+                        <button class="action-card__button btn-add editar-pnf btn-accion-tabla" title="Editar PNF" aria-label="Editar PNF" name="openModal" data-modal="modalActualizarPNF" data-id="<?= e($p['id_pnf']) ?>" data-nombre="<?= e($p['nombre_pnf']) ?>">
                             <svg class="svg-icon-no-pointer" width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9087 3.87352C16.4681 3.31421 17.2266 3 18.0176 3C18.4093 3 18.7971 3.07714 19.1589 3.22702C19.5208 3.3769 19.8495 3.59658 20.1265 3.87352C20.4034 4.15046 20.6231 4.47924 20.773 4.84108C20.9229 5.20292 21 5.59074 21 5.98239C21 6.37404 20.9229 6.76186 20.773 7.1237C20.6231 7.48554 20.4034 7.81432 20.1265 8.09126L19.0231 9.19466C18.6326 9.58519 17.9994 9.58519 17.6089 9.19467L14.8053 6.39114C14.4148 6.00062 14.4148 5.36745 14.8053 4.97693L15.9087 3.87352ZM13.3911 7.80536C13.0006 7.41483 12.3674 7.41483 11.9769 7.80536L5.01084 14.7714C4.37004 15.4122 3.91545 16.2151 3.69566 17.0943L3.02986 19.7575C2.94467 20.0982 3.04452 20.4587 3.2929 20.7071C3.54128 20.9555 3.90177 21.0553 4.24254 20.9701L6.90572 20.3043C7.78488 20.0846 8.58778 19.63 9.22857 18.9892L16.1946 12.0231C16.5852 11.6326 16.5852 10.9994 16.1946 10.6089L13.3911 7.80536Z" fill="#000000"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 20C12 19.4477 12.4477 19 13 19L20 19C20.5523 19 21 19.4477 21 20C21 20.5523 20.5523 21 20 21L13 21C12.4477 21 12 20.5523 12 20Z" fill="#000000"/>
                             </svg>
                         </button>
-                        <button class="btn-eliminar" name="eliminarPnf" type="submit" data-id="<?= e($p['id_pnf']) ?>">
+                        <button class="btn-eliminar btn-accion-tabla" title="Eliminar PNF" aria-label="Eliminar PNF" name="eliminarPnf" type="submit" data-id="<?= e($p['id_pnf']) ?>">
                             <svg class="svg-icon-no-pointer" width="30" height="30" viewBox="0 0 512 512" fill="#000000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M316.325 44.522V0H195.68l-.003 44.522H61.217v87.982h21.616c3.975 75.409 20.548 350.983 21.319 363.803L105.097 512h301.806l.944-15.694c.771-12.821 17.345-288.394 21.319-363.803h21.616V44.522H316.325zM229.069 33.391h53.866v11.13h-53.866V33.391zM375.458 478.609H136.542c-3.633-60.548-16.681-278.597-20.27-346.105h279.456c-3.588 67.503-16.637 285.551-20.27 346.105zM417.391 99.112H94.609V77.913h322.783v21.199z"/>
                                 <path d="M239.304 167.947h33.391v280.031h-33.391z"/>
@@ -364,6 +357,7 @@ include_once __DIR__."/layout/header.php";
     </section>
 
     <?php include_once __DIR__."/modals/modalEditarRol.php"; ?>
+    <?php include_once __DIR__."/modals/modalRegistrarRol.php"; ?>
     <?php include_once __DIR__."/modals/modalEditarCondicion.php"; ?>
     <?php include_once __DIR__."/modals/modalRegistrarCondicion.php"; ?>
     <?php include_once __DIR__."/modals/modalRegistrarOferta.php"; ?>
@@ -372,7 +366,6 @@ include_once __DIR__."/layout/header.php";
     <?php include_once __DIR__."/modals/modalRegistrarPNF.php"; ?>
     <?php include_once __DIR__."/modals/modalActualizarPNF.php"; ?>
     
-    <script src="assets/script/datatables.min.js"></script>
     <script src="assets/script/jquery-4.0.0.min.js"></script>
     <script src="assets/script/gestionOferta.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>

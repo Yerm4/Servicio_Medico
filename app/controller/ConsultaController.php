@@ -52,6 +52,40 @@ class ConsultaController extends BaseController implements ContFace {
         $this->consultar($id);
     }
 
+    public function listado() {
+        if (empty($_SESSION['cedula'])) {
+            http_response_code(401);
+            echo json_encode(["error" => "Debe iniciar sesión"]);
+            exit();
+        }
+
+        if (!$this->checkPerm("ver_consultas")) {
+            http_response_code(403);
+            echo json_encode(["error" => "No tiene permisos para ver consultas"]);
+            exit();
+        }
+
+        $draw = max(1, (int)($_GET['draw'] ?? 1));
+        $start = max(0, (int)($_GET['start'] ?? 0));
+        $length = (int)($_GET['length'] ?? 25);
+        $length = $length < 0 ? -1 : max(1, min(250, $length));
+        $search = trim((string)($_GET['search']['value'] ?? ''));
+        $order = $_GET['order'][0] ?? null;
+        $columns = $_GET['columns'] ?? [];
+        $orderName = $order ? ($columns[(int)$order['column']]['data'] ?? '') : '';
+        $orderDirection = strtolower($order['dir'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
+
+        $result = (new Consulta())->obtenerConsultasListado($start, $length, $search, $orderName, $orderDirection);
+
+        echo json_encode([
+            "draw" => $draw,
+            "recordsTotal" => $result["recordsTotal"],
+            "recordsFiltered" => $result["recordsFiltered"],
+            "data" => $result["data"]
+        ]);
+        exit();
+    }
+
     public function obtenerConsulta($id = null) {
         $this->consultar($id);
     }

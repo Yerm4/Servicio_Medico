@@ -206,6 +206,79 @@ class Consulta extends BaseModel {
         }
     }
 
+    public function obtenerConsultasListado($start, $length, $search, $orderName, $orderDirection) {
+        $where = "1 = 1";
+        $params = [];
+
+        if ($search !== "") {
+            $where .= " AND (CAST(c.id_usuario AS CHAR) LIKE :search
+                OR u.nombre LIKE :search
+                OR u.apellido LIKE :search
+                OR m.nombre LIKE :search
+                OR m.apellido LIKE :search
+                OR c.motivo_de_visita LIKE :search
+                OR c.observaciones LIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $sortColumns = [
+            'fecha_consulta' => 'c.fecha_consulta',
+            'paciente' => 'u.apellido',
+            'medico' => 'm.apellido',
+            'motivo_de_visita' => 'c.motivo_de_visita'
+        ];
+        $orderBy = $sortColumns[$orderName] ?? 'c.fecha_consulta';
+        $direction = $orderDirection === 'asc' ? 'ASC' : 'DESC';
+
+        $baseJoin = "LEFT JOIN usuarios u ON c.id_usuario = u.cedula
+            LEFT JOIN usuarios m ON c.id_medico = m.cedula";
+
+        $total = (int)$this->pdo->query("SELECT COUNT(*) FROM consulta_medica")->fetchColumn();
+
+        $filteredStmt = $this->pdo->prepare("SELECT COUNT(*) FROM consulta_medica c " . $baseJoin . " WHERE " . $where);
+        $filteredStmt->execute($params);
+        $filtered = (int)$filteredStmt->fetchColumn();
+
+        $sql = "SELECT c.id, c.id_usuario, c.id_medico, c.motivo_de_visita,
+            c.observaciones, c.medicamento_suministrado, c.fecha_consulta,
+            u.nombre AS paciente_nombre, u.apellido AS paciente_apellido,
+            m.nombre AS medico_nombre, m.apellido AS medico_apellido
+            FROM consulta_medica c " . $baseJoin . "
+            WHERE " . $where . "
+            ORDER BY " . $orderBy . " " . $direction . "
+            LIMIT :limit OFFSET :offset";
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':limit', $length < 0 ? $filtered : $length, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $start, PDO::PARAM_INT);
+        $stmt->execute();
+        $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($consultas as &$consulta) {
+            $sintomasStmt = $this->pdo->prepare("SELECT l.nombre_sintoma
+                FROM sintomas_consulta s
+                INNER JOIN lista_sintomas l ON s.id_sintoma = l.id_sintoma
+                WHERE s.id_consulta = :id");
+            $sintomasStmt->execute([':id' => $consulta['id']]);
+            $consulta['sintomas'] = $sintomasStmt->fetchAll(PDO::FETCH_COLUMN);
+
+            $diagnosticosStmt = $this->pdo->prepare("SELECT d.codigo_icd_diagnostico, p.patologia
+                FROM diagnosticos_consulta d
+                LEFT JOIN lista_patologias p ON d.codigo_icd_diagnostico = p.codigo_icd
+                WHERE d.id_consulta = :id");
+            $diagnosticosStmt->execute([':id' => $consulta['id']]);
+            $consulta['diagnosticos'] = $diagnosticosStmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filtered,
+            'data' => $consultas
+        ];
+    }
+
     public function actualizarConsulta($idConsulta, $motivo, $observaciones, $sintomas, $diagnosticos, $condiciones = [], $medicamentoSuministrado = '') {
         try {
             $this->pdo->beginTransaction();

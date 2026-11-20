@@ -169,6 +169,7 @@ INSERT INTO `nucleo_pnf` (`id_nucleo`, `id_pnf`) VALUES
 (4, 1), (4, 2), (4, 4);
 
 INSERT INTO `lista_roles` (`id_rol`, `nombre_rol`, `descripcion_rol`) VALUES
+(5, 'Administrador', 'Acceso completo al sistema'),
 (0, 'Visitante/Invitado', 'Solo lectura de perfil propio'),
 (1, 'Usuario', 'Rol de paciente regular'),
 (2, 'Enfermero', 'Registro de usuarios'),
@@ -199,7 +200,14 @@ INSERT INTO `roles_permisos` (`id_rol`, `id_permiso`) VALUES
 (4, 1),
 (4, 5),
 (4, 6),
-(4, 7);
+(4, 7),
+(5, 1),
+(5, 2),
+(5, 3),
+(5, 4),
+(5, 5),
+(5, 6),
+(5, 7);
 
 INSERT INTO `configuracion` (`rol_defecto`) VALUES (1);
 
