@@ -4,18 +4,11 @@ namespace app\model;
 use PDO;
 use PDOException;
 use app\model\BaseModel;
+use app\traits\ModelResponseTrait;
 
 class Usuario extends BaseModel {
 
-    private function response($status, $message = "", $data = null, $redirect = null) {
-        return    [
-        "status" => $status,
-        "message" => $message,
-        "data" => $data,
-        "redirect" => $redirect
-        ];
-    }
-
+    use ModelResponseTrait;
     public function registrar($cedula, $nombre, $apellido, $tipo, $fecha_nacimiento, $tlfprincipal, $tlfemergencia, $nombre_contacto_emergencia, $sexo, $direccion = '', $rol = null, $nucleo_id = null, $pnf_id = null) {
         try {
             $stmtCheck = $this->pdo->prepare("SELECT activo FROM usuarios WHERE cedula = :cedula LIMIT 1");

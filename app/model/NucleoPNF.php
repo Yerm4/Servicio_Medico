@@ -5,17 +5,11 @@ namespace app\model;
 use PDO;
 use PDOException;
 use app\model\BaseModel;
+use app\traits\ModelResponseTrait;
 
 class NucleoPNF extends BaseModel {
     
-    private function response($status, $message = "", $data = null, $redirect = null) {
-        return [
-        "status" => $status,
-        "message" => $message,
-        "data" => $data,
-        "redirect" => $redirect
-        ];
-    }
+    use ModelResponseTrait;
 
     private function existeNucleo($nombre) {
         $sql = "SELECT id_nucleo, estado FROM lista_nucleos

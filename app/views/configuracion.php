@@ -370,4 +370,6 @@ include_once __DIR__."/layout/header.php";
     <script src="assets/script/gestionOferta.js" defer></script>
     <script src="assets/script/gestion.js" defer></script>
     <script src="assets/script/gestionPNFNucleo.js" defer></script>
+    <script src="assets/script/datatables.min.js" defer></script>
+
 </main>
