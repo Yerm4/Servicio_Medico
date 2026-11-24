@@ -1454,7 +1454,7 @@ tr, th, td {
 
     #tablaNucleos,
     #tablaPnfs,
-    #tablaRegistros,
+    #tablaRegistrosOfertas,
     #tablaRegistrosConsultas {
         min-width: 700px;
     }
@@ -1516,6 +1516,7 @@ tr, th, td {
 #tablaRolesPermisos_wrapper .dt-layout-row:first-child,
 #tablaCondiciones_wrapper .dt-layout-row:first-child,
 #tablaNucleos_wrapper .dt-layout-row:first-child,
+#tablaRegistrosOfertas_wrapper .dt-layout-row:first-child,
 #tablaPnfs_wrapper .dt-layout-row:first-child {
     display: none;
 }

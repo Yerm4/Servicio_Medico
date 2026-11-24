@@ -5,7 +5,87 @@ $(document).ready(() => {
     const $cuerpoTablaOfertas = $("#cuerpoTablaOfertas");
     const $alertContainerGeneral = $("#alert-container-oferta");
     const $modalRegistrarOferta = $("#modalRegistrarOferta");
+      $(document).on('input', '#buscarOferta', (e) => {
+        tablaRegistrosOfertas.search(e.target.value).draw();
+    });
+
+const tablaOfertas = new DataTable('#tablaRegistrosOfertas', {
+    autoFill: false,
+    searching: true,
+    paging: false,
+    info: false,
+    lengthChange: false,
+    ordering: false,
+    layout: {
+        topStart: 'search',
+        topEnd: null
+    },
+    language: {
+        search: 'Buscar:',
+        searchPlaceholder: 'Buscar Oferta o Núcleo',
+        emptyTable: 'No hay ofertas académicas vinculadas.',
+        zeroRecords: 'No se encontraron ofertas'
+    },
+    columnDefs: [
+        {
+            targets: 0,
+            render: function (data, type) {
+                // Usa el nombre real para buscar, pero en pantalla muestra solo "↳"
+                return type === 'display'
+                    ? '<span style="color: #94a3b8; padding-left: 1rem;">↳</span>'
+                    : data;
+            }
+        }
+    ],
+    drawCallback: function () {
+        const api = this.api();
+        const tbody = document.getElementById('cuerpoTablaOfertas');
+        if (!tbody) return;
+
+        // Limpiar cabeceras de grupo previas antes de redibujar
+        tbody.querySelectorAll('tr.tr-grupo-nucleo').forEach(tr => tr.remove());
+
+        const rows = api.rows({ page: 'current' }).nodes();
+        const nucleos = api.column(0, { page: 'current' }).data().toArray();
+
+        // Contar PNFs visibles por núcleo
+        const conteo = {};
+        nucleos.forEach(n => {
+            conteo[n] = (conteo[n] || 0) + 1;
+        });
+
+        // Insertar la fila de cabecera encima del primer PNF de cada núcleo
+        let ultimoNucleo = null;
+        nucleos.forEach((nucleo, i) => {
+            if (ultimoNucleo !== nucleo) {
+                const trGrupo = document.createElement('tr');
+                trGrupo.className = 'tr-grupo-nucleo';
+                trGrupo.style.backgroundColor = '#f1f5f9';
+                trGrupo.innerHTML = `
+                    <td colspan="3" class="td-consultas" style="font-weight: 700; color: #1e293b; padding: 0.75rem 1rem; text-align: left;">
+                        ${nucleo}
+                        <span style="font-weight: 400; font-size: 0.85em; color: #64748b;">(${conteo[nucleo]} PNFs)</span>
+                    </td>
+                `;
+                rows[i].parentNode.insertBefore(trGrupo, rows[i]);
+                ultimoNucleo = nucleo;
+            }
+        });
+    }
+});
     
+$('#buscarOfertaInput').on('input', function () {
+        const termino = $(this).val().trim().toLowerCase();
+
+    $('#cuerpoTablaOfertas tr.tr-body-consultas').each(function () {
+        const $fila = $(this);
+        const nucleo = ($fila.attr('data-nucleo') || $fila.find('td:eq(0)').text()).toLowerCase();
+        const pnf = $fila.find('td:eq(1)').text().toLowerCase();
+        const coincide = !termino || nucleo.includes(termino) || pnf.includes(termino);
+
+        $fila.toggle(coincide);
+    });
+    });
 function apiFetch(url, options = {}) {
     const csrfToken = $('input[name="csrf_token"]').val() || $('meta[name="csrf-token"]').attr('content') || '';
     return new Promise((resolve, reject) => {

@@ -33,13 +33,8 @@ $(document).ready(() => {
         searchPlaceholder: 'Buscar PNF',
         zeroRecords: 'No se encontraron pnfs'
     }
-});
-
-
-
+    });
     
-
-
     function apiFetch(url, options = {}) {
     return new Promise((resolve, reject) => {
         $.ajax({
