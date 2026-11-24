@@ -13,7 +13,7 @@ $(document).ready(() => {
         },
         language: {
         search: 'Buscar:',
-        searchPlaceholder: 'Buscar núcleos',
+        searchPlaceholder: 'Buscar Núcleo',
         zeroRecords: 'No se encontraron núcleos'
     }
 });
@@ -30,14 +30,14 @@ $(document).ready(() => {
         },
         language: {
         search: 'Buscar:',
-        searchPlaceholder: 'Buscar PNFs',
+        searchPlaceholder: 'Buscar PNF',
         zeroRecords: 'No se encontraron pnfs'
     }
 });
 
     [
-        [tablaNucleos, 'Buscar núcleos'],
-        [tablaPnfs, 'Buscar PNFs']
+        [tablaNucleos, 'Buscar Núcleo'],
+        [tablaPnfs, 'Buscar PNF']
     ].forEach(([tabla, placeholder]) => {
         const tablaElemento = tabla.table().node();
         const buscador = tabla.table().container().querySelector('.dt-search');
@@ -100,7 +100,7 @@ async function refrescarContenedor(idContenedor) {
         });
 
         $contenedor.append($alertaEl);
-        setTimeout(() => $alertaEl.remove(), 4000);
+        setTimeout(() => $alertaEl.remove(), 2000);
     }
 
     function mostrarErrorEnFormulario(formulario, mensaje) {

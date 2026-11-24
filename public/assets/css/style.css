@@ -1515,7 +1515,6 @@ tr, th, td {
 #tablaRoles_wrapper .dt-layout-row:first-child,
 #tablaRolesPermisos_wrapper .dt-layout-row:first-child,
 #tablaCondiciones_wrapper .dt-layout-row:first-child,
-#tablaRegistrosOfertas_wrapper .dt-layout-row:first-child,
 #tablaNucleos_wrapper .dt-layout-row:first-child,
 #tablaPnfs_wrapper .dt-layout-row:first-child {
     display: none;

@@ -508,7 +508,7 @@ if (formRolesPermisos) {
 
 function configurarOrdenamientoTablas() {
     document.querySelectorAll("table").forEach((tabla) => {
-        if (tabla.id === "tablaRoles" || tabla.id === "tablaCondiciones" || tabla.id === "tablaRegistrosOfertas" || tabla.id === "tablaRegistros" || tabla.id === "tablaRegistrosConsultas") return;
+        if (tabla.id === "tablaRoles" || tabla.id === "tablaCondiciones" || tabla.id === "tablaRegistros" || tabla.id === "tablaRegistrosConsultas") return;
         const encabezados = tabla.querySelectorAll("thead th.sortable");
         const cuerpo = tabla.tBodies[0];
         if (!encabezados.length || !cuerpo) return;
@@ -557,11 +557,10 @@ if (typeof DataTable === 'function') {
     const placeholders = {
         tablaRoles: 'Buscar roles',
         tablaRolesPermisos: 'Buscar permisos',
-        tablaCondiciones: 'Buscar condiciones',
-        tablaRegistrosOfertas: 'Buscar ofertas académicas'
+        tablaCondiciones: 'Buscar condiciones'
     };
 
-    ['tablaRoles', 'tablaRolesPermisos', 'tablaCondiciones', 'tablaRegistrosOfertas'].forEach((id) => {
+    ['tablaRoles', 'tablaRolesPermisos', 'tablaCondiciones'].forEach((id) => {
         const tabla = document.getElementById(id);
         if (!tabla || DataTable.isDataTable(tabla)) return;
 
