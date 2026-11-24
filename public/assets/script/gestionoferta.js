@@ -76,7 +76,7 @@ function apiFetch(url, options = {}) {
         $alertaEl.find(".btn-cerrar-alerta").on("click", () => $alertaEl.remove());
 
         $targetContainer.append($alertaEl);
-        setTimeout(() => $alertaEl.remove(), 4000);
+        setTimeout(() => $alertaEl.remove(), 2000);
     }
 
 

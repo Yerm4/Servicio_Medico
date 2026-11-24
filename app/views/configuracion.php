@@ -245,6 +245,7 @@ include_once __DIR__."/layout/header.php";
                         <div class="contenedor-tabla-consultas">
                             <div class="cabecera-tabla-global">
                                 <h3 class="titulo-tabla-consultas">Núcleos</h3>
+                            <div class="dt-search"><label><input type="search" id="buscarNucleoInput" placeholder="Buscar Núcleo"></label></div>
                                 <a name="openModal" data-modal="modalRegistrarNucleo" class="action-card__button action-card__button--fit" href="#">Registrar Nucleo</a>
                             </div>
                             <div id="alert-container-nucleo" class="alert-container"></div>
@@ -304,6 +305,7 @@ include_once __DIR__."/layout/header.php";
                         <div class="contenedor-tabla-consultas">
                             <div class="cabecera-tabla-global">
                                 <h3 class="titulo-tabla-consultas">Programas Nacionales de Formación (PNF)</h3>
+                                <div class="dt-search"><label><input type="search" id="buscarPnfInput" placeholder="Buscar PNF"></label></div>
                                 <a name="openModal" data-modal="modalRegistrarPNF" class="action-card__button action-card__button--fit" href="#">Registrar PNF</a>
                             </div>
                             
