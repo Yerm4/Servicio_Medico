@@ -537,8 +537,9 @@ tr, th, td {
 }
 
 .section-1--perfil .buscador-caja .section-1__box {
-    grid-column: 3;
-    justify-self: end;
+    grid-column: 2;
+    justify-self: center;
+    margin-bottom: 2px;
 }
 
 #tablaRegistros_wrapper .dt-layout-row:first-child,
@@ -1637,4 +1638,8 @@ tr, th, td {
 .login-button[disabled] {
     background-color: #33fd;
     border: 1px solid #33fd;
+}
+
+.action-card__login {
+    margin-top: 20px;
 }

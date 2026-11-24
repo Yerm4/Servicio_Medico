@@ -29,6 +29,7 @@ const tablaOfertas = new DataTable('#tablaRegistrosOfertas', {
     columnDefs: [
         {
             targets: 0,
+            defaultContent: '',
             render: function (data, type) {
                 // Usa el nombre real para buscar, pero en pantalla muestra solo "↳"
                 return type === 'display'

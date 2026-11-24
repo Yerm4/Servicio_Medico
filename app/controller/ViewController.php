@@ -62,6 +62,13 @@ class ViewController {
 
     public function showUsuario($userModel = null, $permisos = null) {
         $paginaActual = 'usuarios';
+        $userModel = new Usuario();
+        $modeloOfertas = new NucleoPNF();
+        $rolesList = isset($userModel) ? $userModel->obtenerRoles() : [];
+        $defRol = isset($userModel) ? $userModel->obtenerRolDefecto() : 1;
+        $rInput = isset($inputs['rol']) ? (int)$inputs['rol'] : $defRol;
+        $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
+        $nucleos = $modeloOfertas->obtenerNucleos();
         include __DIR__ . "/../views/usuarios.php";
     }
 

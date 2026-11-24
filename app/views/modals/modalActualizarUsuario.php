@@ -23,7 +23,7 @@
                 <select class="action-card__select" id="edit_tipo" name="tipo" required>
                     <option value="" disabled>Seleccione...</option>
                     <?php 
-                    $tipos = isset($userModel) ? $userModel->obtenerTipos() : [];
+                    
                     foreach ($tipos as $tipo): 
                     ?>
                         <option value="<?php echo e($tipo['id_tipo']); ?>"><?php echo e($tipo['nombre_tipo']); ?></option>
@@ -54,7 +54,6 @@
             <label for="edit_rol" class="action-card__label">Rol de Acceso
                 <select class="action-card__select" id="edit_rol" name="rol" required>
                     <?php 
-                    $rolesList = isset($userModel) ? $userModel->obtenerRoles() : [];
                     foreach ($rolesList as $rolOpt): 
                     ?>
                         <option value="<?= e($rolOpt['id_rol']) ?>"><?= e($rolOpt['nombre_rol']) ?></option>

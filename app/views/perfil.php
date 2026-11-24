@@ -159,6 +159,7 @@ include __DIR__."/layout/header.php";
 </main>
 
 <footer>
+    <script src="assets/script/jquery-4.0.0.min.js"></script>
     <script src="assets/script/gestion.js" defer></script>
     <script src="assets/script/gestionPnfNucleo.js" defer></script>
     <script src="assets/script/gestionOferta.js" defer></script>

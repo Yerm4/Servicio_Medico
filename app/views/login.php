@@ -6,7 +6,7 @@ include __DIR__."/layout/header.php";
 <main class="login">
         <section class="section-1">
             <div class="section-1__box">
-            <div class="action-card">
+            <div class="action-card action-card__login">
                 <img class="action-card__logo" src="assets/media/img/uptaeb.jpg" alt="">
                 <h3 class="action-card__title">Servicio de Salud universitaria UPTAEB</h3>
                 <p class="action-card__p">Control de Acceso</p>
@@ -44,7 +44,7 @@ include __DIR__."/layout/header.php";
     <footer>
 
     </footer>
-    <script src="assets/script/jquery-3.7.1.min.js"></script>
+    <script src="assets/script/jquery-4.0.0.min.js"></script>
     <script src="assets/script/login.js"></script>
 </body>
 </html>

@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const datos = Object.fromEntries(new FormData(signupForm).entries());
-z       
+
             try {
                 const result = await apiFetch("api/users", {
                     method: "POST",
