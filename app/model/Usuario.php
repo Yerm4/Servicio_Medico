@@ -557,54 +557,6 @@ class Usuario extends BaseModel {
         }
     }
 
-    public function sincronizarPermisos(array $permisosActivos) {
-        try {
-            $this->pdo->beginTransaction();
-            
-            $stmt = $this->pdo->prepare("SELECT id_permiso, nombre_permiso FROM lista_permisos");
-            $stmt->execute();
-            $permisosDB = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            $dbNombres = [];
-            foreach ($permisosDB as $p) {
-                $dbNombres[$p['nombre_permiso']] = $p['id_permiso'];
-            }
-            
-            $stmtIns = $this->pdo->prepare("INSERT INTO lista_permisos (nombre_permiso, descripcion_permiso) VALUES (:nombre, :descripcion)");
-            $stmtUpd = $this->pdo->prepare("UPDATE lista_permisos SET descripcion_permiso = :descripcion WHERE nombre_permiso = :nombre");
-            foreach ($permisosActivos as $nombre => $descripcion) {
-                if (!isset($dbNombres[$nombre])) {
-                    $stmtIns->execute([
-                        ':nombre' => $nombre,
-                        ':descripcion' => $descripcion
-                    ]);
-                } else {
-                    $stmtUpd->execute([
-                        ':nombre' => $nombre,
-                        ':descripcion' => $descripcion
-                    ]);
-                }
-            }
-            
-            $nombresCodigo = array_keys($permisosActivos);
-            foreach ($dbNombres as $nombre => $idPermiso) {
-                if (!in_array($nombre, $nombresCodigo)) {
-                    $stmtDelRP = $this->pdo->prepare("DELETE FROM roles_permisos WHERE id_permiso = :id_permiso");
-                    $stmtDelRP->execute([':id_permiso' => $idPermiso]);
-                    
-                    $stmtDelP = $this->pdo->prepare("DELETE FROM lista_permisos WHERE id_permiso = :id_permiso");
-                    $stmtDelP->execute([':id_permiso' => $idPermiso]);
-                }
-            }
-            
-            $this->pdo->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->pdo->rollBack();
-            return false;
-        }
-    }
-
     public function eliminarPermiso($idPermiso) {
         try {
             $this->pdo->beginTransaction();

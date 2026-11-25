@@ -17,7 +17,7 @@ class ViewController {
         
     }
 
-    public function showLogin() {
+    public function showLogin(array $permisosUsuario = []) {
         
         if (!empty($_SESSION["cedula"])) header("Location: perfil");
         
@@ -32,9 +32,7 @@ class ViewController {
         }
     }
 
-    public function showPerfil() {
-
-        global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta, $tieneGenerarReportes, $tieneRealizarConsulta;
+    public function showPerfil(array $permisosUsuario = []) {
         $this->auth();
         $consultaModel = new Consulta();
         $stats = [];
@@ -42,7 +40,11 @@ class ViewController {
         $misConsultas = [];
         $misCondiciones = [];
 
-        if (!$tieneGestionarUsuarios && !$tieneVerConsultas && !$tieneGestionarRolesPermisos) {
+        if (
+            empty($permisosUsuario["gestionar_usuarios"])
+            && empty($permisosUsuario["ver_consultas"])
+            && empty($permisosUsuario["gestionar_roles_permisos"])
+        ) {
             $misConsultas = $consultaModel->obtenerConsultasPorPaciente($_SESSION["cedula"]);
             $misCondiciones = $consultaModel->obtenerCondicionesPaciente($_SESSION["cedula"]);
         } else {
@@ -60,7 +62,7 @@ class ViewController {
         include __DIR__ . "/../views/perfil.php";
     }
 
-    public function showUsuario($userModel = null, $permisos = null) {
+    public function showUsuario(array $permisosUsuario = []) {
         $paginaActual = 'usuarios';
         $userModel = new Usuario();
         $modeloOfertas = new NucleoPNF();
@@ -72,21 +74,19 @@ class ViewController {
         include __DIR__ . "/../views/usuarios.php";
     }
 
-    public function showConsultas($userModel = null, $permisos = null) {
-        global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneModificarConsulta, $tieneGenerarReportes, $tieneRealizarConsulta;
+    public function showConsultas(array $permisosUsuario = []) {
         $paginaActual = 'consultas';
         include __DIR__ . "/../views/consultas.php";
     }
 
-    public function showConfiguracion($partesRuta = null) {
-        global $tieneGestionarRolesPermisos, $tieneGestionarCondiciones, $tieneGestionarOferta;
+    public function showConfiguracion(array $permisosUsuario = []) {
         $userModel = new Usuario();
         $roles = [];
         $permisos = [];
         $rolePermMap = [];
         $condicionesRegistradas = [];
         
-        if ($tieneGestionarRolesPermisos) {
+        if (!empty($permisosUsuario["gestionar_roles_permisos"])) {
             $roles = $userModel->obtenerRoles();
             $permisos = $userModel->obtenerPermisos();
             $rolesPermisos = $userModel->obtenerRolesPermisos();
@@ -95,7 +95,7 @@ class ViewController {
             }
         }
 
-        if ($tieneGestionarCondiciones) {
+        if (!empty($permisosUsuario["gestionar_condiciones"])) {
             $condicionesRegistradas = (new Condicion())->consultarCondiciones();
         }
 

@@ -5,6 +5,9 @@ if (!isset($_SESSION["cedula"])) {
 }
 
 $titulo = "Configuración";
+$tieneGestionarRolesPermisos = !empty($permisosUsuario["gestionar_roles_permisos"]);
+$tieneGestionarCondiciones = !empty($permisosUsuario["gestionar_condiciones"]);
+$tieneGestionarOferta = !empty($permisosUsuario["gestionar_oferta_academica"]);
 include_once __DIR__."/layout/header.php";
 ?>
 

@@ -49,7 +49,7 @@
                     <input type="text" placeholder="Los pocitos" class="action-card__input" id="direccion" name="direccion" value="<?php echo isset($inputs['direccion']) ? $inputs['direccion'] : ''; ?>" required>
                 </label>
 
-                <?php if (isset($tieneGestionarRolesPermisos)): ?>
+                <?php if (!empty($permisosUsuario['gestionar_roles_permisos'])): ?>
                 <label for="rol" class="action-card__label">Rol de Acceso
                     <select class="action-card__select" id="rol" name="rol" required>
                         <?php 

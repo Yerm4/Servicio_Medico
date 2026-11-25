@@ -1,9 +1,7 @@
-<?php 
-global $tieneGestionarUsuarios, $tieneVerConsultas, $tieneGestionarRolesPermisos, $tieneGestionarCondiciones, $tieneGestionarOferta;
-$tGestionarUsuarios = $tieneGestionarUsuarios ?? ($GLOBALS['tieneGestionarUsuarios'] ?? false);
-$tVerConsultas = $tieneVerConsultas ?? ($GLOBALS['tieneVerConsultas'] ?? false);
-$tConfiguracion = ($tieneGestionarRolesPermisos ?? ($GLOBALS['tieneGestionarRolesPermisos'] ?? false)) || ($tieneGestionarCondiciones ?? ($GLOBALS['tieneGestionarCondiciones'] ?? false));
-$tOferta = $tieneGestionarOferta ?? ($GLOBALS['tieneGestionarOferta'] ?? false);
+<?php
+$tGestionarUsuarios = !empty($permisosUsuario["gestionar_usuarios"]);
+$tVerConsultas = !empty($permisosUsuario["ver_consultas"]);
+$tConfiguracion = !empty($permisosUsuario["gestionar_roles_permisos"]) || !empty($permisosUsuario["gestionar_condiciones"]);
 ?>
 <aside class="side-menu">
     <h1>Menu</h1>

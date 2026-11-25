@@ -18,7 +18,12 @@ $rutasApi = [
         "api/condiciones/buscar"           => "ConsultaController@buscarCondicion",
         "api/condiciones/paciente/{cedula}"=> "ConsultaController@obtenerCondicionesPaciente",
         "api/pnfs"                         => "UserController@buscarPnfs",
-        "api/nucleos/pnfs/{id}"            => "NucleoPnfController@obtenerPnfsPorNucleo"
+        "api/nucleos/pnfs/{id}"            => "NucleoPnfController@obtenerPnfsPorNucleo",
+        "buscar_patologia"                 => "ConsultaController@buscarPatologia",
+        "buscar_paciente"                  => "ConsultaController@buscarPaciente",
+        "buscar_consultas_paciente"        => "ConsultaController@obtenerConsultasPaciente",
+        "buscar_condicion"                 => "ConsultaController@buscarCondicion",
+        "buscar_condiciones_paciente"      => "ConsultaController@obtenerCondicionesPaciente"
     ],
     "POST" => [
         "api/auth/login"                   => "UserController@login",

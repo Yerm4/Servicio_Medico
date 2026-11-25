@@ -18,11 +18,11 @@ include_once __DIR__."/layout/header.php";
             
             <div class="section-1__box transition" id="section-1-box">
                 <div class="box-iniciar-consulta">
-                    <?php if (!empty($tieneRealizarConsulta) || !empty($GLOBALS['tieneRealizarConsulta'])): ?>
+                    <?php if (!empty($permisosUsuario['realizar_consulta'])): ?>
                         <a name="openModal" data-modal="modalRegistrarConsulta" class="action-card__button action-card__button--grid-principal btn-iniciar-consulta" href="#">Iniciar consulta</a>
                     <?php endif; ?>
                     
-                    <?php if (!empty($tieneGenerarReportes) || !empty($GLOBALS['tieneGenerarReportes'])): ?>
+                    <?php if (!empty($permisosUsuario['generar_reportes'])): ?>
                         <a name="openModal" data-modal="modalReporteMorbilidad" class="action-card__button btn-generar-reporte" href="#">Generar Reporte</a>
                     <?php endif; ?>
                 </div>
@@ -56,12 +56,12 @@ include_once __DIR__."/layout/header.php";
     <?php include_once __DIR__."/modals/modalVerDetallesConsulta.php"; ?>
     <?php include_once __DIR__."/modals/modalBuscarConsulta.php"; ?>
     
-    <?php if (!empty($tieneGenerarReportes) || !empty($GLOBALS['tieneGenerarReportes'])): ?>
+    <?php if (!empty($permisosUsuario['generar_reportes'])): ?>
         <?php include_once __DIR__."/modals/modalReporteMorbilidad.php"; ?>
     <?php endif; ?>
 
     <script>
-        const ES_MEDICO_O_DIRECTOR = <?= isset($tieneModificarConsulta) && $tieneModificarConsulta ? 'true' : 'false' ?>;
+        const ES_MEDICO_O_DIRECTOR = <?= !empty($permisosUsuario['modificar_consulta']) ? 'true' : 'false' ?>;
     </script>
 </main>
 

@@ -13,6 +13,7 @@ require_once __DIR__."/../vendor/autoload.php";
 use app\controller\ViewController;
 use app\controller\ApiController;
 use app\controller\ConsultaController;
+use app\middleware\AccessControlMiddleware;
 
 if (file_exists(__DIR__ . '/.env')) $dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
 else $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -66,7 +67,10 @@ $rutasVistas = [
     "configuracion"  => "showConfiguracion"
 ];
 
-include_once __DIR__."/../app/permisos/permisos.php";
+$accessControl = new AccessControlMiddleware();
+$permisosUsuario = $accessControl->handle($paginaActual);
+
+new ApiController($paginaActual);
 
 $formAccion = $_POST["form"] ?? null;
 if ($formAccion === "generar_reporte_morbilidad" && $_SERVER["REQUEST_METHOD"] === "POST") {
@@ -78,7 +82,7 @@ $paginaMostrar = __DIR__."/../app/views/$paginaActual.php";
 
 if (file_exists($paginaMostrar) && isset($rutasVistas[$paginaActual])) {
     $metodoController = $rutasVistas[$paginaActual];
-    $viewController->$metodoController($partesRuta); 
+    $viewController->$metodoController($permisosUsuario);
 } else {
     include __DIR__."/../app/views/404  .php";
 }

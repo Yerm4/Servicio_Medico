@@ -183,7 +183,8 @@ INSERT INTO `lista_permisos` (`id_permiso`, `nombre_permiso`, `descripcion_permi
 (4, 'modificar_consulta', 'Permite actualizar y modificar consultas médicas'),
 (5, 'generar_reportes', 'Permite generar reportes de morbilidad médica'),
 (6, 'gestionar_roles_permisos', 'Permite administrar roles, permisos y configuración del sistema'),
-(7, 'gestionar_condiciones', 'Permite añadir, modificar y borrar condiciones');
+(7, 'gestionar_condiciones', 'Permite añadir, modificar y borrar condiciones'),
+(8, 'gestionar_oferta_academica', 'Permite administrar los núcleos, PNFs y la oferta académica global');
 
 INSERT INTO `roles_permisos` (`id_rol`, `id_permiso`) VALUES
 (2, 1),
@@ -201,13 +202,15 @@ INSERT INTO `roles_permisos` (`id_rol`, `id_permiso`) VALUES
 (4, 5),
 (4, 6),
 (4, 7),
+(4, 8),
 (5, 1),
 (5, 2),
 (5, 3),
 (5, 4),
 (5, 5),
 (5, 6),
-(5, 7);
+(5, 7),
+(5, 8);
 
 INSERT INTO `configuracion` (`rol_defecto`) VALUES (1);
 
