@@ -219,7 +219,7 @@ class NucleoPnfController extends BaseController {
         }
     }
 
-    public function registrarOferta() {
+  public function registrarOferta() {
         if (!$this->checkPerm("gestionar_oferta_academica")) {
             code(403);
             $this->jsonResponse("error", "No tiene permisos para administrar la oferta académica");
@@ -227,27 +227,31 @@ class NucleoPnfController extends BaseController {
     
         $data = $this->getRequestData();
         $nucleoId = isset($data['nucleo_id']) ? (int)$data['nucleo_id'] : (isset($data['id_nucleo']) ? (int)$data['id_nucleo'] : 0);
-        $pnfId    = isset($data['pnf_id']) ? (int)$data['pnf_id'] : (isset($data['id_pnf']) ? (int)$data['id_pnf'] : 0);
+        $pnfInput = $data['pnf_id'] ?? $data['id_pnf'] ?? [];
+
+        $pnfIds = is_array($pnfInput) ? $pnfInput : [$pnfInput];
+        $pnfIds = array_values(array_unique(array_filter(array_map('intval', $pnfIds), fn($id) => $id > 0)));
     
-        if ($nucleoId <= 0 || $pnfId <= 0) {
+        if ($nucleoId <= 0 || empty($pnfIds)) {
             code(400);
-            $this->jsonResponse("error", "Debe seleccionar un núcleo y una carrera válidos");
+            $this->jsonResponse("error", "Debe seleccionar un núcleo y al menos un PNF válido");
         }
     
         $model = new NucleoPNF();
-        $resultado = $model->registrarOferta($nucleoId, $pnfId);
+        $resultado = $model->registrarOfertas($nucleoId, $pnfIds);
     
-        if ($resultado === "duplicado") {
-            code(400);
-            $this->jsonResponse("error", "Esta carrera ya está ofertada en la sede seleccionada");
-        } elseif ($resultado) {
+        if (($resultado['status'] ?? '') === 'ok') {
             code(201);
-            $this->jsonResponse("ok", "¡Oferta académica asignada con éxito!");
+            $this->jsonResponse("ok", $resultado['message']);
+        } elseif (($resultado['message'] ?? '') === 'duplicado') {
+            code(400);
+            $this->jsonResponse("error", "Los PNFs seleccionados ya están ofertados en esta sede");
         } else {
             code(400);
-            $this->jsonResponse("error", "Ocurrió un error al asignar la oferta");
+            $this->jsonResponse("error", $resultado['message'] ?? "Ocurrió un error al asignar la oferta");
         }
     }
+
     
     public function eliminarOferta($id = null) {
         if (!$this->checkPerm("gestionar_oferta_academica")) {

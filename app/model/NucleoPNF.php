@@ -152,43 +152,63 @@ class NucleoPNF extends BaseModel {
 
 
 
-public function registrarOferta($id_nucleo, $id_pnf) {
-    try {
-        $this->pdo->beginTransaction();
+public function registrarOfertas(int $id_nucleo, array $pnfIds): array {
+        try {
+            $this->pdo->beginTransaction();
 
-        $sqlCheck = "SELECT estado FROM nucleo_pnf WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf FOR UPDATE";
-        $stmtCheck = $this->pdo->prepare($sqlCheck);
-        $stmtCheck->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
-        $existe = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            $sqlCheck = "SELECT estado FROM nucleo_pnf WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf FOR UPDATE";
+            $sqlAnclar = "UPDATE nucleo_pnf SET estado = 1 WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf";
+            $sqlInsert = "INSERT INTO nucleo_pnf (id_nucleo, id_pnf) VALUES (:id_nucleo, :id_pnf)";
 
-        if ($existe) {
-            if ($existe['estado'] == 0) {
-                $sqlAnclar = "UPDATE nucleo_pnf SET estado = 1 WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf";
-                $stmtAnclar = $this->pdo->prepare($sqlAnclar);
-                $resultado = $stmtAnclar->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+            $stmtCheck = $this->pdo->prepare($sqlCheck);
+            $stmtAnclar = $this->pdo->prepare($sqlAnclar);
+            $stmtInsert = $this->pdo->prepare($sqlInsert);
 
-                $this->pdo->commit();
-                return $resultado;
+            $registrados = 0;
+            $duplicados = 0;
+
+            foreach ($pnfIds as $id_pnf) {
+                $stmtCheck->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+                $existe = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+                if ($existe) {
+                    if ((int)$existe['estado'] === 0) {
+                        $stmtAnclar->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+                        $registrados++;
+                    } else {
+                        $duplicados++;
+                    }
+                } else {
+                    $stmtInsert->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
+                    $registrados++;
+                }
             }
 
-            $this->pdo->rollBack();
-            return $this->response('error', 'duplicado');
+            if ($registrados === 0 && $duplicados > 0) {
+                $this->pdo->rollBack();
+                return $this->response('error', 'duplicado');
+            }
+
+            $this->pdo->commit();
+
+            $msg = $registrados === 1
+                ? "¡Oferta académica asignada con éxito!"
+                : "¡Se asignaron {$registrados} ofertas académicas con éxito!";
+
+            if ($duplicados > 0) {
+                $msg .= " ({$duplicados} ya estaban asignados)";
+            }
+
+            return $this->response('ok', $msg);
+
+        } catch (PDOException $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            return $this->response('error', 'Error en la base de datos: ' . $e->getMessage());
         }
-
-        $sql = "INSERT INTO nucleo_pnf (id_nucleo, id_pnf) VALUES (:id_nucleo, :id_pnf)";
-        $stmt = $this->pdo->prepare($sql);
-        $resultado = $stmt->execute([':id_nucleo' => $id_nucleo, ':id_pnf' => $id_pnf]);
-
-        $this->pdo->commit();
-        return $resultado;
-
-    } catch (PDOException $e) {
-        if ($this->pdo->inTransaction()) {
-            $this->pdo->rollBack();
-        }
-        return $this->response('error', 'Error en la base de datos: ' . $e->getMessage());
     }
-}
+
 
     public function desactivarOferta($id_nucleo, $id_pnf) {
         $sql = "UPDATE nucleo_pnf SET estado = 0 WHERE id_nucleo = :id_nucleo AND id_pnf = :id_pnf";
